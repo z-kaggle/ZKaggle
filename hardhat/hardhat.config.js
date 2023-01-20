@@ -22,4 +22,7 @@ module.exports = {
         cache: "./cache",
         artifacts: "./artifacts",
     },
+    mocha: {
+        timeout: 1000000
+    }
 }

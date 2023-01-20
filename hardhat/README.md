@@ -1,3 +1,12 @@
+# Setup
+
+```
+yarn
+yarn setup
+yarn test:full
+```
+If you have already compiled the circuits before, you can run `yarn test` instead.
+
 # FEVM Hardhat Kit
 
 ## Cloning the Repo
