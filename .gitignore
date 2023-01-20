@@ -104,4 +104,40 @@ hardhat/contracts/test/fuzzing/crytic-export
 
 # circom
 hardhat/circuits/build
-*.ptau
+*.ptau 
+
+# ui 
+# dependencies
+ui/node_modules
+ui/.pnp
+ui/.pnp.js
+
+# testing
+ui/coverage
+
+# next.js
+ui/.next/
+ui/out/
+
+# production
+ui/build
+
+# misc
+ui/.DS_Store
+ui/*.pem
+
+# debug
+ui/npm-debug.log*
+ui/yarn-debug.log*
+ui/yarn-error.log*
+ui/.pnpm-debug.log*
+
+# local env files
+ui/.env*.local
+
+# vercel
+ui/.vercel
+
+# typescript
+ui/*.tsbuildinfo
+ui/next-env.d.ts
