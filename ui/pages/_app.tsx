@@ -10,7 +10,7 @@ import { avalanche } from "./chain_config";
 
 const { chains, provider } = configureChains(
   [mainnet, polygon, optimism, arbitrum, avalanche],
-  [alchemyProvider({ apiKey: process.env.ALCHEMY_ID }), publicProvider()]
+  [alchemyProvider({ apiKey: process.env.ALCHEMY_ID! }), publicProvider()]
 );
 
 const { connectors } = getDefaultWallets({
