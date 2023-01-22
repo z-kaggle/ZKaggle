@@ -23,6 +23,7 @@
     "@types/chai": "^4.3.4",
     "@types/mocha": "^10.0.1",
     "@types/node": "^18.11.15",
+    "base32.js": "^0.1.0",
     "chai": "^4.3.7",
     "circom_tester": "^0.0.19",
     "circomlib": "^2.0.5",

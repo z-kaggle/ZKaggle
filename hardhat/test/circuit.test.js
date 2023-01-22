@@ -5,6 +5,7 @@ const wasm_tester = require("circom_tester").wasm;
 
 const fs = require("fs");
 const crypto = require("crypto");
+const base32 = require("base32.js");
 
 const F1Field = require("ffjavascript").F1Field;
 const Scalar = require("ffjavascript").Scalar;
@@ -31,36 +32,48 @@ describe("SHA256 MNIST test", function () {
     let Verifier;
     let verifier;
 
-    let bytes;
+    let digest;
+    let a, b, c, Input;
 
     before(async function () {
         Verifier = await ethers.getContractFactory("Verifier");
         verifier = await Verifier.deploy();
         await verifier.deployed();
 
-        bytes = fs.readFileSync("assets/mnist_image.pgm");
+        const bytes = fs.readFileSync("assets/mnist_image.pgm");
+
+        const hash = crypto.createHash('sha256');
+        hash.update(bytes);
+
+        digest = hash.digest('hex');
 
         const binary = [...bytes].map((b) => b.toString(2).padStart(8, "0").split("")).flat();
         // console.log(binary);
 
         INPUT["in"] = binary;
+        
+        const { proof, publicSignals } = await groth16.fullProve(INPUT, "circuits/build/circuit_js/circuit.wasm","circuits/build/circuit_final.zkey");
+
+        const calldata = await groth16.exportSolidityCallData(proof, publicSignals);
+        
+        const argv = calldata.replace(/["[\]\s]/g, "").split(',').map(x => BigInt(x).toString());
+        
+        a = [argv[0], argv[1]];
+        b = [[argv[2], argv[3]], [argv[4], argv[5]]];
+        c = [argv[6], argv[7]];
+        Input = argv.slice(8);
     });
     
 
-    it("Circuit test", async () => {
+    it("Check circuit output", async () => {
         const circuit = await wasm_tester("circuits/circuit.circom");
-
-        const hash = crypto.createHash('sha256');
-        hash.update(bytes);
-
-        const digest = hash.digest('hex');
         // split digest into two slices and convert to BigNumber
         const digest1 = Fr.e(digest.slice(0, 32), 16);
         const digest2 = Fr.e(digest.slice(32, 64), 16);
 
         // console.log(digest, digest1, digest2);
         
-        // const digest = [...hash.digest()].map((b) => b.toString(2).padStart(8, "0").split("")).flat();
+        // const digest = [...hash.digest()].map((b) => b.toString(16).padStart(2, "0").split("")).flat();
         // console.log(digest);
 
         const witness = await circuit.calculateWitness(INPUT, true);
@@ -79,18 +92,6 @@ describe("SHA256 MNIST test", function () {
     });
 
     it("Verifier should return true for correct proofs", async function () {
-
-        const { proof, publicSignals } = await groth16.fullProve(INPUT, "circuits/build/circuit_js/circuit.wasm","circuits/build/circuit_final.zkey");
-
-        const calldata = await groth16.exportSolidityCallData(proof, publicSignals);
-    
-        const argv = calldata.replace(/["[\]\s]/g, "").split(',').map(x => BigInt(x).toString());
-    
-        const a = [argv[0], argv[1]];
-        const b = [[argv[2], argv[3]], [argv[4], argv[5]]];
-        const c = [argv[6], argv[7]];
-        const Input = argv.slice(8);
-
         expect(await verifier.verifyProof(a, b, c, Input)).to.be.true;
     });
 
@@ -100,6 +101,29 @@ describe("SHA256 MNIST test", function () {
         let c = [0, 0];
         let d = [0, 0, 0, 0];
         expect(await verifier.verifyProof(a, b, c, d)).to.be.false;
+    });
+
+    it("CID should match that from IPFS", async function () {
+        const cid_version = 1;
+        const raw_buffer_code = 85;
+        const hash_function_code = 18; // SHA-256
+        const length = 32;
+        
+        const hex = cid_version.toString(16).padStart(2, "0") + raw_buffer_code.toString(16).padStart(2, "0") + hash_function_code.toString(16).padStart(2, "0") + length.toString(16).padStart(2, "0") + digest;
+        const buf = Buffer.from(hex, 'hex');
+        
+        const encoder = new base32.Encoder();
+        const cid = encoder.write(buf).finalize().toLowerCase();
+        expect("b"+cid).equal("bafkreig42jyiawthjkmskza765hn6krgqs7uk7cmtjmggb6mgnjql7dqje");
+    });
+
+    it("CID contract should compute correct CID", async function () {
+        const Cid = await ethers.getContractFactory("CID");
+        const cid = await Cid.deploy();
+
+        expect(await cid.computeCID(a, b, c, Input)).equal("0x"+digest);
+
+        // TODO: check that the CID is correct
     });
 
 });
