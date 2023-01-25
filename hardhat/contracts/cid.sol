@@ -6,6 +6,11 @@ import "./verifier.sol";
 import "hardhat/console.sol";
 
 contract CID is Verifier {
+
+    uint8 public constant CID_VERSION = 1;
+    uint8 public constant CID_CODEC = 0x55; // for raw buffer
+    uint8 public constant CID_HASH = 0x12; // for sha256
+    uint8 public constant CID_LENGTH = 32; // for sha256
     
     function computeCID(
         uint[2] memory a,
@@ -16,9 +21,7 @@ contract CID is Verifier {
         require(verifyProof(a, b, c, input), "Invalid proof");
         
         uint digest = (input[2] << 128) + input[3];
-        return abi.encodePacked(digest);
-
-        // TODO: compute and return the CID
+        return abi.encodePacked(CID_VERSION, CID_CODEC, CID_HASH, CID_LENGTH, digest);
     }
 
 }

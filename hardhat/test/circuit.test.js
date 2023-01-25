@@ -63,7 +63,6 @@ describe("SHA256 MNIST test", function () {
         c = [argv[6], argv[7]];
         Input = argv.slice(8);
     });
-    
 
     it("Check circuit output", async () => {
         const circuit = await wasm_tester("circuits/circuit.circom");
@@ -103,27 +102,57 @@ describe("SHA256 MNIST test", function () {
         expect(await verifier.verifyProof(a, b, c, d)).to.be.false;
     });
 
-    it("CID should match that from IPFS", async function () {
+    let cidraw;
+
+    it("CIDv1 should match that from IPFS", async function () {
         const cid_version = 1;
-        const raw_buffer_code = 85;
-        const hash_function_code = 18; // SHA-256
+        const cid_codec = 85; // raw 0x55
+        const hash_function_code = 18; // SHA-256 0x12
         const length = 32;
         
-        const hex = cid_version.toString(16).padStart(2, "0") + raw_buffer_code.toString(16).padStart(2, "0") + hash_function_code.toString(16).padStart(2, "0") + length.toString(16).padStart(2, "0") + digest;
-        const buf = Buffer.from(hex, 'hex');
+        cidraw = cid_version.toString(16).padStart(2, "0") + cid_codec.toString(16).padStart(2, "0") + hash_function_code.toString(16).padStart(2, "0") + length.toString(16).padStart(2, "0") + digest;
+        const buf = Buffer.from(cidraw, 'hex');
         
         const encoder = new base32.Encoder();
         const cid = encoder.write(buf).finalize().toLowerCase();
+
         expect("b"+cid).equal("bafkreig42jyiawthjkmskza765hn6krgqs7uk7cmtjmggb6mgnjql7dqje");
     });
+
+    it("Payload CID should match that from Lotus", async function () {
+        const buf = Buffer.from(cidraw, 'hex');
+        const cid = buf.toString('base64');
+        
+        expect("m"+cid).equal("mAVUSINzScIBaZ0qZJWQf907fKiaEv0V8TJpYYwfMM1MF/HBJ");
+    });
+
+    // TODO: fix this test
+    // it("Piece CID (cidraw) should match that from Lotus", async function () {
+    //     const decoder = new base32.Decoder();
+    //     const buf = decoder.write("aga6ea4seaqmiyj4ucamthe6gr2dsu7kqav3ulouz5wu24opwbx76udvwxg2iii").finalize();
+    //     console.log(buf);
+    //     console.log(buf.toString('hex'));
+    //     // const cid_version = 1;
+    //     // const cid_codec = 61697; // fil-commitment-unsealed 0xf101
+    //     // const hash_function_code = 4114; // sha2-256-trunc254-padded 0x1012
+    //     // const length = 32;
+        
+    //     // const cidraw = cid_version.toString(16).padStart(2, "0") + cid_codec.toString(16).padStart(2, "0") + hash_function_code.toString(16).padStart(2, "0") + length.toString(16).padStart(2, "0") + digest;
+    //     // const buf = Buffer.from(cidraw, 'hex');
+        
+    //     // const encoder = new base32.Encoder();
+    //     // const cid = encoder.write(buf).finalize().toLowerCase();
+    //     // console.log(cid);
+    //     // expect("b"+cid).equal("bafkreig42jyiawthjkmskza765hn6krgqs7uk7cmtjmggb6mgnjql7dqje");
+    // });
+
+    
 
     it("CID contract should compute correct CID", async function () {
         const Cid = await ethers.getContractFactory("CID");
         const cid = await Cid.deploy();
 
-        expect(await cid.computeCID(a, b, c, Input)).equal("0x"+digest);
-
-        // TODO: check that the CID is correct
+        expect(await cid.computeCID(a, b, c, Input)).equal("0x"+cidraw);
     });
 
 });
