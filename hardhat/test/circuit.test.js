@@ -40,6 +40,8 @@ describe("SHA256 MNIST test", function () {
         verifier = await Verifier.deploy();
         await verifier.deployed();
 
+        
+
         const bytes = fs.readFileSync("assets/mnist_image.pgm");
 
         const hash = crypto.createHash('sha256');
@@ -150,7 +152,7 @@ describe("SHA256 MNIST test", function () {
 
     it("CID contract should compute correct CID", async function () {
         const Cid = await ethers.getContractFactory("CID");
-        const cid = await Cid.deploy();
+        const cid = await Cid.deploy(verifier.address);
 
         expect(await cid.computeCID(a, b, c, Input)).equal("0x"+cidraw);
     });
