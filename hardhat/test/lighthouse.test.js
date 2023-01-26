@@ -24,6 +24,13 @@ const sign_auth_message = async (publicKey, privateKey) => {
 
 describe("Lighthouse SDK test", function () {
 
+    it("Should upload file in raw to lighthouse", async function () {
+        const response = await lighthouse.uploadFileRaw(path, apiKey);
+        expect(response.data.Name).equal("mnist_image.pgm");
+        expect(response.data.Hash).equal("bafkreig42jyiawthjkmskza765hn6krgqs7uk7cmtjmggb6mgnjql7dqje");
+        expect(response.data.Size).equal("797")
+    });
+
     it("Should upload file to lighthouse", async function () {
         const response = await lighthouse.upload(path, apiKey);
         expect(response.data.Name).equal("mnist_image.pgm");
