@@ -1,7 +1,7 @@
 import type { NextPage } from "next";
 import TopBar from "./components/TopBar";
+import NavBar from "./components/NavBar";
 import { css } from "@emotion/react";
-import MySpace from "./components/MySpace";
 import OutlinedCard from "./components/FlowCard";
 
 interface Task {
@@ -20,7 +20,7 @@ const MySpacePage: NextPage = () => {
       `}
     >
       <TopBar />
-      {/* <NavBar /> */}
+      <NavBar />
 
       <div
         css={css`

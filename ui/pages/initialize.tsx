@@ -12,6 +12,7 @@ import {
 } from "@mui/material";
 import type { NextPage } from "next";
 import TopBar from "./components/TopBar";
+import NavBar from "./components/NavBar";
 
 import PaidIcon from "@mui/icons-material/Paid";
 import React from "react";
@@ -43,7 +44,7 @@ const InitializePage: NextPage = () => {
       `}
     >
       <TopBar />
-      {/* <NavBar /> */}
+      <NavBar />
       <div
         css={css`
           display: flex;

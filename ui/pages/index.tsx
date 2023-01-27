@@ -2,6 +2,8 @@ import type { NextPage } from "next";
 import TopBar from "./components/TopBar";
 import { css } from "@emotion/react";
 import OutlinedCard from "./components/FlowCard";
+import NavBar from "./components/NavBar";
+import Head from "next/head";
 
 const Home: NextPage = () => {
   return (
@@ -12,8 +14,12 @@ const Home: NextPage = () => {
         width: 100%;
       `}
     >
+      <Head>
+        <title>Medium Blog</title>
+        <link rel="icon" href="/favicon.ico" />
+      </Head>
       <TopBar />
-      {/* <NavBar /> */}
+      <NavBar />
       <div
         css={css`
           display: flex;

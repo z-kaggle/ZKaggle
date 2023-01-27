@@ -1,7 +1,7 @@
 import { NextComponentType } from "next";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { css } from "@emotion/react";
-import SearchBar from "./SearchBar";
+import SearchBar from "./TopSearchBar";
 
 const TopBar: NextComponentType = () => {
   return (
