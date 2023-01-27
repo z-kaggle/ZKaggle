@@ -10,7 +10,7 @@ const TopBar: NextComponentType = () => {
         display: flex;
         align-items: center;
         justify-content: space-between;
-        background-color: #fff000;
+        background-color: #ffffff;
         position: fixed;
         top: 0;
         right: 0;
@@ -22,7 +22,8 @@ const TopBar: NextComponentType = () => {
       <div
         css={css`
           margin-left: 10%;
-          margin-right: 10px;
+          margin-right: 5%;
+          flex: 1 1 auto;
         `}
       >
         <SearchBar />

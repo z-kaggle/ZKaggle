@@ -1,9 +1,16 @@
 import type { NextPage } from "next";
 import TopBar from "./components/TopBar";
 import { css } from "@emotion/react";
+import MySpace from "./components/MySpace";
 import OutlinedCard from "./components/FlowCard";
 
-const Home: NextPage = () => {
+interface Task {
+  name: string;
+  requirements: string;
+  bounty: number;
+}
+
+const MySpacePage: NextPage = () => {
   return (
     <div
       css={css`
@@ -14,6 +21,7 @@ const Home: NextPage = () => {
     >
       <TopBar />
       {/* <NavBar /> */}
+
       <div
         css={css`
           display: flex;
@@ -26,8 +34,7 @@ const Home: NextPage = () => {
         <div
           css={css`
             display: flex;
-            flex-wrap: wrap;
-            align-items: flex-start;
+            flex-direction: column;
             margin-left: 10%;
             margin-right: 10px;
             margin-top: 20px;
@@ -37,15 +44,10 @@ const Home: NextPage = () => {
           <OutlinedCard />
           <OutlinedCard />
           <OutlinedCard />
-          <OutlinedCard />
-          <OutlinedCard />
-          <OutlinedCard />
-          <OutlinedCard />
-          <OutlinedCard />
         </div>
       </div>
     </div>
   );
 };
 
-export default Home;
+export default MySpacePage;
