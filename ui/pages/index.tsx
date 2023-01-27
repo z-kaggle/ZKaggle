@@ -1,22 +1,21 @@
 import type { NextPage } from "next";
 import Head from "next/head";
 import Image from "next/image";
-import { ConnectButton } from "@rainbow-me/rainbowkit"; 
+import { ConnectButton } from "@rainbow-me/rainbowkit";
+import TopBar from "./components/TopBar";
+import { css } from "@emotion/react";
 
 const Home: NextPage = () => {
   return (
-    <div>
-      <div
-        style={{
-          width: "100vw",
-          height: "100vh",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-        }}
-      >
-        <ConnectButton />
-      </div>
+    <div
+      css={css`
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+        height: 1000vh;
+      `}
+    >
+      <TopBar />
     </div>
   );
 };
