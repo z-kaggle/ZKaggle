@@ -9,7 +9,7 @@ import { publicProvider } from "wagmi/providers/public";
 import { filecoin, filecoinHyperspace } from "./chain.config";
 
 const { chains, provider } = configureChains(
-  [mainnet, polygon, filecoin, filecoinHyperspace],
+  [filecoinHyperspace, filecoin],
   [alchemyProvider({ apiKey: process.env.ALCHEMY_ID! }), publicProvider()]
 );
 
