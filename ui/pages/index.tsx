@@ -3,6 +3,7 @@ import Head from "next/head";
 import Image from "next/image";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import TopBar from "./components/TopBar";
+import TaskForm from "./components/TaskForm";
 import { css } from "@emotion/react";
 
 const Home: NextPage = () => {
@@ -12,10 +13,16 @@ const Home: NextPage = () => {
         display: flex;
         flex-direction: column;
         width: 100%;
-        height: 1000vh;
       `}
     >
       <TopBar />
+      {/* <NavBar /> */}
+
+      {/* <Feed/> */}
+      {/* <MySpace/> */}
+
+      {/* test for now */}
+      <TaskForm />
     </div>
   );
 };

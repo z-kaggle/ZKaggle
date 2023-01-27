@@ -11,20 +11,23 @@ const TopBar: NextComponentType = () => {
         align-items: center;
         justify-content: space-between;
         background-color: #fff000;
-        position: absolute;
+        position: fixed;
         top: 0;
         right: 0;
         width: 80%;
         height: 60px;
-        padding-left: 10px;
+        z-index: 1;
       `}
     >
-      <SearchBar
+      <div
         css={css`
-          margin-left: 100px;
-          flex: 1 0 auto;
+          margin-left: 10%;
+          margin-right: 10px;
         `}
-      />
+      >
+        <SearchBar />
+      </div>
+
       <div
         css={css`
           margin-right: 10px;

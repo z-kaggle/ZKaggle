@@ -11,22 +11,25 @@ export default function SearchBar() {
   return (
     <Paper
       component="form"
-      sx={{ p: "2px 4px", display: "flex", alignItems: "center", width: 400 }}
+      sx={{
+        p: "2px 4px",
+        display: "flex",
+        alignItems: "center",
+        width: 400,
+        borderRadius: "30px",
+        backgroundColor: "#F5F5F5",
+      }}
     >
       <IconButton sx={{ p: "10px" }} aria-label="menu">
         <MenuIcon />
       </IconButton>
       <InputBase
         sx={{ ml: 1, flex: 1 }}
-        placeholder="Search Google Maps"
+        placeholder="Search Tasks"
         inputProps={{ "aria-label": "search google maps" }}
       />
       <IconButton type="button" sx={{ p: "10px" }} aria-label="search">
         <SearchIcon />
-      </IconButton>
-      <Divider sx={{ height: 28, m: 0.5 }} orientation="vertical" />
-      <IconButton color="primary" sx={{ p: "10px" }} aria-label="directions">
-        <DirectionsIcon />
       </IconButton>
     </Paper>
   );
