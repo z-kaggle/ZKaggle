@@ -16,8 +16,9 @@ const Home: NextPage = () => {
       `}
     >
       <Head>
-        <title>Medium Blog</title>
-        <link rel="icon" href="/favicon.ico" />
+        <title>ZKaggle</title>
+        <link rel="icon" href="/staricon.svg" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
       </Head>
       <TopBar />
       <NavBar />
