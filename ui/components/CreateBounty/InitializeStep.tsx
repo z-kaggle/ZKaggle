@@ -11,7 +11,12 @@ import {
 
 import PaidIcon from "@mui/icons-material/Paid";
 
-const InitializeStep = () => {
+type InitializeStepProps = {
+  goToNextStep: () => void;
+  goToPreviousStep: () => void;
+};
+
+const InitializeStep = ({ goToNextStep, goToPreviousStep }: InitializeStepProps) => {
   const [projectName, setProjectName] = React.useState("Project101");
   const [requirements, setRequirements] = React.useState("Try your best");
 
@@ -25,6 +30,7 @@ const InitializeStep = () => {
 
   const handleSubmit = () => {
     console.log("submit");
+    goToNextStep();
   };
 
   return (

@@ -1,20 +1,70 @@
 import React from "react";
 import { css } from "@emotion/react";
-import {
-  Stepper,
-  Step,
-  StepLabel,
-} from "@mui/material";
+import { Stepper, Step, StepLabel } from "@mui/material";
 import type { NextPage } from "next";
 import TopBar from "../components/TopBar";
 import NavBar from "../components/NavBar";
 
 import MainFlow from "../components/MainFlow";
+import InitializeStep from "../components/CreateBounty/InitializeStep";
+import PublishStep from "../components/CreateBounty/PublishStep";
+import ProcessingStep from "../components/CreateBounty/ProcessingStep";
+import VerifyStep from "../components/CreateBounty/VerifyStep";
+import CheckOutStep from "../components/CreateBounty/CheckOutStep";
 
-const steps = ["Initialize", "Publish", "Processing", "Verify", "Check Out"];
+const stepTitles = [
+  "Initialize",
+  "Publish",
+  "Processing",
+  "Verify",
+  "Check Out",
+];
 
-const InitializePage: NextPage = () => {
-  
+const CreateBounty: NextPage = () => {
+  const [createBountyStep, setCreateBountyStep] = React.useState(0);
+
+  const goToNextStep = () => {
+    setCreateBountyStep((currentStep) => {
+      if (currentStep === stepTitles.length - 1) {
+        return currentStep;
+      }
+      return currentStep + 1;
+    });
+  };
+
+  const goToPreviousStep = () => {
+    setCreateBountyStep((currentStep) => {
+      if (currentStep === 0) {
+        return currentStep;
+      }
+      return currentStep - 1;
+    });
+  };
+
+  const stepComponents = [
+    <InitializeStep
+      goToNextStep={goToNextStep}
+      goToPreviousStep={goToPreviousStep}
+    />,
+    <PublishStep
+      goToNextStep={goToNextStep}
+      goToPreviousStep={goToPreviousStep}
+    />,
+    <ProcessingStep
+      goToNextStep={goToNextStep}
+      goToPreviousStep={goToPreviousStep}
+    />,
+    <VerifyStep
+      goToNextStep={goToNextStep}
+      goToPreviousStep={goToPreviousStep}
+    />,
+    <CheckOutStep
+      goToNextStep={goToNextStep}
+      goToPreviousStep={goToPreviousStep}
+    />,
+  ];
+
+  const currentStep = stepComponents[createBountyStep];
 
   return (
     <div
@@ -38,18 +88,18 @@ const InitializePage: NextPage = () => {
           `}
         >
           <Stepper activeStep={0} alternativeLabel>
-            {steps.map((label) => (
+            {stepTitles.map((label) => (
               <Step key={label}>
                 <StepLabel>{label}</StepLabel>
               </Step>
             ))}
           </Stepper>
 
-          
+          {currentStep}
         </div>
       </MainFlow>
     </div>
   );
 };
 
-export default InitializePage;
+export default CreateBounty;
