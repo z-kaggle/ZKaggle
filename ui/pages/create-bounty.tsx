@@ -1,6 +1,6 @@
 import React from "react";
 import { css } from "@emotion/react";
-import { Stepper, Step, StepLabel } from "@mui/material";
+import { Stepper, Step, StepLabel, Button } from "@mui/material";
 import type { NextPage } from "next";
 import TopBar from "../components/TopBar";
 import NavBar from "../components/NavBar";
@@ -87,7 +87,7 @@ const CreateBounty: NextPage = () => {
             margin-bottom: 20px;
           `}
         >
-          <Stepper activeStep={0} alternativeLabel>
+          <Stepper activeStep={createBountyStep} alternativeLabel>
             {stepTitles.map((label) => (
               <Step key={label}>
                 <StepLabel>{label}</StepLabel>
@@ -97,6 +97,10 @@ const CreateBounty: NextPage = () => {
 
           {currentStep}
         </div>
+        
+        {/* for dev only */}
+        {/* <Button onClick={goToNextStep}>Next</Button>
+        <Button onClick={goToPreviousStep}>Previous</Button> */}
       </MainFlow>
     </div>
   );
