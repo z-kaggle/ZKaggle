@@ -3,6 +3,7 @@ export interface Task {
   requirements: string;
   bounty: number;
   id: number;
+  status: number;
 }
 
 export interface Props {

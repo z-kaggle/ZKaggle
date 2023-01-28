@@ -31,6 +31,8 @@ const NavBar: NextComponentType = () => {
           display: flex;
           flex-direction: row;
           align-items: center;
+          margin-top: 15px;
+          margin-bottom: 15px;
         `}
       >
         <StarIcon
@@ -46,6 +48,8 @@ const NavBar: NextComponentType = () => {
             color: #6750a4;
             margin-left: 5px;
             margin-right: 10px;
+            margin-top: 0;
+            margin-bottom: 0;
           `}
         >
           ZKaggle
