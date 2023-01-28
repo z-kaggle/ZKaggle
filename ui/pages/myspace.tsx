@@ -4,6 +4,15 @@ import NavBar from "./components/NavBar";
 import { css } from "@emotion/react";
 import OutlinedCard from "./components/FlowCard";
 import MainFlow from "./components/MainFlow";
+import { useEffect, useState } from "react";
+import {
+  useAccount,
+  useConnect,
+  useDisconnect,
+  useEnsAvatar,
+  useEnsName,
+} from "wagmi";
+import { fetchBalance } from "@wagmi/core";
 
 interface Task {
   name: string;
@@ -12,6 +21,21 @@ interface Task {
 }
 
 const MySpacePage: NextPage = () => {
+  const { address, connector, isConnected } = useAccount();
+  const [connected, setConnected] = useState(false);
+  useEffect(() => {
+    setConnected(isConnected);
+    const getBalance = async () => {
+      const balance = await fetchBalance({
+        address: "0x2C1189dDAB06e04f0649A7668E4141565d492665",
+      });
+      return balance;
+    };
+    getBalance().then((balance) => {
+      console.log(balance);
+    });
+  });
+
   return (
     <div
       css={css`
@@ -33,9 +57,8 @@ const MySpacePage: NextPage = () => {
             margin-bottom: 20px;
           `}
         >
-          <OutlinedCard />
-          <OutlinedCard />
-          <OutlinedCard />
+          {/* hytration poroblem */}
+          {connected ? <OutlinedCard /> : <p>disconnected</p>}
         </div>
       </MainFlow>
     </div>

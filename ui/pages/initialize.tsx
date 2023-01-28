@@ -21,8 +21,8 @@ import MainFlow from "./components/MainFlow";
 const steps = ["Initialize", "Publish", "Processing", "Verify", "Check Out"];
 
 const InitializePage: NextPage = () => {
-  const [projectName, setProjectName] = React.useState("");
-  const [requirements, setRequirements] = React.useState("");
+  const [projectName, setProjectName] = React.useState("Project101");
+  const [requirements, setRequirements] = React.useState("Try your best");
 
   const handleUpload = () => {
     console.log("upload");
@@ -79,7 +79,6 @@ const InitializePage: NextPage = () => {
               required
               id="outlined-required"
               label="Task Name"
-              defaultValue="Project101"
               value={projectName}
               onChange={(e) => setProjectName(e.target.value)}
               sx={{
@@ -93,7 +92,6 @@ const InitializePage: NextPage = () => {
               label="Requirements"
               multiline
               rows={4}
-              defaultValue="Try your best"
               value={requirements}
               onChange={(e) => setRequirements(e.target.value)}
               sx={{
