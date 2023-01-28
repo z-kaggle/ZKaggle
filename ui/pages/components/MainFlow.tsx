@@ -22,4 +22,3 @@ const MainFlow = ({ children }: LayoutProps) => {
 };
 
 export default MainFlow;
-
