@@ -1,12 +1,15 @@
-import type { NextPage } from "next";
 import TopBar from "./components/TopBar";
 import { css } from "@emotion/react";
-import OutlinedCard from "./components/FlowCard";
+import FlowCard from "./components/FlowCard";
 import NavBar from "./components/NavBar";
 import Head from "next/head";
 import MainFlow from "./components/MainFlow";
+import { useEffect, useState } from "react";
+import { Props } from "../typings";
+import Link from "next/link";
+import Data from "../MOCK_DATA.json";
 
-const Home: NextPage = () => {
+const Home = ({ tasks }: Props) => {
   return (
     <div
       css={css`
@@ -34,14 +37,11 @@ const Home: NextPage = () => {
             margin-bottom: 20px;
           `}
         >
-          <OutlinedCard />
-          <OutlinedCard />
-          <OutlinedCard />
-          <OutlinedCard />
-          <OutlinedCard />
-          <OutlinedCard />
-          <OutlinedCard />
-          <OutlinedCard />
+          {tasks.map((task) => (
+            <Link key={task.id} href="">
+              <FlowCard task={task}></FlowCard>
+            </Link>
+          ))}
         </div>
       </MainFlow>
     </div>
@@ -49,3 +49,12 @@ const Home: NextPage = () => {
 };
 
 export default Home;
+
+export const getServerSideProps = async () => {
+  const tasks = Data;
+  return {
+    props: {
+      tasks,
+    },
+  };
+};

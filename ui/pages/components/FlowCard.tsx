@@ -5,6 +5,7 @@ import CardActions from "@mui/material/CardActions";
 import CardContent from "@mui/material/CardContent";
 import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
+import { Task } from "../../typings";
 
 const bull = (
   <Box
@@ -15,31 +16,30 @@ const bull = (
   </Box>
 );
 
-const card = (
+const card = ({ task }: { task: Task }) => (
   <React.Fragment>
     <CardContent>
       <Typography sx={{ fontSize: 14 }} color="text.secondary" gutterBottom>
-        Word of the Day
+        {task.bounty}ETH
       </Typography>
       <Typography variant="h5" component="div">
-        be{bull}nev{bull}o{bull}lent
+        {task.name}
       </Typography>
       <Typography sx={{ mb: 1.5 }} color="text.secondary">
-        adjective
+        {/* {task.category} */}
       </Typography>
       <Typography variant="body2">
-        well meaning and kindly.
+        {task.requirements}
         <br />
-        {'"a benevolent smile"'}
       </Typography>
     </CardContent>
     <CardActions>
-      <Button size="small">Learn More</Button>
+      <Button size="small">Take it NOW</Button>
     </CardActions>
   </React.Fragment>
 );
 
-export default function OutlinedCard() {
+export default function FlowCard({ task }: { task: Task }) {
   return (
     <Box
       sx={{
@@ -49,7 +49,7 @@ export default function OutlinedCard() {
         marginBottom: "10px",
       }}
     >
-      <Card variant="outlined">{card}</Card>
+      <Card variant="outlined">{card({ task })}</Card>
     </Box>
   );
 }
