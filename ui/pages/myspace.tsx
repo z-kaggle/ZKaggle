@@ -3,6 +3,7 @@ import TopBar from "./components/TopBar";
 import NavBar from "./components/NavBar";
 import { css } from "@emotion/react";
 import OutlinedCard from "./components/FlowCard";
+import MainFlow from "./components/MainFlow";
 
 interface Task {
   name: string;
@@ -21,16 +22,7 @@ const MySpacePage: NextPage = () => {
     >
       <TopBar />
       <NavBar />
-
-      <div
-        css={css`
-          display: flex;
-          flex-direction: column;
-          width: 80%;
-          margin-left: 20%;
-          margin-top: 60px;
-        `}
-      >
+      <MainFlow>
         <div
           css={css`
             display: flex;
@@ -45,7 +37,7 @@ const MySpacePage: NextPage = () => {
           <OutlinedCard />
           <OutlinedCard />
         </div>
-      </div>
+      </MainFlow>
     </div>
   );
 };

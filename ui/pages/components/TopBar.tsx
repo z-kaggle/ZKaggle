@@ -14,7 +14,7 @@ const TopBar: NextComponentType = () => {
         position: fixed;
         top: 0;
         right: 0;
-        width: 80%;
+        width: 90%;
         height: 60px;
         z-index: 1;
       `}

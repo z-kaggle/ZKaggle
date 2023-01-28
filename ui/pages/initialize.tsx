@@ -77,21 +77,28 @@ const InitializePage: NextPage = () => {
             <h2>Basic Information </h2>
             <TextField
               required
-              id="standard-required"
+              id="outlined-required"
               label="Task Name"
               defaultValue="Project101"
-              variant="standard"
               value={projectName}
               onChange={(e) => setProjectName(e.target.value)}
+              sx={{
+                marginTop: "10px",
+              }}
             />
+
             <TextField
               required
-              id="standard-required"
+              id="outlined-multiline-static"
               label="Requirements"
+              multiline
+              rows={4}
               defaultValue="Try your best"
-              variant="standard"
               value={requirements}
               onChange={(e) => setRequirements(e.target.value)}
+              sx={{
+                marginTop: "40px",
+              }}
             />
             <h2>File Upload </h2>
             <List component="nav" aria-label="secondary mailbox folder">

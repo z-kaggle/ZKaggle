@@ -4,7 +4,7 @@ import { Button } from "@mui/material";
 import Link from "next/link";
 import { Add } from "@mui/icons-material";
 import StarIcon from "@mui/icons-material/Star";
-import BasicList from "./NavList";
+import NavList from "./NavList";
 
 const NavBar: NextComponentType = () => {
   return (
@@ -17,7 +17,8 @@ const NavBar: NextComponentType = () => {
         position: fixed;
         top: 0;
         left: 0;
-        width: 20%;
+        min-width: 10%;
+        max-width: 20%;
         height: 100vh;
         z-index: 2;
         filter: drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.3));
@@ -35,7 +36,7 @@ const NavBar: NextComponentType = () => {
         <StarIcon
           sx={{
             color: "#6750a4",
-            marginLeft: "40px",
+            marginLeft: "20px",
           }}
         />
         <p
@@ -44,6 +45,7 @@ const NavBar: NextComponentType = () => {
             font-size: 24px;
             color: #6750a4;
             margin-left: 5px;
+            margin-right: 10px;
           `}
         >
           ZKaggle
@@ -59,13 +61,13 @@ const NavBar: NextComponentType = () => {
             height: "50px",
             width: "120px",
             alignSelf: "flex-end",
-            marginLeft: "25px",
+            marginLeft: "5px",
           }}
         >
           Create
         </Button>
       </Link>
-      <BasicList />
+      <NavList />
     </div>
   );
 };

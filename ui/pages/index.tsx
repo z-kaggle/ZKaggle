@@ -4,6 +4,7 @@ import { css } from "@emotion/react";
 import OutlinedCard from "./components/FlowCard";
 import NavBar from "./components/NavBar";
 import Head from "next/head";
+import MainFlow from "./components/MainFlow";
 
 const Home: NextPage = () => {
   return (
@@ -20,15 +21,7 @@ const Home: NextPage = () => {
       </Head>
       <TopBar />
       <NavBar />
-      <div
-        css={css`
-          display: flex;
-          flex-direction: column;
-          width: 80%;
-          margin-left: 20%;
-          margin-top: 60px;
-        `}
-      >
+      <MainFlow>
         <div
           css={css`
             display: flex;
@@ -49,7 +42,7 @@ const Home: NextPage = () => {
           <OutlinedCard />
           <OutlinedCard />
         </div>
-      </div>
+      </MainFlow>
     </div>
   );
 };

@@ -9,7 +9,7 @@ import ListAltIcon from "@mui/icons-material/ListAlt";
 import AccountBoxIcon from "@mui/icons-material/AccountBox";
 import Link from "next/link";
 
-export default function BasicList() {
+export default function NavList() {
   return (
     <Box sx={{ width: "100%", maxWidth: 360, bgcolor: "background.paper" }}>
       <nav aria-label="main mailbox folders">
@@ -17,10 +17,19 @@ export default function BasicList() {
           <Link href="/">
             <ListItem disablePadding>
               <ListItemButton>
-                <ListItemIcon>
+                <ListItemIcon
+                  sx={{
+                    marginLeft: "5px",
+                  }}
+                >
                   <ListAltIcon />
                 </ListItemIcon>
-                <ListItemText primary="Feed" />
+                <ListItemText
+                  primary="Feed"
+                  sx={{
+                    marginLeft: "-25px",
+                  }}
+                />
               </ListItemButton>
             </ListItem>
           </Link>
@@ -28,10 +37,19 @@ export default function BasicList() {
           <Link href={`/myspace`}>
             <ListItem disablePadding>
               <ListItemButton>
-                <ListItemIcon>
+                <ListItemIcon
+                  sx={{
+                    marginLeft: "5px",
+                  }}
+                >
                   <AccountBoxIcon />
                 </ListItemIcon>
-                <ListItemText primary="MySpace" />
+                <ListItemText
+                  primary="MySpace"
+                  sx={{
+                    marginLeft: "-25px",
+                  }}
+                />
               </ListItemButton>
             </ListItem>
           </Link>

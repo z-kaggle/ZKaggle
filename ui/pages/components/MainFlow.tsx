@@ -11,8 +11,8 @@ const MainFlow = ({ children }: LayoutProps) => {
       css={css`
         display: flex;
         flex-direction: column;
-        width: 80%;
-        margin-left: 20%;
+        width: 90%;
+        margin-left: 10%;
         margin-top: 60px;
       `}
     >
