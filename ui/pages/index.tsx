@@ -1,9 +1,9 @@
-import TopBar from "./components/TopBar";
+import TopBar from "../components/TopBar";
 import { css } from "@emotion/react";
-import FlowCard from "./components/FlowCard";
-import NavBar from "./components/NavBar";
+import FlowCard from "../components/FlowCard";
+import NavBar from "../components/NavBar";
 import Head from "next/head";
-import MainFlow from "./components/MainFlow";
+import MainFlow from "../components/MainFlow";
 import { useEffect, useState } from "react";
 import { Props } from "../typings";
 import Link from "next/link";

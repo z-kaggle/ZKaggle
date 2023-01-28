@@ -1,11 +1,11 @@
-import TopBar from "./components/TopBar";
-import NavBar from "./components/NavBar";
+import TopBar from "../components/TopBar";
+import NavBar from "../components/NavBar";
 import { css } from "@emotion/react";
-import MainFlow from "./components/MainFlow";
+import MainFlow from "../components/MainFlow";
 import { useEffect, useState } from "react";
 import { useAccount } from "wagmi";
 import { Props } from "../typings";
-import ColCard from "./components/ColCard";
+import ColCard from "../components/ColCard";
 import Link from "next/link";
 import Data from "../MOCK_DATA.json";
 
