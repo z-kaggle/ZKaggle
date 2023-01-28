@@ -16,6 +16,7 @@ import NavBar from "./components/NavBar";
 
 import PaidIcon from "@mui/icons-material/Paid";
 import React from "react";
+import MainFlow from "./components/MainFlow";
 
 const steps = ["Initialize", "Publish", "Processing", "Verify", "Check Out"];
 
@@ -45,15 +46,7 @@ const InitializePage: NextPage = () => {
     >
       <TopBar />
       <NavBar />
-      <div
-        css={css`
-          display: flex;
-          flex-direction: column;
-          width: 80%;
-          margin-left: 20%;
-          margin-top: 60px;
-        `}
-      >
+      <MainFlow>
         <div
           css={css`
             display: flex;
@@ -177,7 +170,7 @@ const InitializePage: NextPage = () => {
             </Button>
           </div>
         </div>
-      </div>
+      </MainFlow>
     </div>
   );
 };
