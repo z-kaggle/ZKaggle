@@ -25,8 +25,10 @@ template hashed_mnist_latest() {
     signal input bn_2_b[8];
     signal input dense_weights[200][10];
     signal input dense_bias[10];
-    signal output out;
-    signal output hash;
+
+    signal input salt;
+    
+    signal output hash[2];
     signal output digest[2];
 
     component sha = Sha256(797*8);
@@ -54,12 +56,6 @@ template hashed_mnist_latest() {
         }
         digest[i] <== b2n[i].out;
     }
-    
-    component mimc = MultiMiMC7(3*3*1*4+4+4+4+3*3*4*8+8+8+8+200*10+10, 91);
-    
-    mimc.k <== 0;
-
-    var idx = 0;
 
     component conv2d_1 = Conv2D(28,28,1,4,3,1);
     component bn_1 = BatchNormalization2D(26,26,4);
@@ -83,28 +79,20 @@ template hashed_mnist_latest() {
         for (var j=0; j<3; j++) {
             for (var m=0; m<4; m++) {
                 conv2d_1.weights[i][j][0][m] <== conv2d_1_weights[i][j][0][m];
-                mimc.in[idx] <== conv2d_1_weights[i][j][0][m];
-                idx++;
             }
         }
     }
     
     for (var m=0; m<4; m++) {
         conv2d_1.bias[m] <== conv2d_1_bias[m];
-        mimc.in[idx] <== conv2d_1_bias[m];
-        idx++;
     }
 
     for (var k=0; k<4; k++) {
         bn_1.a[k] <== bn_1_a[k];
-        mimc.in[idx] <== bn_1_a[k];
-        idx++;
     }
 
     for (var k=0; k<4; k++) {
         bn_1.b[k] <== bn_1_b[k];
-        mimc.in[idx] <== bn_1_b[k];
-        idx++;
         for (var i=0; i<26; i++) {
             for (var j=0; j<26; j++) {
                 bn_1.in[i][j][k] <== conv2d_1.out[i][j][k];
@@ -135,8 +123,6 @@ template hashed_mnist_latest() {
             for (var k=0; k<4; k++) {   
                 for (var m=0; m<8; m++) {
                     conv2d_2.weights[i][j][k][m] <== conv2d_2_weights[i][j][k][m];
-                    mimc.in[idx] <== conv2d_2_weights[i][j][k][m];
-                    idx++;
                 }
             }
         }
@@ -144,20 +130,14 @@ template hashed_mnist_latest() {
 
     for (var m=0; m<8; m++) {
         conv2d_2.bias[m] <== conv2d_2_bias[m];
-        mimc.in[idx] <== conv2d_2_bias[m];
-        idx++;
     }
 
     for (var k=0; k<8; k++) {
         bn_2.a[k] <== bn_2_a[k];
-        mimc.in[idx] <== bn_2_a[k];
-        idx++;
     }
 
     for (var k=0; k<8; k++) {
         bn_2.b[k] <== bn_2_b[k];
-        mimc.in[idx] <== bn_2_b[k];
-        idx++;
         for (var i=0; i<11; i++) {
             for (var j=0; j<11; j++) {
                 bn_2.in[i][j][k] <== conv2d_2.out[i][j][k];
@@ -187,23 +167,46 @@ template hashed_mnist_latest() {
         dense.in[i] <== flatten.out[i];
         for (var j=0; j<10; j++) {
             dense.weights[i][j] <== dense_weights[i][j];
-            mimc.in[idx] <== dense_weights[i][j];
-            idx++;
         }
     }
 
     for (var i=0; i<10; i++) {
         dense.bias[i] <== dense_bias[i];
-        mimc.in[idx] <== dense_bias[i];
-        idx++;
     }
 
     for (var i=0; i<10; i++) {
         argmax.in[i] <== dense.out[i];
     }
 
-    out <== argmax.out;
-    hash <== mimc.out;
+    component sha2 = Sha256(256*2);
+    component n2b[2];
+
+    n2b[0] = Num2Bits(254);
+    n2b[0].in <== argmax.out;
+    n2b[1] = Num2Bits(254);
+    n2b[1].in <== salt;
+    
+    sha2.in[0] <== 0;
+    sha2.in[1] <== 0;
+    sha2.in[256] <== 0;
+    sha2.in[257] <== 0;
+
+    for (var i=0; i<254; i++) {
+        sha2.in[i+2] <== n2b[0].out[i];
+        sha2.in[i+2+256] <== n2b[1].out[i];
+    }
+
+    component b2n2[2];
+
+    for (var i=1; i>=0; i--) {
+        b2n2[i] = Bits2Num(128);
+        for (var j=127; j>=0; j--) {
+            b2n2[i].in[127-j] <== sha2.out[i*128+j];
+        }
+        hash[i] <== b2n2[i].out;
+    }
+    
+
 }
 
 component main = hashed_mnist_latest();

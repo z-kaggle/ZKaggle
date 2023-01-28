@@ -35,12 +35,12 @@ describe("SHA256 MNIST test", function () {
     let digest;
     let a, b, c, Input;
 
+    let digest2;
+
     before(async function () {
         Verifier = await ethers.getContractFactory("Verifier");
         verifier = await Verifier.deploy();
         await verifier.deployed();
-
-        
 
         const bytes = fs.readFileSync("assets/mnist_image.pgm");
 
@@ -53,6 +53,13 @@ describe("SHA256 MNIST test", function () {
         // console.log(binary);
 
         INPUT["in"] = binary;
+
+        // compute hash from salt and expected output
+        INPUT["salt"] = "123456789";
+
+        const hash2 = crypto.createHash('sha256');
+        hash2.update((123456789).toString(16).padStart(32, "0") + (5).toString(16).padStart(32, "0"));
+        digest2 = hash2.digest('hex');
         
         const { proof, publicSignals } = await groth16.fullProve(INPUT, "circuits/build/circuit_js/circuit.wasm","circuits/build/circuit_final.zkey");
 
@@ -69,27 +76,20 @@ describe("SHA256 MNIST test", function () {
     it("Check circuit output", async () => {
         const circuit = await wasm_tester("circuits/circuit.circom");
         // split digest into two slices and convert to BigNumber
-        const digest1 = Fr.e(digest.slice(0, 32), 16);
-        const digest2 = Fr.e(digest.slice(32, 64), 16);
+        const digest11 = Fr.e(digest.slice(0, 32), 16);
+        const digest12 = Fr.e(digest.slice(32, 64), 16);
 
-        // console.log(digest, digest1, digest2);
-        
-        // const digest = [...hash.digest()].map((b) => b.toString(16).padStart(2, "0").split("")).flat();
-        // console.log(digest);
+        const digest21 = Fr.e(digest2.slice(0, 32), 16);
+        const digest22 = Fr.e(digest2.slice(32, 64), 16);
 
         const witness = await circuit.calculateWitness(INPUT, true);
 
         assert(Fr.eq(Fr.e(witness[0]),Fr.e(1)));
-        assert(Fr.eq(Fr.e(witness[1]),Fr.e(5)));
-
-        // console.log(witness[2]);
-        // console.log(witness[3], witness[4]);
-        assert(Fr.eq(Fr.e(witness[3], digest1)));
-        assert(Fr.eq(Fr.e(witness[4], digest2)));
+        assert(Fr.eq(Fr.e(witness[1], digest21)));
+        assert(Fr.eq(Fr.e(witness[2], digest22)));
+        assert(Fr.eq(Fr.e(witness[3], digest11)));
+        assert(Fr.eq(Fr.e(witness[4], digest12)));
         
-        // for (let i = 0; i < digest.length; i++) {
-        //     assert(Fr.eq(Fr.e(witness[i+3]),Fr.e(digest[i])));
-        // }
     });
 
     it("Verifier should return true for correct proofs", async function () {
@@ -127,28 +127,6 @@ describe("SHA256 MNIST test", function () {
         
         expect("m"+cid).equal("mAVUSINzScIBaZ0qZJWQf907fKiaEv0V8TJpYYwfMM1MF/HBJ");
     });
-
-    // TODO: fix this test
-    // it("Piece CID (cidraw) should match that from Lotus", async function () {
-    //     const decoder = new base32.Decoder();
-    //     const buf = decoder.write("aga6ea4seaqmiyj4ucamthe6gr2dsu7kqav3ulouz5wu24opwbx76udvwxg2iii").finalize();
-    //     console.log(buf);
-    //     console.log(buf.toString('hex'));
-    //     // const cid_version = 1;
-    //     // const cid_codec = 61697; // fil-commitment-unsealed 0xf101
-    //     // const hash_function_code = 4114; // sha2-256-trunc254-padded 0x1012
-    //     // const length = 32;
-        
-    //     // const cidraw = cid_version.toString(16).padStart(2, "0") + cid_codec.toString(16).padStart(2, "0") + hash_function_code.toString(16).padStart(2, "0") + length.toString(16).padStart(2, "0") + digest;
-    //     // const buf = Buffer.from(cidraw, 'hex');
-        
-    //     // const encoder = new base32.Encoder();
-    //     // const cid = encoder.write(buf).finalize().toLowerCase();
-    //     // console.log(cid);
-    //     // expect("b"+cid).equal("bafkreig42jyiawthjkmskza765hn6krgqs7uk7cmtjmggb6mgnjql7dqje");
-    // });
-
-    
 
     it("CID contract should compute correct CID", async function () {
         const Cid = await ethers.getContractFactory("CID");
