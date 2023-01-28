@@ -11,12 +11,12 @@ import {
   Divider,
 } from "@mui/material";
 import type { NextPage } from "next";
-import TopBar from "./components/TopBar";
-import NavBar from "./components/NavBar";
+import TopBar from "../components/TopBar";
+import NavBar from "../components/NavBar";
 
 import PaidIcon from "@mui/icons-material/Paid";
 import React from "react";
-import MainFlow from "./components/MainFlow";
+import MainFlow from "../components/MainFlow";
 
 const steps = ["Initialize", "Publish", "Processing", "Verify", "Check Out"];
 

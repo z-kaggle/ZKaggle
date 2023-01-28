@@ -5,8 +5,7 @@ import CardActions from "@mui/material/CardActions";
 import CardContent from "@mui/material/CardContent";
 import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
-import { Task } from "../../typings";
-import { autocompleteClasses } from "@mui/material";
+import { Task } from "../typings";
 
 const bull = (
   <Box
@@ -40,12 +39,12 @@ const card = ({ task }: { task: Task }) => (
   </React.Fragment>
 );
 
-export default function ColCard({ task }: { task: Task }) {
+export default function FlowCard({ task }: { task: Task }) {
   return (
     <Box
       sx={{
-        // not responsive
-        minWidth: 500,
+        minWidth: 150,
+        maxWidth: 200,
         marginRight: "10px",
         marginBottom: "10px",
       }}
