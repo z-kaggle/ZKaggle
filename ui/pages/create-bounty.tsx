@@ -99,8 +99,8 @@ const CreateBounty: NextPage = () => {
         </div>
         
         {/* for dev only */}
-        {/* <Button onClick={goToNextStep}>Next</Button>
-        <Button onClick={goToPreviousStep}>Previous</Button> */}
+        <Button onClick={goToNextStep}>Next</Button>
+        <Button onClick={goToPreviousStep}>Previous</Button>
       </MainFlow>
     </div>
   );

@@ -12,8 +12,6 @@ import {
   lightTheme,
 } from "@rainbow-me/rainbowkit";
 import { configureChains, createClient, WagmiConfig } from "wagmi";
-import { alchemyProvider } from "wagmi/providers/alchemy";
-import { publicProvider } from "wagmi/providers/public";
 import { filecoin, filecoinHyperspace } from "./chain.config";
 import { jsonRpcProvider } from "@wagmi/core/providers/jsonRpc";
 

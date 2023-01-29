@@ -7,7 +7,7 @@ import {
   ListItemText,
   Button,
   Divider,
-  Stack
+  Stack,
 } from "@mui/material";
 
 import PaidIcon from "@mui/icons-material/Paid";
@@ -17,7 +17,10 @@ type CheckOutStepProps = {
   goToPreviousStep: () => void;
 };
 
-const CheckOutStep = ({ goToNextStep, goToPreviousStep }: CheckOutStepProps) => {
+const CheckOutStep = ({
+  goToNextStep,
+  goToPreviousStep,
+}: CheckOutStepProps) => {
   return (
     <div
       css={css`

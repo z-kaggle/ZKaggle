@@ -3,32 +3,89 @@ import { css } from "@emotion/react";
 import {
   TextField,
   List,
-  ListItemButton,
   ListItemText,
   Button,
-  Divider,
+  ListItemIcon,
+  ListItem,
 } from "@mui/material";
 
 import PaidIcon from "@mui/icons-material/Paid";
+import HighlightOffIcon from "@mui/icons-material/HighlightOff";
+import FolderIcon from "@mui/icons-material/Folder";
+import lighthouse from "@lighthouse-web3/sdk";
 
 type InitializeStepProps = {
   goToNextStep: () => void;
   goToPreviousStep: () => void;
 };
 
-const InitializeStep = ({ goToNextStep, goToPreviousStep }: InitializeStepProps) => {
+interface FileData {
+  name: string;
+  size: number;
+  requirements: string;
+  hash: string;
+}
+
+function formatBytes(bytes: number, decimals = 2) {
+  if (!+bytes) return "0 Bytes";
+
+  const k = 1024;
+  const dm = decimals < 0 ? 0 : decimals;
+  const sizes = ["Bytes", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB"];
+
+  const i = Math.floor(Math.log(bytes) / Math.log(k));
+
+  return `${parseFloat((bytes / Math.pow(k, i)).toFixed(dm))} ${sizes[i]}`;
+}
+
+const InitializeStep = ({
+  goToNextStep,
+  goToPreviousStep,
+}: InitializeStepProps) => {
   const [projectName, setProjectName] = React.useState("Project101");
   const [requirements, setRequirements] = React.useState("Try your best");
+  const [files, setFiles] = React.useState<lighthouse.IpfsFileResponse | null>({
+    Name: "example.txt",
+    Size: 88000,
+    Hash: "QmWNmn2gr4ZihNPqaC5oTeePsHvFtkWNpjY3cD6Fd5am1w",
+  });
 
-  const handleUpload = () => {
-    console.log("upload");
+  // const handleDelete = () => {
+  //   console.log("delete");
+  // };
+
+  const progressCallback = (progressData: any) => {
+    let percentageDone =
+      100 - ((progressData?.total / progressData?.uploaded) as any)?.toFixed(2);
+    console.log(percentageDone);
   };
 
-  const handleDeposit = () => {
-    console.log("deposit");
+  const handleUpload = async (e: string) => {
+    const output = await lighthouse.upload(
+      e,
+      process.env.NEXT_PUBLIC_LIGHTHOUSE_API_KEY,
+      progressCallback
+    );
+    console.log("File Status:", output);
+    /*
+      output:
+        {
+          Name: "filename.txt",
+          Size: 88000,
+          Hash: "QmWNmn2gr4ZihNPqaC5oTeePsHvFtkWNpjY3cD6Fd5am1w"
+        }
+      Note: Hash in response is CID.
+    */
+
+    console.log(
+      "Visit at https://gateway.lighthouse.storage/ipfs/" + output.data.Hash
+    );
+
+    setFiles(output.data);
   };
 
   const handleSubmit = () => {
+    // contract creation with deposit money
     console.log("submit");
     goToNextStep();
   };
@@ -69,19 +126,27 @@ const InitializeStep = ({ goToNextStep, goToPreviousStep }: InitializeStepProps)
         }}
       />
       <h2>File Upload </h2>
-      <List component="nav" aria-label="secondary mailbox folder">
-        <ListItemButton
-        // selected={selectedIndex === 2}
-        // onClick={(event) => handleListItemClick(event, 2)}
-        >
-          <ListItemText primary="File.zip" />
-        </ListItemButton>
-        <ListItemButton
-        // selected={selectedIndex === 3}
-        // onClick={(event) => handleListItemClick(event, 3)}
-        >
-          <ListItemText primary="File1.zip" />
-        </ListItemButton>
+
+      <List dense={true}>
+        <ListItem key={files?.Hash}>
+          <ListItemIcon>
+            <FolderIcon />
+          </ListItemIcon>
+          <ListItemText
+            primary={files?.Name}
+            secondary={formatBytes(files?.Size as number)}
+            primaryTypographyProps={{
+              style: {
+                whiteSpace: "nowrap",
+                overflow: "hidden",
+                textOverflow: "ellipsis",
+              },
+            }}
+          />
+          {/* <IconButton onClick={() => handleDelete()}>
+              <HighlightOffIcon />
+            </IconButton> */}
+        </ListItem>
       </List>
       <Button
         variant="outlined"
@@ -92,56 +157,22 @@ const InitializeStep = ({ goToNextStep, goToPreviousStep }: InitializeStepProps)
         }}
       >
         Upload
-        <input hidden accept="image/*" multiple type="file" />
+        <input hidden multiple type="file" onChange={handleUpload as any} />
       </Button>
 
       <h2>Deposit Bounty </h2>
-      <div
-        css={css`
-          display: flex;
-          flex-direction: row;
-          justify-content: flex-end;
-        `}
-      >
-        <Button
-          variant="outlined"
-          sx={{
-            width: "150px",
-            alignSelf: "flex-end",
-          }}
-        >
-          0.5 ETH
-        </Button>
-        <Button
-          variant="outlined"
-          startIcon={<PaidIcon />}
-          sx={{
-            width: "150px",
-            alignSelf: "flex-end",
-            marginLeft: "10px",
-          }}
-        >
-          Deposit
-        </Button>
-      </div>
 
-      <Divider
-        css={css`
-          margin-top: 40px;
-          margin-bottom: 20px;
-        `}
-      />
       <Button
         variant="contained"
+        startIcon={<PaidIcon />}
         sx={{
           borderRadius: "30px",
           height: "50px",
-          width: "100px",
           alignSelf: "flex-end",
         }}
         onClick={() => handleSubmit()}
       >
-        Finish
+        Deposit Bounty to Create Task
       </Button>
     </div>
   );
