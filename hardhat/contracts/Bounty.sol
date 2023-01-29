@@ -2,11 +2,11 @@
 
 pragma solidity ^0.8.17;
 
-import "@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import "./IVerifier.sol";
-import "hardhat/console.sol";
 
-contract Bounty is Ownable {
+contract Bounty is Initializable, OwnableUpgradeable {
     // variables set by bounty provier at Tx 1 (constructor)
     string public name;
     string public description;
@@ -37,19 +37,24 @@ contract Bounty is Ownable {
     // ! current design only allows one bounty hunter to submit proof
     // TODO: allow multiple bounty hunters to submit proof
 
+    event BountySubmitted();
+    event BountyReleased();
+    event BountyClaimed();
+
     /*
         Tx 1
         * take owner address from factory
         * set bounty details
         * receive native tokens as bounty reward
     */
-    constructor(
+    function initialize (
         address _owner,
         string memory _name,
         string memory _description,
         bytes memory _dataCID
-    ) payable {
+    ) public payable initializer {
         require(msg.value > 0, "Bounty reward must be greater than 0");
+        __Ownable_init();
         transferOwnership(_owner);
         name = _name;
         description = _description;
@@ -106,6 +111,8 @@ contract Bounty is Ownable {
         circomCID = _circomCID;
 
         bountyHunter = msg.sender;
+
+        emit BountySubmitted();
     }
 
     /*
@@ -118,6 +125,8 @@ contract Bounty is Ownable {
         require(!isComplete, "Bounty is already complete");
         require(a[0] != 0, "Bounty hunter has not submitted proof");
         isComplete = true;
+
+        emit BountyReleased();
     }
 
     /*
@@ -139,6 +148,8 @@ contract Bounty is Ownable {
         );
         input = _input;
         payable(msg.sender).transfer(address(this).balance);
+
+        emit BountyClaimed();
     }
 
     // function to concat input into digest

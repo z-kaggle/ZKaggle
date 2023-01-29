@@ -43,7 +43,10 @@ describe("Bounty contract test", function () {
         it("Should reject deploying the contract is msg.value is 0", async function () {
             const owner = await ethers.provider.getSigner(0).getAddress();
             const Bounty = await ethers.getContractFactory("Bounty");
-            await expect(Bounty.deploy(
+            const bounty = await Bounty.deploy();
+            await bounty.deployed();
+            
+            await expect(bounty.initialize(
                 owner,
                 "Bounty 1",
                 "This is the first bounty",
@@ -54,13 +57,17 @@ describe("Bounty contract test", function () {
         it("Should deploy the contract and set owner to first input", async function () {
             const owner = await ethers.provider.getSigner(0).getAddress();
             const Bounty = await ethers.getContractFactory("Bounty");
-            const bounty = await Bounty.deploy(
+            const bounty = await Bounty.deploy();
+            await bounty.deployed();
+
+            const tx = await bounty.initialize(
                 owner,
                 "Bounty 1",
                 "This is the first bounty",
                 cidraw,
                 { value: ethers.utils.parseEther("1")}
             );
+            await tx.wait();
             expect(await bounty.name()).to.equal("Bounty 1");
             expect(await bounty.description()).to.equal("This is the first bounty");
             expect(await bounty.dataCID()).to.equal('0x' + cidraw.toString('hex'));
@@ -77,14 +84,17 @@ describe("Bounty contract test", function () {
             // Deploy the contract
             const owner = await ethers.provider.getSigner(0).getAddress();
             const Bounty = await ethers.getContractFactory("Bounty");
-            bounty = await Bounty.deploy(
+            bounty = await Bounty.deploy();
+            await bounty.deployed();
+
+            const tx = await bounty.initialize(
                 owner,
                 "Bounty 1",
                 "This is the first bounty",
                 cidraw,
                 { value: ethers.utils.parseEther("1")}
             );
-            await bounty.deployed();
+            await tx.wait();
 
             // Deploy the verifier
             const Verifier = await ethers.getContractFactory("Verifier");
@@ -150,8 +160,6 @@ describe("Bounty contract test", function () {
                 )).to.be.revertedWith("Data CID mismatch");
         });
 
-
-
         it("Should submit a bounty", async function () {
             const submitter = await ethers.provider.getSigner(1).getAddress();
             const tx = await bounty.connect(ethers.provider.getSigner(1)).
@@ -165,6 +173,8 @@ describe("Bounty contract test", function () {
                     Input
                 );
             await tx.wait();
+
+            expect(tx).to.emit(bounty, "BountySubmitted");
             expect(await bounty.bountyHunter()).to.equal(submitter);
         });
 
@@ -189,14 +199,16 @@ describe("Bounty contract test", function () {
             // Deploy the contract
             const owner = await ethers.provider.getSigner(0).getAddress();
             const Bounty = await ethers.getContractFactory("Bounty");
-            bounty = await Bounty.deploy(
+            bounty = await Bounty.deploy();
+            await bounty.deployed();
+            const tx = await bounty.initialize(
                 owner,
                 "Bounty 1",
                 "This is the first bounty",
                 cidraw,
                 { value: ethers.utils.parseEther("1")}
             );
-            await bounty.deployed();
+            await tx.wait();
 
             // Deploy the verifier
             const Verifier = await ethers.getContractFactory("Verifier");
@@ -227,6 +239,8 @@ describe("Bounty contract test", function () {
         it("Should release a bounty", async function () {
             const tx = await bounty.releaseBounty();
             await tx.wait();
+
+            expect(tx).to.emit(bounty, "BountyReleased");
             expect(await bounty.isComplete()).to.equal(true);
         });
 
@@ -242,21 +256,24 @@ describe("Bounty contract test", function () {
             // Deploy the contract
             const owner = await ethers.provider.getSigner(0).getAddress();
             const Bounty = await ethers.getContractFactory("Bounty");
-            bounty = await Bounty.deploy(
+            bounty = await Bounty.deploy();
+            await bounty.deployed();
+
+            let tx = await bounty.initialize(
                 owner,
                 "Bounty 1",
                 "This is the first bounty",
                 cidraw,
                 { value: ethers.utils.parseEther("1")}
             );
-            await bounty.deployed();
+            await tx.wait();
 
             // Deploy the verifier
             const Verifier = await ethers.getContractFactory("Verifier");
             verifier = await Verifier.deploy();
             await verifier.deployed();
 
-            const tx = await bounty.connect(ethers.provider.getSigner(1)).
+            tx = await bounty.connect(ethers.provider.getSigner(1)).
                 submitBounty(
                     0x0,
                     0x0,
@@ -289,6 +306,7 @@ describe("Bounty contract test", function () {
                 .claimBounty([5, 123456789]);
             await tx.wait();
 
+            expect(tx).to.emit(bounty, "BountyClaimed");
             // Check that the bounty hunter has been paid
             expect(await ethers.provider.getBalance(bountyHunter)).to.greaterThan(balance);
             // Check that the input has been updated
