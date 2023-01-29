@@ -3,7 +3,6 @@
 pragma solidity ^0.8.17;
 
 import "./IVerifier.sol";
-import "hardhat/console.sol";
 
 contract CID {
 
