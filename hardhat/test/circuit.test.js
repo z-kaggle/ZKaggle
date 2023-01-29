@@ -58,8 +58,10 @@ describe("SHA256 MNIST test", function () {
         INPUT["salt"] = "123456789";
 
         const hash2 = crypto.createHash('sha256');
-        hash2.update((123456789).toString(16).padStart(32, "0") + (5).toString(16).padStart(32, "0"));
+        const preimage = (5).toString(16).padStart(64, "0") +  (123456789).toString(16).padStart(64, "0");
+        hash2.update(preimage, 'hex');
         digest2 = hash2.digest('hex');
+        // console.log(digest2);
         
         const { proof, publicSignals } = await groth16.fullProve(INPUT, "circuits/build/circuit_js/circuit.wasm","circuits/build/circuit_final.zkey");
 
@@ -85,10 +87,10 @@ describe("SHA256 MNIST test", function () {
         const witness = await circuit.calculateWitness(INPUT, true);
 
         assert(Fr.eq(Fr.e(witness[0]),Fr.e(1)));
-        assert(Fr.eq(Fr.e(witness[1], digest21)));
-        assert(Fr.eq(Fr.e(witness[2], digest22)));
-        assert(Fr.eq(Fr.e(witness[3], digest11)));
-        assert(Fr.eq(Fr.e(witness[4], digest12)));
+        assert(Fr.eq(Fr.e(witness[1]), Fr.e(digest21)));
+        assert(Fr.eq(Fr.e(witness[2]), Fr.e(digest22)));
+        assert(Fr.eq(Fr.e(witness[3]), Fr.e(digest11)));
+        assert(Fr.eq(Fr.e(witness[4]), Fr.e(digest12)));
         
     });
 
