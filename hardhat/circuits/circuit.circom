@@ -196,10 +196,6 @@ template hashed_mnist_latest() {
         sha2.in[i+2+256] <== n2b[1].out[253-i];
     }
 
-    for (var i=0; i<256*2; i++) {
-        log(sha2.in[i]);
-    }
-
     component b2n2[2];
 
     for (var i=1; i>=0; i--) {
@@ -209,8 +205,6 @@ template hashed_mnist_latest() {
         }
         hash[i] <== b2n2[i].out;
     }
-    
-
 }
 
 component main = hashed_mnist_latest();
