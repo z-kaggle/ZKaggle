@@ -20,13 +20,13 @@ const card = ({ task }: { task: Task }) => (
   <React.Fragment>
     <CardContent>
       <Typography sx={{ fontSize: 14 }} color="text.secondary" gutterBottom>
-        {task.bounty}ETH
+        {task.status}
       </Typography>
       <Typography variant="h5" component="div">
         {task.name}
       </Typography>
       <Typography sx={{ mb: 1.5 }} color="text.secondary">
-        {/* {task.category} */}
+        {task.bounty}ETH
       </Typography>
       <Typography variant="body2">
         {task.requirements}
