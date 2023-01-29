@@ -11,6 +11,8 @@ import PublishStep from "../components/CreateBounty/PublishStep";
 import ProcessingStep from "../components/CreateBounty/ProcessingStep";
 import VerifyStep from "../components/CreateBounty/VerifyStep";
 import CheckOutStep from "../components/CreateBounty/CheckOutStep";
+import { useAccount, useContractWrite } from "wagmi";
+import { useEffect, useState } from "react";
 
 const stepTitles = [
   "Initialize",
@@ -21,6 +23,9 @@ const stepTitles = [
 ];
 
 const CreateBounty: NextPage = () => {
+  const { isConnected } = useAccount();
+  const [connected, setConnected] = React.useState(false);
+  const [access, setAccess] = React.useState(false);
   const [createBountyStep, setCreateBountyStep] = React.useState(0);
 
   const goToNextStep = () => {
@@ -66,6 +71,10 @@ const CreateBounty: NextPage = () => {
 
   const currentStep = stepComponents[createBountyStep];
 
+  useEffect(() => {
+    setConnected(isConnected);
+  }, [isConnected]);
+
   return (
     <div
       css={css`
@@ -94,10 +103,13 @@ const CreateBounty: NextPage = () => {
               </Step>
             ))}
           </Stepper>
-
-          {currentStep}
+          {connected ? (
+            currentStep
+          ) : (
+            <h1>🚨Please connect your wallet to continue!</h1>
+          )}
         </div>
-        
+
         {/* for dev only */}
         <Button onClick={goToNextStep}>Next</Button>
         <Button onClick={goToPreviousStep}>Previous</Button>

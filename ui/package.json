@@ -21,6 +21,7 @@
     "wagmi": "^0.9.6"
   },
   "devDependencies": {
+    "@typechain/ethers-v5": "^10.2.0",
     "@types/node": "18.11.3",
     "@types/react": "18.0.21",
     "@types/react-dom": "18.0.6",

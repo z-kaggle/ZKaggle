@@ -13,6 +13,8 @@ import PaidIcon from "@mui/icons-material/Paid";
 import HighlightOffIcon from "@mui/icons-material/HighlightOff";
 import FolderIcon from "@mui/icons-material/Folder";
 import lighthouse from "@lighthouse-web3/sdk";
+import { useContract, useContractWrite, usePrepareContractWrite } from "wagmi";
+import { formatBytes } from "../../utils";
 
 type InitializeStepProps = {
   goToNextStep: () => void;
@@ -24,18 +26,6 @@ interface FileData {
   size: number;
   requirements: string;
   hash: string;
-}
-
-function formatBytes(bytes: number, decimals = 2) {
-  if (!+bytes) return "0 Bytes";
-
-  const k = 1024;
-  const dm = decimals < 0 ? 0 : decimals;
-  const sizes = ["Bytes", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB"];
-
-  const i = Math.floor(Math.log(bytes) / Math.log(k));
-
-  return `${parseFloat((bytes / Math.pow(k, i)).toFixed(dm))} ${sizes[i]}`;
 }
 
 const InitializeStep = ({
@@ -66,26 +56,24 @@ const InitializeStep = ({
       process.env.NEXT_PUBLIC_LIGHTHOUSE_API_KEY,
       progressCallback
     );
-    console.log("File Status:", output);
-    /*
-      output:
-        {
-          Name: "filename.txt",
-          Size: 88000,
-          Hash: "QmWNmn2gr4ZihNPqaC5oTeePsHvFtkWNpjY3cD6Fd5am1w"
-        }
-      Note: Hash in response is CID.
-    */
-
     console.log(
       "Visit at https://gateway.lighthouse.storage/ipfs/" + output.data.Hash
     );
-
     setFiles(output.data);
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     // contract creation with deposit money
+    // const contract = useContract({
+    //   address: "0x00000000000C2E074eC69A0dFb2997BA6C7d2e1e",
+    //   abi: ensRegistryABI,
+    // });
+    // const { config } = usePrepareContractWrite({
+    //   address: "0xecb504d39723b0be0e3a9aa33d646642d1051ee1",
+    //   abi: wagmigotchiABI,
+    //   functionName: "feed",
+    // });
+    // const { data, isLoading, isSuccess, write } = useContractWrite(config);
     console.log("submit");
     goToNextStep();
   };

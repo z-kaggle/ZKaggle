@@ -4,12 +4,31 @@ import FlowCard from "../components/FlowCard";
 import NavBar from "../components/NavBar";
 import Head from "next/head";
 import MainFlow from "../components/MainFlow";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { Props } from "../typings";
 import Link from "next/link";
 import Data from "../MOCK_DATA.json";
+import { useContractEvent, useContractRead } from "wagmi";
 
 const Home = ({ tasks }: Props) => {
+  useEffect(() => {
+    // // load in all tasks from the contract
+    // const { data, isError, isLoading } = useContractRead({
+    //   address: "0xecb504d39723b0be0e3a9aa33d646642d1051ee1",
+    //   // abi: wagmigotchiABI,
+    //   functionName: "getHunger",
+    // });
+    // // set up contract listener
+    // useContractEvent({
+    //   address: "0x00000000000C2E074eC69A0dFb2997BA6C7d2e1e",
+    //   // abi: ensRegistryABI,
+    //   eventName: "NewOwner",
+    //   listener(node, label, owner) {
+    //     console.log(node, label, owner);
+    //   },
+    // });
+  }, []);
+
   return (
     <div
       css={css`
