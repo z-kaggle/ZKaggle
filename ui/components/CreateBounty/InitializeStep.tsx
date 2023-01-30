@@ -32,6 +32,7 @@ const InitializeStep = ({
   goToNextStep,
   goToPreviousStep,
 }: InitializeStepProps) => {
+  const [taskAddress, setTaskAddress] = React.useState("");
   const [projectName, setProjectName] = React.useState("Project101");
   const [requirements, setRequirements] = React.useState("Try your best");
   const [files, setFiles] = React.useState<lighthouse.IpfsFileResponse | null>({
@@ -39,6 +40,8 @@ const InitializeStep = ({
     Size: 88000,
     Hash: "QmWNmn2gr4ZihNPqaC5oTeePsHvFtkWNpjY3cD6Fd5am1w",
   });
+
+  // file upload through lighthouse sdk
 
   // const handleDelete = () => {
   //   console.log("delete");
@@ -62,20 +65,32 @@ const InitializeStep = ({
     setFiles(output.data);
   };
 
+  // contract creation with wagmi
+
+  // const { config } = usePrepareContractWrite({
+  //   address: "0xecb504d39723b0be0e3a9aa33d646642d1051ee1",
+  //   abi: wagmigotchiABI,
+  //   functionName: "createBounty",
+  //   args: [
+  //     {
+  //       Name: projectName,
+  //       Requirements: requirements,
+  //       File: files?.Hash,
+  //     },
+  //   ],
+  // });
+  // const { data, isLoading, isSuccess, write } = useContractWrite(config);
+
   const handleSubmit = async () => {
-    // contract creation with deposit money
-    // const contract = useContract({
-    //   address: "0x00000000000C2E074eC69A0dFb2997BA6C7d2e1e",
-    //   abi: ensRegistryABI,
-    // });
-    // const { config } = usePrepareContractWrite({
-    //   address: "0xecb504d39723b0be0e3a9aa33d646642d1051ee1",
-    //   abi: wagmigotchiABI,
-    //   functionName: "feed",
-    // });
-    // const { data, isLoading, isSuccess, write } = useContractWrite(config);
-    console.log("submit");
-    goToNextStep();
+    // // contract creation with deposit money
+    // write!();
+    // if (isSuccess) {
+    //   setTaskAddress(JSON.stringify(data));
+    //   console.log("submitted");
+    //   goToNextStep();
+    // } else if (!isSuccess) {
+    //   console.log("failed");
+    // }
   };
 
   return (
