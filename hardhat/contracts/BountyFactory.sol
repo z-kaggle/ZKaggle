@@ -6,9 +6,6 @@ import "./Bounty.sol";
 import "@openzeppelin/contracts/proxy/Clones.sol";
 
 contract BountyFactory {
-    // TODO: deploy bounty contract, passing msg.sender as an argument, with the address recorded AND returned
-    // Ref: https://blog.logrocket.com/cloning-solidity-smart-contracts-factory-pattern/
-
     address public immutable bountyTemplate;
     address[] public bounties;
 

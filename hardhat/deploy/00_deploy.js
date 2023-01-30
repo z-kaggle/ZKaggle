@@ -47,27 +47,8 @@ module.exports = async ({ deployments }) => {
     }
 
     console.log("Wallet Ethereum Address:", deployer.address)
-    const chainId = network.config.chainId
-    const tokenToBeMinted = networkConfig[chainId]["tokenToBeMinted"]
 
-
-    await deployLogError("SimpleCoin", {
-        from: deployer.address,
-        args: [tokenToBeMinted],
-        // maxPriorityFeePerGas to instruct hardhat to use EIP-1559 tx format
-        maxPriorityFeePerGas: priorityFee,
-        log: true,
-    })
-
-    await deployLogError("FilecoinMarketConsumer", {
-        from: deployer.address,
-        args: [],
-        // maxPriorityFeePerGas to instruct hardhat to use EIP-1559 tx format
-        maxPriorityFeePerGas: priorityFee,
-        log: true,
-    })
-
-    await deployLogError("DealRewarder", {
+    await deployLogError("BountyFactory", {
         from: deployer.address,
         args: [],
         // maxPriorityFeePerGas to instruct hardhat to use EIP-1559 tx format
