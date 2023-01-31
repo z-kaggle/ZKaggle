@@ -5,19 +5,18 @@ import NavBar from "../components/NavBar";
 import Head from "next/head";
 import MainFlow from "../components/MainFlow";
 import React, { useEffect } from "react";
-import { Props } from "../typings";
+import { Task } from "../typings";
 import Link from "next/link";
-import Data from "../MOCK_DATA.json";
-import { useContract, useContractEvent, useContractRead } from "wagmi";
+import { useContract } from "wagmi";
 import BountyFactory from "../BountyFactory.json";
 import Bounty from "../Bounty.json";
-import { useProvider, useSigner } from "wagmi";
+import { useProvider } from "wagmi";
+import { Contract, utils } from "ethers";
 
-const Home = ({ tasks }: Props) => {
-  const [taskAddress, setTaskAddress] = React.useState([]);
+const Home = () => {
+  const [tasks, setTasks] = React.useState<Task[]>([]);
 
   const provider = useProvider();
-  const signer = useSigner();
 
   const bountyFactory = useContract({
     address: BountyFactory.address,
@@ -28,23 +27,52 @@ const Home = ({ tasks }: Props) => {
   // const bounty = useContract({
   //   address: taskAddress,
   //   abi: Bounty.abi,
+  //   signerOrProvider: provider,
   // });
 
   // set up contract listener
-  useContractEvent({
-    address: BountyFactory.address,
-    abi: BountyFactory.abi,
-    eventName: "BountyCreated",
-    listener() {},
-  });
+
+  // useContractEvent({
+  //   address: BountyFactory.address,
+  //   abi: BountyFactory.abi,
+  //   eventName: "BountyCreated",
+  //   listener(address) {
+  //     console.log(`created a bounty at ${address}`);
+  //   },
+  // });
 
   useEffect(() => {
-    // load in all tasks from the contract
     const loadTasks = async () => {
-      setTaskAddress(await bountyFactory?.bounties(1));
-      console.log(taskAddress);
+      const eventSignature = utils.id(`BountyCreated(address)`);
+      const taskFilter = {
+        address: BountyFactory.address,
+        abi: BountyFactory.abi,
+        // owner: signer,
+        topics: [eventSignature],
+        fromBlock: 0,
+      };
+      const logs = await provider.getLogs(taskFilter);
+      const tasks = await logs.map((log) => {
+        const task = bountyFactory?.interface.parseLog(log);
+        return {
+          address: task?.args[0] as string,
+        } as Task;
+      });
+      await tasks.map(async (task: Task) => {
+        const bounty = new Contract(task.address, Bounty.abi, provider);
+        task.name = await bounty?.name();
+        task.description = await bounty?.description();
+        task.dataCID = await bounty?.dataCID();
+      });
+
+      setTasks(tasks as Task[]);
+      console.log("address:");
+      console.log(tasks);
     };
+
     loadTasks();
+    console.log("tasks:");
+    console.log(tasks);
   }, []);
 
   return (
@@ -74,8 +102,8 @@ const Home = ({ tasks }: Props) => {
             margin-bottom: 20px;
           `}
         >
-          {tasks.map((task) => (
-            <Link key={task.id} href="">
+          {tasks.map((task, index) => (
+            <Link key={index} href={`/tasks/${task.address}`}>
               <FlowCard task={task}></FlowCard>
             </Link>
           ))}
@@ -88,10 +116,7 @@ const Home = ({ tasks }: Props) => {
 export default Home;
 
 export const getServerSideProps = async () => {
-  const tasks = Data;
   return {
-    props: {
-      tasks,
-    },
+    props: {},
   };
 };

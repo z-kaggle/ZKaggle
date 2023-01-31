@@ -20,16 +20,16 @@ const card = ({ task }: { task: Task }) => (
   <React.Fragment>
     <CardContent>
       <Typography sx={{ fontSize: 14 }} color="text.secondary" gutterBottom>
-        {task.status}
+        {task.name}
       </Typography>
       <Typography variant="h5" component="div">
         {task.name}
       </Typography>
       <Typography sx={{ mb: 1.5 }} color="text.secondary">
-        {task.bounty}ETH
+        {task.description}
       </Typography>
       <Typography variant="body2">
-        {task.requirements}
+        {task.dataCID}
         <br />
       </Typography>
     </CardContent>
