@@ -17,6 +17,7 @@ import { useContractEvent } from "wagmi";
 import { Contract } from "ethers";
 import BountyFactory from "../BountyFactory.json";
 import Bounty from "../Bounty.json";
+import { useSigner, useProvider } from "wagmi";
 
 const stepTitles = [
   "Initialize",
@@ -32,6 +33,8 @@ const CreateBounty: NextPage = () => {
   const [connected, setConnected] = React.useState(false);
   const [access, setAccess] = React.useState(false);
   const [createBountyStep, setCreateBountyStep] = React.useState(0);
+  const signer = useSigner();
+  const provider = useProvider();
 
   const goToNextStep = () => {
     setCreateBountyStep((currentStep) => {
@@ -79,11 +82,13 @@ const CreateBounty: NextPage = () => {
   const bountyFactory = useContract({
     address: BountyFactory.address,
     abi: BountyFactory.abi,
+    signerOrProvider: provider,
   });
 
   const bounty = useContract({
     address: taskAddress,
     abi: Bounty.abi,
+    signerOrProvider: provider,
   });
 
   useContractEvent({

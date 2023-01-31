@@ -87,8 +87,9 @@ const InitializeStep = ({
     );
     console.log("Mining...", createBounty.hash);
     await createBounty.wait();
-    console.log("Mined --", createBounty.bounties(0));
-    setTaskAddress(JSON.stringify(createBounty.bounties(0)));
+    console.log("Mined --", bountyFactory?.bounties(0));
+    setTaskAddress(JSON.stringify(bountyFactory?.bounties(0)));
+    console.log(taskAddress);
     // goToNextStep();
   };
 

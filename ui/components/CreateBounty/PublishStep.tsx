@@ -79,7 +79,9 @@ const PublishStep = ({ goToNextStep, goToPreviousStep }: PublishStepProps) => {
                 spacing={10}
                 justifyContent="space-between"
               >
-                <h2 style={{ padding: "0", margin: "0" }}>{bounty.name}</h2>
+                <h2 style={{ padding: "0", margin: "0" }}>
+                  MNIST Training Task
+                </h2>
                 <Button
                   variant="outlined"
                   sx={{
