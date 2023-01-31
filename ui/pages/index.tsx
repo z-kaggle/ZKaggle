@@ -4,29 +4,47 @@ import FlowCard from "../components/FlowCard";
 import NavBar from "../components/NavBar";
 import Head from "next/head";
 import MainFlow from "../components/MainFlow";
-import { useEffect } from "react";
+import React, { useEffect } from "react";
 import { Props } from "../typings";
 import Link from "next/link";
 import Data from "../MOCK_DATA.json";
-import { useContractEvent, useContractRead } from "wagmi";
+import { useContract, useContractEvent, useContractRead } from "wagmi";
+import BountyFactory from "../BountyFactory.json";
+import Bounty from "../Bounty.json";
+import { useProvider, useSigner } from "wagmi";
 
 const Home = ({ tasks }: Props) => {
+  const [taskAddress, setTaskAddress] = React.useState([]);
+
+  const provider = useProvider();
+  const signer = useSigner();
+
+  const bountyFactory = useContract({
+    address: BountyFactory.address,
+    abi: BountyFactory.abi,
+    signerOrProvider: provider,
+  });
+
+  // const bounty = useContract({
+  //   address: taskAddress,
+  //   abi: Bounty.abi,
+  // });
+
+  // set up contract listener
+  useContractEvent({
+    address: BountyFactory.address,
+    abi: BountyFactory.abi,
+    eventName: "BountyCreated",
+    listener() {},
+  });
+
   useEffect(() => {
-    // // load in all tasks from the contract
-    // const { data, isError, isLoading } = useContractRead({
-    //   address: "0xecb504d39723b0be0e3a9aa33d646642d1051ee1",
-    //   // abi: wagmigotchiABI,
-    //   functionName: "getHunger",
-    // });
-    // // set up contract listener
-    // useContractEvent({
-    //   address: "0x00000000000C2E074eC69A0dFb2997BA6C7d2e1e",
-    //   // abi: ensRegistryABI,
-    //   eventName: "NewOwner",
-    //   listener(node, label, owner) {
-    //     console.log(node, label, owner);
-    //   },
-    // });
+    // load in all tasks from the contract
+    const loadTasks = async () => {
+      setTaskAddress(await bountyFactory?.bounties(1));
+      console.log(taskAddress);
+    };
+    loadTasks();
   }, []);
 
   return (

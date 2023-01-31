@@ -13,8 +13,11 @@ import PaidIcon from "@mui/icons-material/Paid";
 import HighlightOffIcon from "@mui/icons-material/HighlightOff";
 import FolderIcon from "@mui/icons-material/Folder";
 import lighthouse from "@lighthouse-web3/sdk";
-import { useContract, useContractWrite, usePrepareContractWrite } from "wagmi";
+import { useContract, useSigner } from "wagmi";
 import { formatBytes } from "../../utils";
+import BountyFactory from "../../BountyFactory.json";
+const { utils } = require("ethers");
+import { ethers } from "ethers";
 
 type InitializeStepProps = {
   goToNextStep: () => void;
@@ -65,32 +68,28 @@ const InitializeStep = ({
     setFiles(output.data);
   };
 
-  // contract creation with wagmi
+  const { data: signer } = useSigner();
 
-  // const { config } = usePrepareContractWrite({
-  //   address: "0xecb504d39723b0be0e3a9aa33d646642d1051ee1",
-  //   abi: wagmigotchiABI,
-  //   functionName: "createBounty",
-  //   args: [
-  //     {
-  //       Name: projectName,
-  //       Requirements: requirements,
-  //       File: files?.Hash,
-  //     },
-  //   ],
-  // });
-  // const { data, isLoading, isSuccess, write } = useContractWrite(config);
+  const bountyFactory = useContract({
+    address: BountyFactory.address,
+    abi: BountyFactory.abi,
+    signerOrProvider: signer,
+  });
 
   const handleSubmit = async () => {
-    // // contract creation with deposit money
-    // write!();
-    // if (isSuccess) {
-    //   setTaskAddress(JSON.stringify(data));
-    //   console.log("submitted");
-    //   goToNextStep();
-    // } else if (!isSuccess) {
-    //   console.log("failed");
-    // }
+    let createBounty = await bountyFactory!.createBounty(
+      projectName,
+      requirements,
+      utils.hexlify(Buffer.from(files!.Hash, "utf8")),
+      {
+        value: ethers.utils.parseEther("0.01"),
+      }
+    );
+    console.log("Mining...", createBounty.hash);
+    await createBounty.wait();
+    console.log("Mined --", createBounty.bounties(0));
+    setTaskAddress(JSON.stringify(createBounty.bounties(0)));
+    // goToNextStep();
   };
 
   return (

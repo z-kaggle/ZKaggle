@@ -11,8 +11,12 @@ import PublishStep from "../components/CreateBounty/PublishStep";
 import ProcessingStep from "../components/CreateBounty/ProcessingStep";
 import VerifyStep from "../components/CreateBounty/VerifyStep";
 import CheckOutStep from "../components/CreateBounty/CheckOutStep";
-import { useAccount, useContractWrite } from "wagmi";
+import { useAccount, useContract, useContractWrite } from "wagmi";
 import { useEffect, useState } from "react";
+import { useContractEvent } from "wagmi";
+import { Contract } from "ethers";
+import BountyFactory from "../BountyFactory.json";
+import Bounty from "../Bounty.json";
 
 const stepTitles = [
   "Initialize",
@@ -23,7 +27,8 @@ const stepTitles = [
 ];
 
 const CreateBounty: NextPage = () => {
-  const { isConnected } = useAccount();
+  const { address, isConnected } = useAccount();
+  const [taskAddress, setTaskAddress] = React.useState("");
   const [connected, setConnected] = React.useState(false);
   const [access, setAccess] = React.useState(false);
   const [createBountyStep, setCreateBountyStep] = React.useState(0);
@@ -70,6 +75,50 @@ const CreateBounty: NextPage = () => {
   ];
 
   const currentStep = stepComponents[createBountyStep];
+
+  const bountyFactory = useContract({
+    address: BountyFactory.address,
+    abi: BountyFactory.abi,
+  });
+
+  const bounty = useContract({
+    address: taskAddress,
+    abi: Bounty.abi,
+  });
+
+  useContractEvent({
+    address: BountyFactory.address,
+    abi: BountyFactory.abi,
+    eventName: "BountyCreated",
+    listener() {
+      setTaskAddress(bountyFactory?.bounties(0));
+      setCreateBountyStep(1);
+    },
+  });
+  useContractEvent({
+    address: taskAddress,
+    abi: Bounty.abi,
+    eventName: "BountySubmitted",
+    listener() {
+      setCreateBountyStep(3);
+    },
+  });
+  useContractEvent({
+    address: taskAddress,
+    abi: Bounty.abi,
+    eventName: "BountyReleased",
+    listener() {
+      setCreateBountyStep(4);
+    },
+  });
+  useContractEvent({
+    address: taskAddress,
+    abi: Bounty.abi,
+    eventName: "BountyClaimed",
+    listener() {
+      console.log("BountyClaimed");
+    },
+  });
 
   useEffect(() => {
     setConnected(isConnected);
