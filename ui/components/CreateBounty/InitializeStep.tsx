@@ -18,10 +18,12 @@ import { formatBytes } from "../../utils";
 import BountyFactory from "../../BountyFactory.json";
 import { ethers, utils } from "ethers";
 import { useRouter } from "next/router";
+import base32 from "base32.js";
 
 const InitializeStep = () => {
   const [projectName, setProjectName] = React.useState("Project101");
   const [requirements, setRequirements] = React.useState("Try your best");
+  // TODO: show empty state instead of dummy data [Cathie]
   const [files, setFiles] = React.useState<lighthouse.IpfsFileResponse | null>({
     Name: "example.txt",
     Size: 88000,
@@ -41,8 +43,9 @@ const InitializeStep = () => {
     console.log(percentageDone);
   };
 
+  // ?: should we have a "confirm" button to upload the file? [Cathie]
   const handleUpload = async (e: string) => {
-    const output = await lighthouse.upload(
+    const output = await lighthouse.uploadFileRaw(
       e,
       process.env.NEXT_PUBLIC_LIGHTHOUSE_API_KEY,
       progressCallback
@@ -62,16 +65,21 @@ const InitializeStep = () => {
   });
 
   const handleSubmit = async () => {
-    let createBounty = await bountyFactory!.createBounty(
+    const decoder = new base32.Decoder();
+    const cid = decoder.write(files!.Hash.slice(1)).finalize();
+    const createBounty = await bountyFactory!.createBounty(
       projectName,
       requirements,
-      ethers.utils.hexlify(ethers.utils.toUtf8Bytes(files!.Hash)),
+      cid,
       {
-        value: ethers.utils.parseEther("0.01"),
+        value: ethers.utils.parseEther("0.01"), // TODO: this value should be set by the user [Cathie]
       }
     );
     console.log("Mining...", createBounty.hash);
     await createBounty.wait();
+    // TODO: should be loading latest event instead of index 0 [Cathie]
+    // !: taskRouter doesn't seem to be working [Cathie]
+    // not sure what this is supposed to do [Cathie]
     console.log("Mined --", await bountyFactory?.bounties(0));
     taskRouter.push(`/tasks/${await bountyFactory?.bounties(0)}`);
   };

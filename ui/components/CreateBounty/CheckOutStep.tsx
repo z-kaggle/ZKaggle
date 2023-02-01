@@ -18,7 +18,8 @@ type CheckOutStepProps = {
   goToNextStep: () => void;
   goToPreviousStep: () => void;
 };
-
+// !: no handle for submit [Cathie]
+// !: let's fix the UI first [Cathie]
 const CheckOutStep = ({
   task,
   goToNextStep,

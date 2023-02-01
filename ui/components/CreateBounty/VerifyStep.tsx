@@ -19,7 +19,8 @@ type VerifyStepProps = {
   goToNextStep: () => void;
   goToPreviousStep: () => void;
 };
-
+// !: no handle for submit [Cathie]
+// !: let's fix the UI first [Cathie]
 const VerifyStep = ({
   task,
   goToNextStep,
