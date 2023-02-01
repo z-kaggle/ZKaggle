@@ -19,11 +19,6 @@ import BountyFactory from "../../BountyFactory.json";
 const { utils } = require("ethers");
 import { ethers } from "ethers";
 
-type InitializeStepProps = {
-  goToNextStep: () => void;
-  goToPreviousStep: () => void;
-};
-
 interface FileData {
   name: string;
   size: number;
@@ -31,10 +26,7 @@ interface FileData {
   hash: string;
 }
 
-const InitializeStep = ({
-  goToNextStep,
-  goToPreviousStep,
-}: InitializeStepProps) => {
+const InitializeStep = () => {
   const [taskAddress, setTaskAddress] = React.useState("");
   const [projectName, setProjectName] = React.useState("Project101");
   const [requirements, setRequirements] = React.useState("Try your best");

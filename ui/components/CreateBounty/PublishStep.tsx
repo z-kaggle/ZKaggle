@@ -18,13 +18,15 @@ import lighthouse from "@lighthouse-web3/sdk";
 import { useAccount, useContractRead } from "wagmi";
 import { useContract, useContractWrite, usePrepareContractWrite } from "wagmi";
 import { Check } from "@mui/icons-material";
+import { Task } from "../../typings";
 
 type PublishStepProps = {
+  task: Task;
   goToNextStep: () => void;
   goToPreviousStep: () => void;
 };
 
-const PublishStep = ({ goToNextStep, goToPreviousStep }: PublishStepProps) => {
+const PublishStep = ({ task, goToNextStep, goToPreviousStep }: PublishStepProps) => {
   const [isOwner, setIsOwner] = React.useState(false);
   const { address, isConnecting, isDisconnected } = useAccount();
   const [files, setFiles] = React.useState<lighthouse.IpfsFileResponse | null>({
@@ -80,7 +82,7 @@ const PublishStep = ({ goToNextStep, goToPreviousStep }: PublishStepProps) => {
                 justifyContent="space-between"
               >
                 <h2 style={{ padding: "0", margin: "0" }}>
-                  MNIST Training Task
+                  {task.name}
                 </h2>
                 <Button
                   variant="outlined"

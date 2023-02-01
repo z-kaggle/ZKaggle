@@ -56,7 +56,7 @@ const NavBar: NextComponentType = () => {
         </p>
       </Link>
 
-      <Link href={`/create-bounty`}>
+      <Link href={`/create`}>
         <Button
           variant="contained"
           startIcon={<Add />}

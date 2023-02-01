@@ -18,6 +18,7 @@ import { Contract } from "ethers";
 import BountyFactory from "../BountyFactory.json";
 import Bounty from "../Bounty.json";
 import { useSigner, useProvider } from "wagmi";
+import { useRouter } from "next/router";
 
 const stepTitles = [
   "Initialize",
@@ -35,49 +36,7 @@ const CreateBounty: NextPage = () => {
   const [createBountyStep, setCreateBountyStep] = React.useState(0);
   const signer = useSigner();
   const provider = useProvider();
-
-  const goToNextStep = () => {
-    setCreateBountyStep((currentStep) => {
-      if (currentStep === stepTitles.length - 1) {
-        return currentStep;
-      }
-      return currentStep + 1;
-    });
-  };
-
-  const goToPreviousStep = () => {
-    setCreateBountyStep((currentStep) => {
-      if (currentStep === 0) {
-        return currentStep;
-      }
-      return currentStep - 1;
-    });
-  };
-
-  const stepComponents = [
-    <InitializeStep
-      goToNextStep={goToNextStep}
-      goToPreviousStep={goToPreviousStep}
-    />,
-    <PublishStep
-      goToNextStep={goToNextStep}
-      goToPreviousStep={goToPreviousStep}
-    />,
-    <ProcessingStep
-      goToNextStep={goToNextStep}
-      goToPreviousStep={goToPreviousStep}
-    />,
-    <VerifyStep
-      goToNextStep={goToNextStep}
-      goToPreviousStep={goToPreviousStep}
-    />,
-    <CheckOutStep
-      goToNextStep={goToNextStep}
-      goToPreviousStep={goToPreviousStep}
-    />,
-  ];
-
-  const currentStep = stepComponents[createBountyStep];
+  const taskRouter = useRouter();
 
   const bountyFactory = useContract({
     address: BountyFactory.address,
@@ -95,33 +54,9 @@ const CreateBounty: NextPage = () => {
     address: BountyFactory.address,
     abi: BountyFactory.abi,
     eventName: "BountyCreated",
-    listener() {
-      setTaskAddress(bountyFactory?.bounties(0));
-      setCreateBountyStep(1);
-    },
-  });
-  useContractEvent({
-    address: taskAddress,
-    abi: Bounty.abi,
-    eventName: "BountySubmitted",
-    listener() {
-      setCreateBountyStep(3);
-    },
-  });
-  useContractEvent({
-    address: taskAddress,
-    abi: Bounty.abi,
-    eventName: "BountyReleased",
-    listener() {
-      setCreateBountyStep(4);
-    },
-  });
-  useContractEvent({
-    address: taskAddress,
-    abi: Bounty.abi,
-    eventName: "BountyClaimed",
-    listener() {
-      console.log("BountyClaimed");
+    async listener() {
+      taskRouter.push(`/tasks/${await bountyFactory?.bounties(0)}`);
+      console.log("BountyCreated, Jumping now!");
     },
   });
 
@@ -158,15 +93,11 @@ const CreateBounty: NextPage = () => {
             ))}
           </Stepper>
           {connected ? (
-            currentStep
+            <InitializeStep />
           ) : (
             <h1>🚨Please connect your wallet to continue!</h1>
           )}
         </div>
-
-        {/* for dev only */}
-        <Button onClick={goToNextStep}>Next</Button>
-        <Button onClick={goToPreviousStep}>Previous</Button>
       </MainFlow>
     </div>
   );

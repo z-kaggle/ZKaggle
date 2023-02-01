@@ -4,17 +4,22 @@ import FlowCard from "../components/FlowCard";
 import NavBar from "../components/NavBar";
 import Head from "next/head";
 import MainFlow from "../components/MainFlow";
-import React, { useEffect } from "react";
+import React, { useEffect, useMemo } from "react";
 import { Task } from "../typings";
 import Link from "next/link";
 import { useContract } from "wagmi";
 import BountyFactory from "../BountyFactory.json";
 import Bounty from "../Bounty.json";
 import { useProvider } from "wagmi";
-import { Contract, utils } from "ethers";
+import { Contract, ethers, utils } from "ethers";
 
-const Home = () => {
-  const [tasks, setTasks] = React.useState<Task[]>([]);
+interface Props {
+  tasks: [Task];
+}
+
+const Home = ({ tasks }: Props) => {
+  console.log("clienttask:");
+  console.log(tasks);
 
   const provider = useProvider();
 
@@ -23,57 +28,6 @@ const Home = () => {
     abi: BountyFactory.abi,
     signerOrProvider: provider,
   });
-
-  // const bounty = useContract({
-  //   address: taskAddress,
-  //   abi: Bounty.abi,
-  //   signerOrProvider: provider,
-  // });
-
-  // set up contract listener
-
-  // useContractEvent({
-  //   address: BountyFactory.address,
-  //   abi: BountyFactory.abi,
-  //   eventName: "BountyCreated",
-  //   listener(address) {
-  //     console.log(`created a bounty at ${address}`);
-  //   },
-  // });
-
-  useEffect(() => {
-    const loadTasks = async () => {
-      const eventSignature = utils.id(`BountyCreated(address)`);
-      const taskFilter = {
-        address: BountyFactory.address,
-        abi: BountyFactory.abi,
-        // owner: signer,
-        topics: [eventSignature],
-        fromBlock: 0,
-      };
-      const logs = await provider.getLogs(taskFilter);
-      const tasks = await logs.map((log) => {
-        const task = bountyFactory?.interface.parseLog(log);
-        return {
-          address: task?.args[0] as string,
-        } as Task;
-      });
-      await tasks.map(async (task: Task) => {
-        const bounty = new Contract(task.address, Bounty.abi, provider);
-        task.name = await bounty?.name();
-        task.description = await bounty?.description();
-        task.dataCID = await bounty?.dataCID();
-      });
-
-      setTasks(tasks as Task[]);
-      console.log("address:");
-      console.log(tasks);
-    };
-
-    loadTasks();
-    console.log("tasks:");
-    console.log(tasks);
-  }, []);
 
   return (
     <div
@@ -102,7 +56,7 @@ const Home = () => {
             margin-bottom: 20px;
           `}
         >
-          {tasks.map((task, index) => (
+          {tasks.reverse().map((task, index) => (
             <Link key={index} href={`/tasks/${task.address}`}>
               <FlowCard task={task}></FlowCard>
             </Link>
@@ -116,7 +70,39 @@ const Home = () => {
 export default Home;
 
 export const getServerSideProps = async () => {
+  const provider = new ethers.providers.JsonRpcProvider(
+    "https://api.hyperspace.node.glif.io/rpc/v1"
+  );
+  const bountyFactory = new Contract(
+    BountyFactory.address,
+    BountyFactory.abi,
+    provider
+  );
+  const eventSignature = utils.id(`BountyCreated(address)`);
+  const taskFilter = {
+    address: BountyFactory.address,
+    abi: BountyFactory.abi,
+    // owner: signer,
+    topics: [eventSignature],
+    fromBlock: 0,
+  };
+  const logs = await provider.getLogs(taskFilter);
+  const tasks = logs.map((log) => {
+    const task = bountyFactory?.interface.parseLog(log);
+    return {
+      address: task?.args[0] as string,
+    } as Task;
+  });
+  const results = tasks.map(async (task: Task) => {
+    const bounty = new Contract(task.address, Bounty.abi, provider);
+    task.name = await bounty?.name();
+    task.description = await bounty?.description();
+    task.dataCID = await bounty?.dataCID();
+    console.log("task:");
+    console.log(task);
+  });
+  await Promise.all(results);
   return {
-    props: {},
+    props: { tasks },
   };
 };

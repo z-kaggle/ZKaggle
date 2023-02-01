@@ -7,6 +7,10 @@ import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
 import { Task } from "../typings";
 
+interface FlowCardProps {
+  task: Task;
+}
+
 const bull = (
   <Box
     component="span"
@@ -16,7 +20,7 @@ const bull = (
   </Box>
 );
 
-const card = ({ task }: { task: Task }) => (
+const card = ({ task }: FlowCardProps) => (
   <React.Fragment>
     <CardContent>
       <Typography sx={{ fontSize: 14 }} color="text.secondary" gutterBottom>
@@ -39,7 +43,7 @@ const card = ({ task }: { task: Task }) => (
   </React.Fragment>
 );
 
-export default function FlowCard({ task }: { task: Task }) {
+export default function FlowCard({ task }: FlowCardProps) {
   return (
     <Box
       sx={{
