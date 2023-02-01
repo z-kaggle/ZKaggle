@@ -4,9 +4,8 @@ import FlowCard from "../components/FlowCard";
 import NavBar from "../components/NavBar";
 import Head from "next/head";
 import MainFlow from "../components/MainFlow";
-import React, { useEffect, useMemo } from "react";
+import React from "react";
 import { Task } from "../typings";
-import Link from "next/link";
 import { useContract } from "wagmi";
 import BountyFactory from "../BountyFactory.json";
 import Bounty from "../Bounty.json";
@@ -57,9 +56,7 @@ const Home = ({ tasks }: Props) => {
           `}
         >
           {tasks.reverse().map((task, index) => (
-            <Link key={index} href={`/tasks/${task.address}`}>
-              <FlowCard task={task}></FlowCard>
-            </Link>
+            <FlowCard key={index} task={task}></FlowCard>
           ))}
         </div>
       </MainFlow>
