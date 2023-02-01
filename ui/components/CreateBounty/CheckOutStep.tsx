@@ -21,6 +21,7 @@ const CheckOutStep = ({
   goToNextStep,
   goToPreviousStep,
 }: CheckOutStepProps) => {
+  const [isBountyHunter, setIsBountyHunter] = React.useState(false);
   return (
     <div
       css={css`
@@ -30,9 +31,20 @@ const CheckOutStep = ({
         min-width: 300px;
       `}
     >
-      <h1>Verify the results!</h1>
-      <h5>Check the results and release the bounty</h5>
-
+      {isBountyHunter ? (
+        <>
+          <h1>Congrats!</h1>
+          <h5>
+            Your task has been verified by the provider, your bounty has been
+            released to your wallet
+          </h5>
+        </>
+      ) : (
+        <>
+          <h1>Closing the task!</h1>
+          <h5>Check the results and release the bounty</h5>
+        </>
+      )}
       <div
         css={css`
           display: flex;
@@ -151,6 +163,10 @@ const CheckOutStep = ({
           Finish
         </Button>
       </div>
+      {/* for development purpose */}
+      <Button onClick={() => setIsBountyHunter(!isBountyHunter)}>
+        Change role
+      </Button>
     </div>
   );
 };
