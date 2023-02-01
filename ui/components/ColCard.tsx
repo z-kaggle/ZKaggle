@@ -6,41 +6,35 @@ import CardContent from "@mui/material/CardContent";
 import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
 import { Task } from "../typings";
-import { autocompleteClasses } from "@mui/material";
 
-const bull = (
-  <Box
-    component="span"
-    sx={{ display: "inline-block", mx: "2px", transform: "scale(0.8)" }}
-  >
-    •
-  </Box>
-);
+interface ColCardProps {
+  task: Task;
+}
 
-const card = ({ task }: { task: Task }) => (
+const card = ({ task }: ColCardProps) => (
   <React.Fragment>
     <CardContent>
       <Typography sx={{ fontSize: 14 }} color="text.secondary" gutterBottom>
-        {task.status}
+        {task.name}
       </Typography>
       <Typography variant="h5" component="div">
         {task.name}
       </Typography>
       <Typography sx={{ mb: 1.5 }} color="text.secondary">
-        {task.bounty}ETH
+        {task.name}ETH
       </Typography>
       <Typography variant="body2">
-        {task.requirements}
+        {task.description}
         <br />
       </Typography>
     </CardContent>
     <CardActions>
-      <Button size="small">Take it NOW</Button>
+      <Button size="small">Take a Look</Button>
     </CardActions>
   </React.Fragment>
 );
 
-export default function ColCard({ task }: { task: Task }) {
+export default function ColCard({ task }: ColCardProps) {
   return (
     <Box
       sx={{

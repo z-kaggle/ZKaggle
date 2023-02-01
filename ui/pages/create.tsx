@@ -15,7 +15,6 @@ import { useRouter } from "next/router";
 
 const stepTitles = [
   "Initialize",
-  "Publish",
   "Processing",
   "Verify",
   "Check Out",

@@ -11,34 +11,46 @@ import {
   ListItemIcon,
   ListItem,
 } from "@mui/material";
-import { useContractRead } from "wagmi";
+import { useAccount, useContractRead, useSigner } from "wagmi";
 import { useContract, useContractWrite, usePrepareContractWrite } from "wagmi";
 import FolderIcon from "@mui/icons-material/Folder";
 import lighthouse from "@lighthouse-web3/sdk";
 import { formatBytes } from "../../utils";
 import { Check } from "@mui/icons-material";
+import { Task } from "../../typings";
+import Bounty from "../../Bounty.json";
+import { ethers, utils } from "ethers";
 
 type ProcessingStepProps = {
+  task: Task;
   goToNextStep: () => void;
   goToPreviousStep: () => void;
 };
 
 const ProcessingStep = ({
+  task,
   goToNextStep,
   goToPreviousStep,
 }: ProcessingStepProps) => {
-  const [isBountyHunter, setIsBountyHunter] = React.useState(false);
+  const [isOwner, setIsOwner] = React.useState(false);
+  const { address, isConnecting, isDisconnected } = useAccount();
+  const [zkeyCID, setZkeyCID] =
+    React.useState<lighthouse.IpfsFileResponse | null>({
+      Name: "zkeyCID.txt",
+      Size: 88000,
+      Hash: "QmWNmn2gr4ZihNPqaC5oTeePsHvFtkWNpjY3cD6Fd5am1w",
+    });
+  const [circomCID, setCircomCID] =
+    React.useState<lighthouse.IpfsFileResponse | null>({
+      Name: "circomCID.txt",
+      Size: 88000,
+      Hash: "QmWNmn2gr4ZihNPqaC5oTeePsHvFtkWNpjY3cD6Fd5am1w",
+    });
   const [files, setFiles] = React.useState<lighthouse.IpfsFileResponse | null>({
-    Name: "example.txt",
+    Name: "circomCID.txt",
     Size: 88000,
     Hash: "QmWNmn2gr4ZihNPqaC5oTeePsHvFtkWNpjY3cD6Fd5am1w",
   });
-
-  // file upload through lighthouse sdk
-
-  // const handleDelete = () => {
-  //   console.log("delete");
-  // };
 
   const progressCallback = (progressData: any) => {
     let percentageDone =
@@ -55,18 +67,40 @@ const ProcessingStep = ({
     console.log(
       "Visit at https://gateway.lighthouse.storage/ipfs/" + output.data.Hash
     );
-    setFiles(output.data);
+    // setFiles(output.data);
   };
 
-  const handleUploadResult = async () => {};
+  const { data: signer } = useSigner();
 
-  // useEffect(() => {
-  //   const { data, isError, isLoading } = useContractRead({
-  //     address: "0xecb504d39723b0be0e3a9aa33d646642d1051ee1",
-  //     abi: wagmigotchiABI,
-  //     functionName: "getTask",
-  //   });
-  // }, []);
+  const bounty = useContract({
+    address: task.address,
+    abi: Bounty.abi,
+    signerOrProvider: signer,
+  });
+
+  const handleUploadResult = async () => {
+    // let createBounty = await bounty!.submitBounty(
+    //   projectName,
+    //   requirements,
+    //   utils.hexlify(Buffer.from(files!.Hash, "utf8"))
+    //   // {
+    //   //   value: ethers.utils.parseEther("0.01"),
+    //   // }
+    // );
+    // console.log("Mining...", createBounty.hash);
+    // await createBounty.wait();
+    // console.log("Mined --", await bountyFactory?.bounties(0));
+    // taskRouter.push(`/tasks/${await bountyFactory?.bounties(0)}`);
+  };
+
+  // check whether is the owner or the rest
+  useEffect(() => {
+    if (address === task.bountyOwner) {
+      setIsOwner(true);
+    } else {
+      setIsOwner(false);
+    }
+  }, [address]);
 
   return (
     <div
@@ -77,9 +111,9 @@ const ProcessingStep = ({
         min-width: 300px;
       `}
     >
-      {isBountyHunter ? (
+      {isOwner ? (
         <div>
-          <h1>This task is being handling by a bounty hunter!</h1>
+          <h1>This task is waiting for bounty hunter to pick up!</h1>
           <h5>It will take up to 2-3 days.</h5>
 
           <div
@@ -96,9 +130,7 @@ const ProcessingStep = ({
                 spacing={10}
                 justifyContent="space-between"
               >
-                <h2 style={{ padding: "0", margin: "0" }}>
-                  MNIST Training Task
-                </h2>
+                <h2 style={{ padding: "0", margin: "0" }}>{task?.name}</h2>
                 <Button
                   variant="outlined"
                   sx={{
@@ -109,7 +141,7 @@ const ProcessingStep = ({
                   0.5 ETH
                 </Button>
               </Stack>
-              <h5>Your task will be shown in the task pool.</h5>
+              <h5>{task?.description}</h5>
             </Stack>
 
             <h2>Files</h2>
@@ -155,9 +187,7 @@ const ProcessingStep = ({
                 spacing={10}
                 justifyContent="space-between"
               >
-                <h2 style={{ padding: "0", margin: "0" }}>
-                  MNIST Training Task
-                </h2>
+                <h2 style={{ padding: "0", margin: "0" }}>{task?.name}</h2>
                 <Button
                   variant="outlined"
                   sx={{
@@ -336,9 +366,7 @@ const ProcessingStep = ({
       )}
 
       {/* for development purpose */}
-      <Button onClick={() => setIsBountyHunter(!isBountyHunter)}>
-        Change role
-      </Button>
+      <Button onClick={() => setIsOwner(!isOwner)}>Change role</Button>
     </div>
   );
 };

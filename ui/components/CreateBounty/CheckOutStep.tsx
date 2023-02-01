@@ -11,13 +11,16 @@ import {
 } from "@mui/material";
 
 import PaidIcon from "@mui/icons-material/Paid";
+import { Task } from "../../typings";
 
 type CheckOutStepProps = {
+  task: Task;
   goToNextStep: () => void;
   goToPreviousStep: () => void;
 };
 
 const CheckOutStep = ({
+  task,
   goToNextStep,
   goToPreviousStep,
 }: CheckOutStepProps) => {

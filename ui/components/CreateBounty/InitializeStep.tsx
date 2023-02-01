@@ -16,8 +16,7 @@ import lighthouse from "@lighthouse-web3/sdk";
 import { useContract, useSigner } from "wagmi";
 import { formatBytes } from "../../utils";
 import BountyFactory from "../../BountyFactory.json";
-const { utils } = require("ethers");
-import { ethers } from "ethers";
+import { ethers, utils } from "ethers";
 import { useRouter } from "next/router";
 
 const InitializeStep = () => {
@@ -66,7 +65,7 @@ const InitializeStep = () => {
     let createBounty = await bountyFactory!.createBounty(
       projectName,
       requirements,
-      utils.hexlify(Buffer.from(files!.Hash, "utf8")),
+      ethers.utils.hexlify(ethers.utils.toUtf8Bytes(files!.Hash)),
       {
         value: ethers.utils.parseEther("0.01"),
       }

@@ -12,13 +12,19 @@ import {
 } from "@mui/material";
 
 import PaidIcon from "@mui/icons-material/Paid";
+import { Task } from "../../typings";
 
 type VerifyStepProps = {
+  task: Task;
   goToNextStep: () => void;
   goToPreviousStep: () => void;
 };
 
-const VerifyStep = ({ goToNextStep, goToPreviousStep }: VerifyStepProps) => {
+const VerifyStep = ({
+  task,
+  goToNextStep,
+  goToPreviousStep,
+}: VerifyStepProps) => {
   return (
     <div
       css={css`

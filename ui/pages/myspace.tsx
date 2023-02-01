@@ -4,13 +4,18 @@ import { css } from "@emotion/react";
 import MainFlow from "../components/MainFlow";
 import { useEffect, useState } from "react";
 import { useAccount } from "wagmi";
-import { Props } from "../typings";
+import { Task } from "../typings";
 import ColCard from "../components/ColCard";
-import Link from "next/link";
-import Data from "../MOCK_DATA.json";
+import { Contract, ethers, utils } from "ethers";
+import BountyFactory from "../BountyFactory.json";
+import Bounty from "../Bounty.json";
+
+interface Props {
+  tasks: Task[];
+}
 
 const MySpacePage = ({ tasks }: Props) => {
-  const { isConnected } = useAccount();
+  const { address, isConnected } = useAccount();
   const [connected, setConnected] = useState(false);
 
   useEffect(() => {
@@ -39,13 +44,11 @@ const MySpacePage = ({ tasks }: Props) => {
             margin-bottom: 20px;
           `}
         >
-          {/* must be made into client side rendering */}
           {connected ? (
-            tasks.map((task) => (
-              <Link key={task.id} href="">
-                <ColCard task={task}></ColCard>
-              </Link>
-            ))
+            tasks
+              .filter((task) => task.bountyOwner === address)
+              .reverse()
+              .map((task, index) => <ColCard key={index} task={task}></ColCard>)
           ) : (
             <h1>🚨Please connect your wallet to continue!</h1>
           )}
@@ -58,10 +61,38 @@ const MySpacePage = ({ tasks }: Props) => {
 export default MySpacePage;
 
 export const getServerSideProps = async () => {
-  const tasks = Data;
+  const provider = new ethers.providers.JsonRpcProvider(
+    "https://api.hyperspace.node.glif.io/rpc/v1"
+  );
+  const bountyFactory = new Contract(
+    BountyFactory.address,
+    BountyFactory.abi,
+    provider
+  );
+  const eventSignature = utils.id(`BountyCreated(address)`);
+  const taskFilter = {
+    address: BountyFactory.address,
+    abi: BountyFactory.abi,
+    // owner: signer,
+    topics: [eventSignature],
+    fromBlock: 0,
+  };
+  const logs = await provider.getLogs(taskFilter);
+  const tasks = logs.map((log) => {
+    const task = bountyFactory?.interface.parseLog(log);
+    return {
+      address: task?.args[0] as string,
+    } as Task;
+  });
+  const results = tasks.map(async (task: Task) => {
+    const bounty = new Contract(task.address, Bounty.abi, provider);
+    task.name = await bounty?.name();
+    task.description = await bounty?.description();
+    task.dataCID = await bounty?.dataCID();
+    task.bountyOwner = await bounty?.owner();
+  });
+  await Promise.all(results);
   return {
-    props: {
-      tasks,
-    },
+    props: { tasks },
   };
 };

@@ -12,15 +12,6 @@ interface FlowCardProps {
   task: Task;
 }
 
-const bull = (
-  <Box
-    component="span"
-    sx={{ display: "inline-block", mx: "2px", transform: "scale(0.8)" }}
-  >
-    •
-  </Box>
-);
-
 const card = ({ task }: FlowCardProps) => (
   <React.Fragment>
     <CardContent>
