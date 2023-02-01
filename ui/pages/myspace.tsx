@@ -78,12 +78,18 @@ export const getServerSideProps = async () => {
     fromBlock: 0,
   };
   const logs = await provider.getLogs(taskFilter);
-  const tasks = logs.map((log) => {
+  const rawtasks = logs.map((log) => {
     const task = bountyFactory?.interface.parseLog(log);
     return {
       address: task?.args[0] as string,
     } as Task;
   });
+
+  const ids = rawtasks.map((task) => task.address);
+  const tasks = rawtasks.filter(
+    ({ address }, index) => !ids.includes(address, index + 1)
+  );
+
   const results = tasks.map(async (task: Task) => {
     const bounty = new Contract(task.address, Bounty.abi, provider);
     task.name = await bounty?.name();

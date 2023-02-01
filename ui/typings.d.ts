@@ -1,5 +1,6 @@
 export interface Task {
   address: string;
+  event: string;
 
   bountyAmount: string;
   bountyOwner: string;
