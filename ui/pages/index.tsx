@@ -98,8 +98,6 @@ export const getServerSideProps = async () => {
     task.name = await bounty?.name();
     task.description = await bounty?.description();
     task.dataCID = await bounty?.dataCID();
-    console.log("task:");
-    console.log(task);
   });
   await Promise.all(results);
   return {

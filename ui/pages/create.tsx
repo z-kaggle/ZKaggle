@@ -4,20 +4,13 @@ import { Stepper, Step, StepLabel, Button } from "@mui/material";
 import type { NextPage } from "next";
 import TopBar from "../components/TopBar";
 import NavBar from "../components/NavBar";
-
 import MainFlow from "../components/MainFlow";
 import InitializeStep from "../components/CreateBounty/InitializeStep";
-import PublishStep from "../components/CreateBounty/PublishStep";
-import ProcessingStep from "../components/CreateBounty/ProcessingStep";
-import VerifyStep from "../components/CreateBounty/VerifyStep";
-import CheckOutStep from "../components/CreateBounty/CheckOutStep";
-import { useAccount, useContract, useContractWrite } from "wagmi";
+import { useAccount, useContract } from "wagmi";
 import { useEffect, useState } from "react";
 import { useContractEvent } from "wagmi";
-import { Contract } from "ethers";
 import BountyFactory from "../BountyFactory.json";
-import Bounty from "../Bounty.json";
-import { useSigner, useProvider } from "wagmi";
+import { useProvider } from "wagmi";
 import { useRouter } from "next/router";
 
 const stepTitles = [
@@ -30,11 +23,7 @@ const stepTitles = [
 
 const CreateBounty: NextPage = () => {
   const { address, isConnected } = useAccount();
-  const [taskAddress, setTaskAddress] = React.useState("");
   const [connected, setConnected] = React.useState(false);
-  const [access, setAccess] = React.useState(false);
-  const [createBountyStep, setCreateBountyStep] = React.useState(0);
-  const signer = useSigner();
   const provider = useProvider();
   const taskRouter = useRouter();
 
@@ -44,21 +33,15 @@ const CreateBounty: NextPage = () => {
     signerOrProvider: provider,
   });
 
-  const bounty = useContract({
-    address: taskAddress,
-    abi: Bounty.abi,
-    signerOrProvider: provider,
-  });
-
-  useContractEvent({
-    address: BountyFactory.address,
-    abi: BountyFactory.abi,
-    eventName: "BountyCreated",
-    async listener() {
-      taskRouter.push(`/tasks/${await bountyFactory?.bounties(0)}`);
-      console.log("BountyCreated, Jumping now!");
-    },
-  });
+  // useContractEvent({
+  //   address: BountyFactory.address,
+  //   abi: BountyFactory.abi,
+  //   eventName: "BountyCreated",
+  //   async listener() {
+  //     taskRouter.push(`/tasks/${await bountyFactory?.bounties(0)}`);
+  //     console.log("BountyCreated, Jumping now!");
+  //   },
+  // });
 
   useEffect(() => {
     setConnected(isConnected);
@@ -85,7 +68,7 @@ const CreateBounty: NextPage = () => {
             margin-bottom: 20px;
           `}
         >
-          <Stepper activeStep={createBountyStep} alternativeLabel>
+          <Stepper activeStep={0} alternativeLabel>
             {stepTitles.map((label) => (
               <Step key={label}>
                 <StepLabel>{label}</StepLabel>

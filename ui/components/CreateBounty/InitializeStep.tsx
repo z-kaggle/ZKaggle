@@ -18,16 +18,9 @@ import { formatBytes } from "../../utils";
 import BountyFactory from "../../BountyFactory.json";
 const { utils } = require("ethers");
 import { ethers } from "ethers";
-
-interface FileData {
-  name: string;
-  size: number;
-  requirements: string;
-  hash: string;
-}
+import { useRouter } from "next/router";
 
 const InitializeStep = () => {
-  const [taskAddress, setTaskAddress] = React.useState("");
   const [projectName, setProjectName] = React.useState("Project101");
   const [requirements, setRequirements] = React.useState("Try your best");
   const [files, setFiles] = React.useState<lighthouse.IpfsFileResponse | null>({
@@ -35,6 +28,7 @@ const InitializeStep = () => {
     Size: 88000,
     Hash: "QmWNmn2gr4ZihNPqaC5oTeePsHvFtkWNpjY3cD6Fd5am1w",
   });
+  const taskRouter = useRouter();
 
   // file upload through lighthouse sdk
 
@@ -79,10 +73,8 @@ const InitializeStep = () => {
     );
     console.log("Mining...", createBounty.hash);
     await createBounty.wait();
-    console.log("Mined --", bountyFactory?.bounties(0));
-    setTaskAddress(JSON.stringify(bountyFactory?.bounties(0)));
-    console.log(taskAddress);
-    // goToNextStep();
+    console.log("Mined --", await bountyFactory?.bounties(0));
+    taskRouter.push(`/tasks/${await bountyFactory?.bounties(0)}`);
   };
 
   return (
