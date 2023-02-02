@@ -1,39 +1,32 @@
-import React, { useEffect } from "react";
 import { css } from "@emotion/react";
-import {
-  ListItemButton,
-  Divider,
-  Stack,
-  TextField,
-  List,
-  ListItemText,
-  Button,
-  ListItemIcon,
-  ListItem,
-} from "@mui/material";
-import { useAccount, useContractRead, useSigner } from "wagmi";
-import { useContract, useContractWrite, usePrepareContractWrite } from "wagmi";
-import FolderIcon from "@mui/icons-material/Folder";
 import lighthouse from "@lighthouse-web3/sdk";
-import { formatBytes } from "../../utils";
 import { Check } from "@mui/icons-material";
-import { Task } from "../../typings";
-import Bounty from "../../Bounty.json";
-import { ethers, utils } from "ethers";
-import BountyFactory from "../../BountyFactory.json";
+import FolderIcon from "@mui/icons-material/Folder";
+import {
+  Button,
+  Divider,
+  List,
+  ListItem,
+  ListItemIcon,
+  ListItemText,
+  Stack,
+} from "@mui/material";
+import { ethers } from "ethers";
 import { useRouter } from "next/router";
+import React, { useEffect } from "react";
+import { useAccount, useSigner } from "wagmi";
+import { useContract } from "wagmi";
+
+import Bounty from "../../Bounty.json";
+import BountyFactory from "../../BountyFactory.json";
+import { Task } from "../../typings";
+import { formatBytes } from "../../utils";
 
 type ProcessingStepProps = {
   task: Task;
-  goToNextStep: () => void;
-  goToPreviousStep: () => void;
 };
 
-const ProcessingStep = ({
-  task,
-  goToNextStep,
-  goToPreviousStep,
-}: ProcessingStepProps) => {
+const ProcessingStep = ({ task }: ProcessingStepProps) => {
   const [isOwner, setIsOwner] = React.useState(false);
   const { address, isConnecting, isDisconnected } = useAccount();
   const [zkeyCID, setZkeyCID] =
@@ -73,7 +66,7 @@ const ProcessingStep = ({
   });
 
   const progressCallback = (progressData: any) => {
-    let percentageDone =
+    const percentageDone =
       100 - ((progressData?.total / progressData?.uploaded) as any)?.toFixed(2);
     console.log(percentageDone);
   };
@@ -83,24 +76,24 @@ const ProcessingStep = ({
     const provider = new ethers.providers.Web3Provider(window.ethereum as any);
     const signer = provider.getSigner();
     const address = await signer.getAddress();
-    const messageRequested = (await lighthouse.getAuthMessage(address)).data.message;
+    const messageRequested = (await lighthouse.getAuthMessage(address)).data
+      .message;
     const signedMessage = await signer.signMessage(messageRequested);
-    return ({
+    return {
       signedMessage: signedMessage,
-      publicKey: address
-    });
-  }
+      publicKey: address,
+    };
+  };
 
   const signAuthMessage = async () => {
     const provider = new ethers.providers.Web3Provider(window.ethereum as any);
     const signer = provider.getSigner();
     const publicKey = (await signer.getAddress()).toLowerCase();
-    const messageRequested = (await lighthouse.getAuthMessage(publicKey)).data.message;
-    const signedMessage = await signer.signMessage(
-      messageRequested
-    );
-    return ({ publicKey: publicKey, signedMessage: signedMessage });
-  }
+    const messageRequested = (await lighthouse.getAuthMessage(publicKey)).data
+      .message;
+    const signedMessage = await signer.signMessage(messageRequested);
+    return { publicKey: publicKey, signedMessage: signedMessage };
+  };
 
   const handleUpload = async (e: string) => {
     const sig = await encryptionSignature();
@@ -118,9 +111,7 @@ const ProcessingStep = ({
 
     const { publicKey, signedMessage } = await signAuthMessage();
     const publicKeyUserB = [await bounty!.owner()];
-    console.log(
-      "Sharing file with contract owner: " + publicKeyUserB
-    );
+    console.log("Sharing file with contract owner: " + publicKeyUserB);
 
     const res = await lighthouse.shareFile(
       publicKey,
@@ -141,10 +132,30 @@ const ProcessingStep = ({
       Buffer.from(circomCID!.Hash),
       // Buffer.from(files!.Hash),
       "0xc711BaB4132EbDB5705beB50BCE62DdA48Cb7981",
-      ["14172240044072774793844585011288753813118894742160860643730950726212424123780", "11912368533860691264480209638201808334931774619536068060919407784292566921480"],
-      [["11411885995891681770933762130690794053958102525507494895118843861091413717287", "7514027573924792970367948792849771893519377166975206263298024904704725939985"], ["5949228699588289784664917744103034867580028000018518102143426265478680408244", "17579777658583367220167198373765417117912874207070998193384018557556893485922"]],
-      ["3958312370074787282691478032108295537241594154559458688467820175581595625926", "11807315541273777388714640803711076075133845622319539789595138441286554957180"],
-      ["18383848545176925895656022227321129305", "20470626237853968335761818307704869799", "293522823212032739177258903802228976166", "176451233477851303752071885142877827145"]
+      [
+        "14172240044072774793844585011288753813118894742160860643730950726212424123780",
+        "11912368533860691264480209638201808334931774619536068060919407784292566921480",
+      ],
+      [
+        [
+          "11411885995891681770933762130690794053958102525507494895118843861091413717287",
+          "7514027573924792970367948792849771893519377166975206263298024904704725939985",
+        ],
+        [
+          "5949228699588289784664917744103034867580028000018518102143426265478680408244",
+          "17579777658583367220167198373765417117912874207070998193384018557556893485922",
+        ],
+      ],
+      [
+        "3958312370074787282691478032108295537241594154559458688467820175581595625926",
+        "11807315541273777388714640803711076075133845622319539789595138441286554957180",
+      ],
+      [
+        "18383848545176925895656022227321129305",
+        "20470626237853968335761818307704869799",
+        "293522823212032739177258903802228976166",
+        "176451233477851303752071885142877827145",
+      ]
     );
     console.log("Mining...", submitBounty.hash);
     await submitBounty.wait();

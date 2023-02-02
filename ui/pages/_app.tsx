@@ -1,19 +1,20 @@
+import {
+  getDefaultWallets,
+  lightTheme,
+  RainbowKitProvider,
+} from "@rainbow-me/rainbowkit";
+import { jsonRpcProvider } from "@wagmi/core/providers/jsonRpc";
+import type { AppProps } from "next/app";
+import { configureChains, createClient, WagmiConfig } from "wagmi";
+
 import "../styles/globals.css";
 import "@fontsource/roboto/300.css";
 import "@fontsource/roboto/400.css";
 import "@fontsource/roboto/500.css";
 import "@fontsource/roboto/700.css";
-
-import type { AppProps } from "next/app";
 import "@rainbow-me/rainbowkit/styles.css";
-import {
-  getDefaultWallets,
-  RainbowKitProvider,
-  lightTheme,
-} from "@rainbow-me/rainbowkit";
-import { configureChains, createClient, WagmiConfig } from "wagmi";
+
 import { filecoin, filecoinHyperspace } from "./chain.config";
-import { jsonRpcProvider } from "@wagmi/core/providers/jsonRpc";
 
 const { chains, provider } = configureChains(
   [filecoinHyperspace, filecoin],

@@ -1,16 +1,17 @@
-import TopBar from "../components/TopBar";
 import { css } from "@emotion/react";
-import FlowCard from "../components/FlowCard";
-import NavBar from "../components/NavBar";
-import Head from "next/head";
-import MainFlow from "../components/MainFlow";
-import React from "react";
-import { Task } from "../typings";
-import { useContract } from "wagmi";
-import BountyFactory from "../BountyFactory.json";
-import Bounty from "../Bounty.json";
-import { useProvider } from "wagmi";
 import { Contract, ethers, utils } from "ethers";
+import Head from "next/head";
+import React from "react";
+import { useContract } from "wagmi";
+import { useProvider } from "wagmi";
+
+import Bounty from "../Bounty.json";
+import BountyFactory from "../BountyFactory.json";
+import FlowCard from "../components/FlowCard";
+import MainFlow from "../components/MainFlow";
+import NavBar from "../components/NavBar";
+import TopBar from "../components/TopBar";
+import { Task } from "../typings";
 
 interface Props {
   tasks: [Task];
@@ -75,6 +76,8 @@ export const getServerSideProps = async () => {
     BountyFactory.abi,
     provider
   );
+
+  // fetching all task address by browsing events
   const eventSignature = utils.id(`BountyCreated(address)`);
   const taskFilter = {
     address: BountyFactory.address,
@@ -91,11 +94,13 @@ export const getServerSideProps = async () => {
     } as Task;
   });
 
+  // removing duplicate tasks and formatting
   const ids = rawtasks.map((task) => task.address);
   const tasks = rawtasks
     .filter(({ address }, index) => !ids.includes(address, index + 1))
     .reverse();
 
+  // fetching all task details
   const results = tasks.map(async (task: Task) => {
     const bounty = new Contract(task.address, Bounty.abi, provider);
     task.name = await bounty?.name();

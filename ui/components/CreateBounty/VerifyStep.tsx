@@ -1,31 +1,25 @@
-import React from "react";
 import { css } from "@emotion/react";
+import PaidIcon from "@mui/icons-material/Paid";
 import {
-  TextField,
+  Box,
+  Button,
+  Divider,
   List,
   ListItemButton,
   ListItemText,
-  Button,
-  Divider,
   Stack,
-  Box,
+  TextField,
 } from "@mui/material";
+import React from "react";
 
-import PaidIcon from "@mui/icons-material/Paid";
 import { Task } from "../../typings";
 
 type VerifyStepProps = {
   task: Task;
-  goToNextStep: () => void;
-  goToPreviousStep: () => void;
 };
 // !: no handle for submit [Cathie]
 // !: let's fix the UI first [Cathie]
-const VerifyStep = ({
-  task,
-  goToNextStep,
-  goToPreviousStep,
-}: VerifyStepProps) => {
+const VerifyStep = ({ task }: VerifyStepProps) => {
   return (
     <div
       css={css`

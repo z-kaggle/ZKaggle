@@ -1,30 +1,24 @@
-import React from "react";
 import { css } from "@emotion/react";
+import PaidIcon from "@mui/icons-material/Paid";
 import {
-  TextField,
+  Button,
+  Divider,
   List,
   ListItemButton,
   ListItemText,
-  Button,
-  Divider,
   Stack,
+  TextField,
 } from "@mui/material";
+import React from "react";
 
-import PaidIcon from "@mui/icons-material/Paid";
 import { Task } from "../../typings";
 
 type CheckOutStepProps = {
   task: Task;
-  goToNextStep: () => void;
-  goToPreviousStep: () => void;
 };
 // !: no handle for submit [Cathie]
 // !: let's fix the UI first [Cathie]
-const CheckOutStep = ({
-  task,
-  goToNextStep,
-  goToPreviousStep,
-}: CheckOutStepProps) => {
+const CheckOutStep = ({ task }: CheckOutStepProps) => {
   const [isBountyHunter, setIsBountyHunter] = React.useState(false);
   return (
     <div

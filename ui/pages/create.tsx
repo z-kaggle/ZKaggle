@@ -1,24 +1,20 @@
-import React from "react";
 import { css } from "@emotion/react";
-import { Stepper, Step, StepLabel, Button } from "@mui/material";
+import { Button, Step, StepLabel, Stepper } from "@mui/material";
 import type { NextPage } from "next";
-import TopBar from "../components/TopBar";
-import NavBar from "../components/NavBar";
-import MainFlow from "../components/MainFlow";
-import InitializeStep from "../components/CreateBounty/InitializeStep";
-import { useAccount, useContract } from "wagmi";
-import { useEffect, useState } from "react";
-import { useContractEvent } from "wagmi";
-import BountyFactory from "../BountyFactory.json";
-import { useProvider } from "wagmi";
 import { useRouter } from "next/router";
+import React from "react";
+import { useEffect, useState } from "react";
+import { useAccount, useContract } from "wagmi";
+import { useContractEvent } from "wagmi";
+import { useProvider } from "wagmi";
 
-const stepTitles = [
-  "Initialize",
-  "Processing",
-  "Verify",
-  "Check Out",
-];
+import BountyFactory from "../BountyFactory.json";
+import InitializeStep from "../components/CreateBounty/InitializeStep";
+import MainFlow from "../components/MainFlow";
+import NavBar from "../components/NavBar";
+import TopBar from "../components/TopBar";
+
+const stepTitles = ["Initialize", "Processing", "Verify", "Check Out"];
 
 const CreateBounty: NextPage = () => {
   const { address, isConnected } = useAccount();

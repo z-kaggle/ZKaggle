@@ -1,24 +1,24 @@
-import React from "react";
 import { css } from "@emotion/react";
-import {
-  TextField,
-  List,
-  ListItemText,
-  Button,
-  ListItemIcon,
-  ListItem,
-} from "@mui/material";
-
-import PaidIcon from "@mui/icons-material/Paid";
-import HighlightOffIcon from "@mui/icons-material/HighlightOff";
-import FolderIcon from "@mui/icons-material/Folder";
 import lighthouse from "@lighthouse-web3/sdk";
-import { useContract, useSigner } from "wagmi";
-import { formatBytes } from "../../utils";
-import BountyFactory from "../../BountyFactory.json";
+import FolderIcon from "@mui/icons-material/Folder";
+import HighlightOffIcon from "@mui/icons-material/HighlightOff";
+import PaidIcon from "@mui/icons-material/Paid";
+import {
+  Button,
+  List,
+  ListItem,
+  ListItemIcon,
+  ListItemText,
+  TextField,
+} from "@mui/material";
 import { ethers, utils } from "ethers";
 import { useRouter } from "next/router";
-import base32 from "base32.js";
+import React from "react";
+import { useContract, useSigner } from "wagmi";
+
+import BountyFactory from "../../BountyFactory.json";
+import { formatBytes } from "../../utils";
+// import base32 from "base32.js";
 
 const InitializeStep = () => {
   const [projectName, setProjectName] = React.useState("");
@@ -37,49 +37,48 @@ const InitializeStep = () => {
 
   // input files to fileList
   const handleInput = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setFileList((prevFiles) => [
-      ...prevFiles,
-      ...Array.from(event.target.files),
-    ]);
+    // setFileList((prevFiles) => [
+    //   ...prevFiles,
+    //   ...Array.from(event.target.files),
+    // ]);
   };
 
   const progressCallback = (progressData: any) => {
-    let percentageDone =
+    const percentageDone =
       100 - ((progressData?.total / progressData?.uploaded) as any)?.toFixed(2);
     console.log(percentageDone);
   };
 
   // upload files to lighthouse, then create bounty
   const handleSubmit = async () => {
-    // upload all files at fileList to lighthouse
-    const output = await lighthouse.uploadFileRaw(
-      e,
-      process.env.NEXT_PUBLIC_LIGHTHOUSE_API_KEY,
-      progressCallback
-    );
-    console.log(
-      "Visit at https://gateway.lighthouse.storage/ipfs/" + output.data.Hash
-    );
-    setFiles(output.data);
-
+    // // upload all files at fileList to lighthouse
+    // const output = await lighthouse.uploadFileRaw(
+    //   e,
+    //   process.env.NEXT_PUBLIC_LIGHTHOUSE_API_KEY,
+    //   progressCallback
+    // );
+    // console.log(
+    //   "Visit at https://gateway.lighthouse.storage/ipfs/" + output.data.Hash
+    // );
+    // setFiles(output.data);
     // create bounty
-    const decoder = new base32.Decoder();
-    const cid = decoder.write(files!.Hash.slice(1)).finalize();
-    const createBounty = await bountyFactory!.createBounty(
-      projectName,
-      requirements,
-      cid,
-      {
-        value: ethers.utils.parseEther("0.01"), // TODO: this value should be set by the user [Cathie]
-      }
-    );
-    console.log("Mining...", createBounty.hash);
-    await createBounty.wait();
-    // TODO: should be loading latest event instead of index 0 [Cathie]
-    // !: taskRouter doesn't seem to be working [Cathie]
-    // not sure what this is supposed to do [Cathie]
-    console.log("Mined --", await bountyFactory?.bounties(0));
-    taskRouter.push(`/tasks/${await bountyFactory?.bounties(0)}`);
+    // const decoder = new base32.Decoder();
+    // const cid = decoder.write(files!.Hash.slice(1)).finalize();
+    // const createBounty = await bountyFactory!.createBounty(
+    //   projectName,
+    //   requirements,
+    //   cid,
+    //   {
+    //     value: ethers.utils.parseEther("0.01"), // TODO: this value should be set by the user [Cathie]
+    //   }
+    // );
+    // console.log("Mining...", createBounty.hash);
+    // await createBounty.wait();
+    // // TODO: should be loading latest event instead of index 0 [Cathie]
+    // // !: taskRouter doesn't seem to be working [Cathie]
+    // // not sure what this is supposed to do [Cathie]
+    // console.log("Mined --", await bountyFactory?.bounties(0));
+    // taskRouter.push(`/tasks/${await bountyFactory?.bounties(0)}`);
   };
 
   return (

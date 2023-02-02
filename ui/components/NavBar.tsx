@@ -1,9 +1,10 @@
-import { NextComponentType } from "next";
 import { css } from "@emotion/react";
-import { Button } from "@mui/material";
-import Link from "next/link";
 import { Add } from "@mui/icons-material";
 import StarIcon from "@mui/icons-material/Star";
+import { Button } from "@mui/material";
+import { NextComponentType } from "next";
+import Link from "next/link";
+
 import NavList from "./NavList";
 
 const NavBar: NextComponentType = () => {

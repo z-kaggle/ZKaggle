@@ -1,23 +1,23 @@
-import React from "react";
 import { css } from "@emotion/react";
-import { Stepper, Step, StepLabel, Button } from "@mui/material";
+import { Button, Step, StepLabel, Stepper } from "@mui/material";
+import { Contract, ethers, utils } from "ethers";
 import type { GetServerSidePropsContext, NextPage } from "next";
-import TopBar from "../../components/TopBar";
-import NavBar from "../../components/NavBar";
+import { useRouter } from "next/router";
+import React from "react";
+import { useEffect, useState } from "react";
+import { useAccount, useContract, useContractWrite } from "wagmi";
+import { useContractEvent } from "wagmi";
+import { useProvider, useSigner } from "wagmi";
 
-import MainFlow from "../../components/MainFlow";
+import Bounty from "../../Bounty.json";
+import BountyFactory from "../../BountyFactory.json";
+import CheckOutStep from "../../components/CreateBounty/CheckOutStep";
 import InitializeStep from "../../components/CreateBounty/InitializeStep";
 import ProcessingStep from "../../components/CreateBounty/ProcessingStep";
 import VerifyStep from "../../components/CreateBounty/VerifyStep";
-import CheckOutStep from "../../components/CreateBounty/CheckOutStep";
-import { useAccount, useContract, useContractWrite } from "wagmi";
-import { useEffect, useState } from "react";
-import { useContractEvent } from "wagmi";
-import { Contract, ethers, utils } from "ethers";
-import BountyFactory from "../../BountyFactory.json";
-import Bounty from "../../Bounty.json";
-import { useSigner, useProvider } from "wagmi";
-import { useRouter } from "next/router";
+import MainFlow from "../../components/MainFlow";
+import NavBar from "../../components/NavBar";
+import TopBar from "../../components/TopBar";
 import { Task } from "../../typings";
 
 const stepTitles = ["Initialize", "Processing", "Verify", "Check Out"];
@@ -55,52 +55,40 @@ const TaskSteps = ({ task }: Props) => {
   };
 
   const stepComponents = [
-    <InitializeStep />,
-    <ProcessingStep
-      task={task}
-      goToNextStep={goToNextStep}
-      goToPreviousStep={goToPreviousStep}
-    />,
-    <VerifyStep
-      task={task}
-      goToNextStep={goToNextStep}
-      goToPreviousStep={goToPreviousStep}
-    />,
-    <CheckOutStep
-      task={task}
-      goToNextStep={goToNextStep}
-      goToPreviousStep={goToPreviousStep}
-    />,
+    <InitializeStep key={0} />,
+    <ProcessingStep key={1} task={task} />,
+    <VerifyStep key={2} task={task} />,
+    <CheckOutStep key={3} task={task} />,
   ];
 
   const currentStep = stepComponents[createBountyStep];
 
-  useContractEvent({
-    address: task.address,
-    abi: Bounty.abi,
-    eventName: "BountySubmitted",
-    listener() {
-      setCreateBountyStep(2);
-    },
-  });
+  // useContractEvent({
+  //   address: task.address,
+  //   abi: Bounty.abi,
+  //   eventName: "BountySubmitted",
+  //   listener() {
+  //     setCreateBountyStep(2);
+  //   },
+  // });
 
-  useContractEvent({
-    address: task.address,
-    abi: Bounty.abi,
-    eventName: "BountyReleased",
-    listener() {
-      setCreateBountyStep(3);
-    },
-  });
+  // useContractEvent({
+  //   address: task.address,
+  //   abi: Bounty.abi,
+  //   eventName: "BountyReleased",
+  //   listener() {
+  //     setCreateBountyStep(3);
+  //   },
+  // });
 
-  useContractEvent({
-    address: task.address,
-    abi: Bounty.abi,
-    eventName: "BountyClaimed",
-    listener() {
-      console.log("BountyClaimed");
-    },
-  });
+  // useContractEvent({
+  //   address: task.address,
+  //   abi: Bounty.abi,
+  //   eventName: "BountyClaimed",
+  //   listener() {
+  //     console.log("BountyClaimed");
+  //   },
+  // });
 
   useEffect(() => {
     setConnected(isConnected);

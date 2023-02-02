@@ -1,13 +1,13 @@
-import * as React from "react";
+import AccountBoxIcon from "@mui/icons-material/AccountBox";
+import ListAltIcon from "@mui/icons-material/ListAlt";
 import Box from "@mui/material/Box";
 import List from "@mui/material/List";
 import ListItem from "@mui/material/ListItem";
 import ListItemButton from "@mui/material/ListItemButton";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
-import ListAltIcon from "@mui/icons-material/ListAlt";
-import AccountBoxIcon from "@mui/icons-material/AccountBox";
 import Link from "next/link";
+import * as React from "react";
 
 export default function NavList() {
   return (
