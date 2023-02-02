@@ -55,7 +55,7 @@ const Home = ({ tasks }: Props) => {
             margin-bottom: 20px;
           `}
         >
-          {tasks.reverse().map((task, index) => (
+          {tasks.map((task, index) => (
             <FlowCard key={index} task={task}></FlowCard>
           ))}
         </div>
@@ -88,14 +88,13 @@ export const getServerSideProps = async () => {
     const task = bountyFactory?.interface.parseLog(log);
     return {
       address: task?.args[0] as string,
-      event: task?.name as string,
     } as Task;
   });
 
-  const ids =  rawtasks.map((task) => task.address);
-  const tasks = rawtasks.filter(
-    ({ address }, index) => !ids.includes(address, index + 1)
-  );
+  const ids = rawtasks.map((task) => task.address);
+  const tasks = rawtasks
+    .filter(({ address }, index) => !ids.includes(address, index + 1))
+    .reverse();
 
   const results = tasks.map(async (task: Task) => {
     const bounty = new Contract(task.address, Bounty.abi, provider);

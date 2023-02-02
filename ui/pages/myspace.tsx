@@ -47,7 +47,6 @@ const MySpacePage = ({ tasks }: Props) => {
           {connected ? (
             tasks
               .filter((task) => task.bountyOwner === address)
-              .reverse()
               .map((task, index) => <ColCard key={index} task={task}></ColCard>)
           ) : (
             <h1>🚨Please connect your wallet to continue!</h1>
@@ -86,9 +85,9 @@ export const getServerSideProps = async () => {
   });
 
   const ids = rawtasks.map((task) => task.address);
-  const tasks = rawtasks.filter(
-    ({ address }, index) => !ids.includes(address, index + 1)
-  );
+  const tasks = rawtasks
+    .filter(({ address }, index) => !ids.includes(address, index + 1))
+    .reverse();
 
   const results = tasks.map(async (task: Task) => {
     const bounty = new Contract(task.address, Bounty.abi, provider);

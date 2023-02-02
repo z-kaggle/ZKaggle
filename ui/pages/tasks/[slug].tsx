@@ -157,10 +157,10 @@ export const getServerSideProps = async (
   const provider = new ethers.providers.JsonRpcProvider(
     "https://api.hyperspace.node.glif.io/rpc/v1"
   );
-
   const task: Task = {
     address: context.query.slug as string as string,
   } as Task;
+  const bounty = new Contract(task.address, Bounty.abi, provider);
 
   const eventSubmitted = utils.id(`BountySubmitted()`);
   const eventReleased = utils.id(`BountyReleased()`);
@@ -174,15 +174,13 @@ export const getServerSideProps = async (
     fromBlock: 0,
   };
   const logs = await provider.getLogs(eventFilter);
-  //   const events = await logs.map((log) => {
-  //     const event = bounty?.interface.parseLog(log);
-  //     return {
-  //       address: event?.args[0] as string,
-  //     } as Task;
-  //   });
-  console.log(logs);
-
-  const bounty = new Contract(task.address, Bounty.abi, provider);
+  const events = await logs.map((log) => {
+    const event = bounty?.interface.parseLog(log);
+    return {
+      name: event.name,
+    };
+  });
+  console.log(events);
 
   task.bountyAmount = ethers.utils.formatEther(
     await provider.getBalance(task?.address)
