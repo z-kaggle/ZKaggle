@@ -19,17 +19,24 @@ import { filecoin, filecoinHyperspace } from "./chain.config";
 const { chains, provider } = configureChains(
   [filecoinHyperspace, filecoin],
   [
+    // only endpoint that support Ethereum API requests
     jsonRpcProvider({
       priority: 0,
-      rpc: (chain) => ({
-        http: `https://api.hyperspace.node.glif.io/`,
-        webSocket: `wss://wss.hyperspace.node.glif.io/apigw/lotus/rpc/v0`,
+      rpc: () => ({
+        http: `https://api.hyperspace.node.glif.io`,
+      }),
+    }),
+    // only support filecoin API requests
+    jsonRpcProvider({
+      priority: 1,
+      rpc: () => ({
+        http: `https://api.hyperspace.node.glif.io/rpc/v0`,
       }),
     }),
     jsonRpcProvider({
-      priority: 1,
-      rpc: (chain) => ({
-        http: `https://api.hyperspace.node.glif.io/rpc/v0`,
+      priority: 2,
+      rpc: () => ({
+        http: `https://api.hyperspace.node.glif.io/rpc/v1`,
       }),
     }),
   ]

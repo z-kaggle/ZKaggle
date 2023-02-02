@@ -31,7 +31,6 @@ export const filecoinHyperspace: Chain = {
   },
   rpcUrls: {
     default: { http: ["https://api.hyperspace.node.glif.io/rpc/v1"] },
-    backup: { http: ["https://api.hyperspace.node.glif.io/rpc/v0"] },
     public: { http: ["https://api.hyperspace.node.glif.io/rpc/v1"] },
   },
   blockExplorers: {
