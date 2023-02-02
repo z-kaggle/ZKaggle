@@ -1,16 +1,11 @@
 import { css } from "@emotion/react";
 import { Button, Step, StepLabel, Stepper } from "@mui/material";
 import { Contract, ethers, utils } from "ethers";
-import type { GetServerSidePropsContext, NextPage } from "next";
-import { useRouter } from "next/router";
+import type { GetServerSidePropsContext } from "next";
 import React from "react";
-import { useEffect, useState } from "react";
-import { useAccount, useContract, useContractWrite } from "wagmi";
 import { useContractEvent } from "wagmi";
-import { useProvider, useSigner } from "wagmi";
 
 import Bounty from "../../Bounty.json";
-import BountyFactory from "../../BountyFactory.json";
 import CheckOutStep from "../../components/CreateBounty/CheckOutStep";
 import InitializeStep from "../../components/CreateBounty/InitializeStep";
 import ProcessingStep from "../../components/CreateBounty/ProcessingStep";
@@ -29,24 +24,19 @@ interface Props {
 const TaskSteps = ({ task }: Props) => {
   console.log("TaskSteps", task);
 
-  const { address, isConnected } = useAccount();
-  const [connected, setConnected] = React.useState(false);
-  const [access, setAccess] = React.useState(false);
-  const [createBountyStep, setCreateBountyStep] = React.useState(1);
-  const signer = useSigner();
-  const provider = useProvider();
+  const [bountyStep, setbountyStep] = React.useState(task.step);
 
+  // step jumpers
   const goToNextStep = () => {
-    setCreateBountyStep((currentStep) => {
+    setbountyStep((currentStep) => {
       if (currentStep === stepTitles.length - 1) {
         return currentStep;
       }
       return currentStep + 1;
     });
   };
-
   const goToPreviousStep = () => {
-    setCreateBountyStep((currentStep) => {
+    setbountyStep((currentStep) => {
       if (currentStep === 0) {
         return currentStep;
       }
@@ -61,38 +51,33 @@ const TaskSteps = ({ task }: Props) => {
     <CheckOutStep key={3} task={task} />,
   ];
 
-  const currentStep = stepComponents[createBountyStep];
+  const currentStep = stepComponents[bountyStep];
 
-  // useContractEvent({
-  //   address: task.address,
-  //   abi: Bounty.abi,
-  //   eventName: "BountySubmitted",
-  //   listener() {
-  //     setCreateBountyStep(2);
-  //   },
-  // });
-
-  // useContractEvent({
-  //   address: task.address,
-  //   abi: Bounty.abi,
-  //   eventName: "BountyReleased",
-  //   listener() {
-  //     setCreateBountyStep(3);
-  //   },
-  // });
-
-  // useContractEvent({
-  //   address: task.address,
-  //   abi: Bounty.abi,
-  //   eventName: "BountyClaimed",
-  //   listener() {
-  //     console.log("BountyClaimed");
-  //   },
-  // });
-
-  useEffect(() => {
-    setConnected(isConnected);
-  }, [isConnected]);
+  // listening to contract events to update step
+  useContractEvent({
+    address: task.address,
+    abi: Bounty.abi,
+    eventName: "BountySubmitted",
+    listener() {
+      setbountyStep(2);
+    },
+  });
+  useContractEvent({
+    address: task.address,
+    abi: Bounty.abi,
+    eventName: "BountyReleased",
+    listener() {
+      setbountyStep(3);
+    },
+  });
+  useContractEvent({
+    address: task.address,
+    abi: Bounty.abi,
+    eventName: "BountyClaimed",
+    listener() {
+      console.log("BountyClaimed");
+    },
+  });
 
   return (
     <div
@@ -115,23 +100,18 @@ const TaskSteps = ({ task }: Props) => {
             margin-bottom: 20px;
           `}
         >
-          <Stepper activeStep={createBountyStep} alternativeLabel>
+          <Stepper activeStep={bountyStep} alternativeLabel>
             {stepTitles.map((label) => (
               <Step key={label}>
                 <StepLabel>{label}</StepLabel>
               </Step>
             ))}
           </Stepper>
-          {connected ? (
-            currentStep
-          ) : (
-            <h1>🚨Please connect your wallet to continue!</h1>
-          )}
+          {currentStep}
+          {/* for dev only */}
+          <Button onClick={goToNextStep}>Next</Button>
+          <Button onClick={goToPreviousStep}>Previous</Button>
         </div>
-
-        {/* for dev only */}
-        <Button onClick={goToNextStep}>Next</Button>
-        <Button onClick={goToPreviousStep}>Previous</Button>
       </MainFlow>
     </div>
   );
@@ -142,34 +122,46 @@ export default TaskSteps;
 export const getServerSideProps = async (
   context: GetServerSidePropsContext
 ) => {
-  const provider = new ethers.providers.JsonRpcProvider(
-    "https://api.hyperspace.node.glif.io/rpc/v1"
-  );
+  // geting task address from url
   const task: Task = {
     address: context.query.slug as string as string,
   } as Task;
+
+  const provider = new ethers.providers.JsonRpcProvider(
+    "https://api.hyperspace.node.glif.io/rpc/v1"
+  );
   const bounty = new Contract(task.address, Bounty.abi, provider);
 
+  // fetching all task address by browsing events
   const eventSubmitted = utils.id(`BountySubmitted()`);
   const eventReleased = utils.id(`BountyReleased()`);
   const eventClaimed = utils.id(`BountyClaimed()`);
-
   const eventFilter = {
     address: task.address,
     abi: Bounty.abi,
-    // owner: signer,
     topics: [eventSubmitted, eventReleased, eventClaimed],
     fromBlock: 0,
   };
   const logs = await provider.getLogs(eventFilter);
   const events = await logs.map((log) => {
     const event = bounty?.interface.parseLog(log);
-    return {
-      name: event.name,
-    };
+    return event.name;
   });
-  console.log(events);
 
+  console.log("Events", events);
+
+  // setting task step according to events
+  if (events.includes("BountyClaimed")) {
+    task.step = 3;
+  } else if (events.includes("BountyReleased")) {
+    task.step = 3;
+  } else if (events.includes("BountySubmitted")) {
+    task.step = 2;
+  } else {
+    task.step = 1;
+  }
+
+  // fetching all task details
   task.bountyAmount = ethers.utils.formatEther(
     await provider.getBalance(task?.address)
   );

@@ -2,8 +2,6 @@ import { css } from "@emotion/react";
 import { Contract, ethers, utils } from "ethers";
 import Head from "next/head";
 import React from "react";
-import { useContract } from "wagmi";
-import { useProvider } from "wagmi";
 
 import Bounty from "../Bounty.json";
 import BountyFactory from "../BountyFactory.json";
@@ -18,17 +16,6 @@ interface Props {
 }
 
 const Home = ({ tasks }: Props) => {
-  console.log("clienttask:");
-  console.log(tasks);
-
-  const provider = useProvider();
-
-  const bountyFactory = useContract({
-    address: BountyFactory.address,
-    abi: BountyFactory.abi,
-    signerOrProvider: provider,
-  });
-
   return (
     <div
       css={css`
@@ -82,7 +69,6 @@ export const getServerSideProps = async () => {
   const taskFilter = {
     address: BountyFactory.address,
     abi: BountyFactory.abi,
-    // owner: signer,
     topics: [eventSignature],
     fromBlock: 0,
   };

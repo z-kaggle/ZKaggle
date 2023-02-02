@@ -1,6 +1,7 @@
 export interface Task {
   address: string;
   event: string;
+  step: number;
 
   bountyAmount: string;
   bountyOwner: string;
@@ -15,7 +16,9 @@ export interface Task {
   zkeyCID: string;
   circomCID: string;
   verifier: string;
-  a: any;
+
+  // Todo: need to confirm the type
+  a: Array;
   b: Array<Array>;
   c: Array;
   hashedInput: Array;

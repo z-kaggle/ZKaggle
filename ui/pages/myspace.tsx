@@ -77,7 +77,6 @@ export const getServerSideProps = async () => {
   const taskFilter = {
     address: BountyFactory.address,
     abi: BountyFactory.abi,
-    // owner: signer,
     topics: [eventSignature],
     fromBlock: 0,
   };
