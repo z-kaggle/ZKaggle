@@ -21,21 +21,27 @@ import { useRouter } from "next/router";
 import base32 from "base32.js";
 
 const InitializeStep = () => {
-  const [projectName, setProjectName] = React.useState("Project101");
-  const [requirements, setRequirements] = React.useState("Try your best");
-  // TODO: show empty state instead of dummy data [Cathie]
-  const [files, setFiles] = React.useState<lighthouse.IpfsFileResponse | null>({
-    Name: "example.txt",
-    Size: 88000,
-    Hash: "QmWNmn2gr4ZihNPqaC5oTeePsHvFtkWNpjY3cD6Fd5am1w",
-  });
+  const [projectName, setProjectName] = React.useState("");
+  const [requirements, setRequirements] = React.useState("");
+  const [files, setFiles] =
+    React.useState<lighthouse.IpfsFileResponse | null>();
   const taskRouter = useRouter();
+  const [fileList, setFileList] = React.useState<FileList | null>(null);
+  const { data: signer } = useSigner();
 
-  // file upload through lighthouse sdk
+  const bountyFactory = useContract({
+    address: BountyFactory.address,
+    abi: BountyFactory.abi,
+    signerOrProvider: signer,
+  });
 
-  // const handleDelete = () => {
-  //   console.log("delete");
-  // };
+  // input files to fileList
+  const handleInput = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setFileList((prevFiles) => [
+      ...prevFiles,
+      ...Array.from(event.target.files),
+    ]);
+  };
 
   const progressCallback = (progressData: any) => {
     let percentageDone =
@@ -43,8 +49,9 @@ const InitializeStep = () => {
     console.log(percentageDone);
   };
 
-  // ?: should we have a "confirm" button to upload the file? [Cathie]
-  const handleUpload = async (e: string) => {
+  // upload files to lighthouse, then create bounty
+  const handleSubmit = async () => {
+    // upload all files at fileList to lighthouse
     const output = await lighthouse.uploadFileRaw(
       e,
       process.env.NEXT_PUBLIC_LIGHTHOUSE_API_KEY,
@@ -54,17 +61,8 @@ const InitializeStep = () => {
       "Visit at https://gateway.lighthouse.storage/ipfs/" + output.data.Hash
     );
     setFiles(output.data);
-  };
 
-  const { data: signer } = useSigner();
-
-  const bountyFactory = useContract({
-    address: BountyFactory.address,
-    abi: BountyFactory.abi,
-    signerOrProvider: signer,
-  });
-
-  const handleSubmit = async () => {
+    // create bounty
     const decoder = new base32.Decoder();
     const cid = decoder.write(files!.Hash.slice(1)).finalize();
     const createBounty = await bountyFactory!.createBounty(
@@ -151,7 +149,7 @@ const InitializeStep = () => {
         }}
       >
         Upload
-        <input hidden multiple type="file" onChange={handleUpload as any} />
+        <input hidden multiple type="file" onChange={handleInput} />
       </Button>
 
       <h2>Deposit Bounty </h2>
