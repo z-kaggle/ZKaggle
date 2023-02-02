@@ -6,19 +6,11 @@ import CardContent from "@mui/material/CardContent";
 import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
 import { Task } from "../typings";
+import Link from "next/link";
 
 interface FlowCardProps {
   task: Task;
 }
-
-const bull = (
-  <Box
-    component="span"
-    sx={{ display: "inline-block", mx: "2px", transform: "scale(0.8)" }}
-  >
-    •
-  </Box>
-);
 
 const card = ({ task }: FlowCardProps) => (
   <React.Fragment>
@@ -38,7 +30,9 @@ const card = ({ task }: FlowCardProps) => (
       </Typography>
     </CardContent>
     <CardActions>
-      <Button size="small">Take it NOW</Button>
+      <Link href={`/tasks/${task.address}`}>
+        <Button size="small">Take a Look</Button>
+      </Link>
     </CardActions>
   </React.Fragment>
 );

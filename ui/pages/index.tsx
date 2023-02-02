@@ -4,9 +4,8 @@ import FlowCard from "../components/FlowCard";
 import NavBar from "../components/NavBar";
 import Head from "next/head";
 import MainFlow from "../components/MainFlow";
-import React, { useEffect, useMemo } from "react";
+import React from "react";
 import { Task } from "../typings";
-import Link from "next/link";
 import { useContract } from "wagmi";
 import BountyFactory from "../BountyFactory.json";
 import Bounty from "../Bounty.json";
@@ -57,9 +56,7 @@ const Home = ({ tasks }: Props) => {
           `}
         >
           {tasks.reverse().map((task, index) => (
-            <Link key={index} href={`/tasks/${task.address}`}>
-              <FlowCard task={task}></FlowCard>
-            </Link>
+            <FlowCard key={index} task={task}></FlowCard>
           ))}
         </div>
       </MainFlow>
@@ -87,12 +84,19 @@ export const getServerSideProps = async () => {
     fromBlock: 0,
   };
   const logs = await provider.getLogs(taskFilter);
-  const tasks = logs.map((log) => {
+  const rawtasks = logs.map((log) => {
     const task = bountyFactory?.interface.parseLog(log);
     return {
       address: task?.args[0] as string,
+      event: task?.name as string,
     } as Task;
   });
+
+  const ids =  rawtasks.map((task) => task.address);
+  const tasks = rawtasks.filter(
+    ({ address }, index) => !ids.includes(address, index + 1)
+  );
+
   const results = tasks.map(async (task: Task) => {
     const bounty = new Contract(task.address, Bounty.abi, provider);
     task.name = await bounty?.name();

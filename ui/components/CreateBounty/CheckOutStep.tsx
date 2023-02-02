@@ -11,13 +11,17 @@ import {
 } from "@mui/material";
 
 import PaidIcon from "@mui/icons-material/Paid";
+import { Task } from "../../typings";
 
 type CheckOutStepProps = {
+  task: Task;
   goToNextStep: () => void;
   goToPreviousStep: () => void;
 };
-
+// !: no handle for submit [Cathie]
+// !: let's fix the UI first [Cathie]
 const CheckOutStep = ({
+  task,
   goToNextStep,
   goToPreviousStep,
 }: CheckOutStepProps) => {

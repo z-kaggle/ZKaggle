@@ -1,5 +1,9 @@
 export interface Task {
   address: string;
+  event: string;
+
+  bountyAmount: string;
+  bountyOwner: string;
 
   // tx 1
   name: string;
@@ -11,18 +15,14 @@ export interface Task {
   zkeyCID: string;
   circomCID: string;
   verifier: string;
-  a: string;
-  b: string;
-  c: string;
-  hashedInput: string;
+  a: any;
+  b: Array<Array>;
+  c: Array;
+  hashedInput: Array;
 
   // tx 3
   isCompleted: boolean;
 
   // tx 4
-  input: string;
-}
-
-export interface Props {
-  tasks: [Task];
+  input: Array;
 }
