@@ -5,6 +5,7 @@ import FolderIcon from "@mui/icons-material/Folder";
 import {
   Button,
   Divider,
+  Input,
   List,
   ListItem,
   ListItemIcon,
@@ -29,25 +30,18 @@ type ProcessingStepProps = {
 const ProcessingStep = ({ task }: ProcessingStepProps) => {
   const [isOwner, setIsOwner] = React.useState(false);
   const { address, isConnecting, isDisconnected } = useAccount();
-  const [zkeyCID, setZkeyCID] =
-    React.useState<lighthouse.IpfsFileResponse | null>({
-      Name: "zkeyCID.txt",
-      Size: 88000,
-      Hash: "QmWNmn2gr4ZihNPqaC5oTeePsHvFtkWNpjY3cD6Fd5am1w",
-    });
-  const [circomCID, setCircomCID] =
-    React.useState<lighthouse.IpfsFileResponse | null>({
-      Name: "circomCID.txt",
-      Size: 88000,
-      Hash: "QmWNmn2gr4ZihNPqaC5oTeePsHvFtkWNpjY3cD6Fd5am1w",
-    });
-  // TODO: should rename files to verifierCID [Cathie]
-  const [files, setFiles] = React.useState<lighthouse.IpfsFileResponse | null>({
-    Name: "circomCID.txt",
-    Size: 88000,
-    Hash: "QmWNmn2gr4ZihNPqaC5oTeePsHvFtkWNpjY3cD6Fd5am1w",
-  });
-  // !: missing field for verifier addresss [Cathie]
+
+  const [zkeyFile, setZkeyFile] =
+    React.useState<lighthouse.IpfsFileResponse | null>(null);
+  const [circomFile, setCircomFile] =
+    React.useState<lighthouse.IpfsFileResponse | null>(null);
+  const [verifierFile, setVerifierFile] =
+    React.useState<lighthouse.IpfsFileResponse | null>(null);
+
+  const verifierAddressRef = React.useRef<HTMLInputElement>(null);
+  const zkProofRef = React.useRef<HTMLInputElement>(null);
+
+  // FOR CATHIE WHERE EVER YOU NEED THE VALUES OF ABOVE 2 REFS JUST DO REFNAME.current.value
 
   const taskRouter = useRouter();
 
@@ -128,8 +122,8 @@ const ProcessingStep = ({ task }: ProcessingStepProps) => {
   const handleUploadResult = async () => {
     // TODO: will update contract to record verifierCID [Cathie]
     const submitBounty = await bounty!.submitBounty(
-      Buffer.from(zkeyCID!.Hash),
-      Buffer.from(circomCID!.Hash),
+      Buffer.from(zkeyFile!.Hash),
+      Buffer.from(circomFile!.Hash),
       // Buffer.from(files!.Hash),
       "0xc711BaB4132EbDB5705beB50BCE62DdA48Cb7981",
       [
@@ -217,7 +211,8 @@ const ProcessingStep = ({ task }: ProcessingStepProps) => {
               <h5>{task?.description}</h5>
             </Stack>
 
-            <h2>Files</h2>
+            {/* FOR CATHIE WASNT SURE ABOUT THE OWNER SIDE OF THIS SO LEFT COMMENTED OUT */}
+            {/* <h2>Files</h2>
             <List dense={true}>
               <ListItem key={files?.Hash}>
                 <ListItemIcon>
@@ -234,11 +229,11 @@ const ProcessingStep = ({ task }: ProcessingStepProps) => {
                     },
                   }}
                 />
-                {/* <IconButton onClick={() => handleDelete()}>
+                <IconButton onClick={() => handleDelete()}>
               <HighlightOffIcon />
-            </IconButton> */}
+            </IconButton>
               </ListItem>
-            </List>
+            </List> */}
           </div>
         </div>
       ) : (
@@ -274,39 +269,23 @@ const ProcessingStep = ({ task }: ProcessingStepProps) => {
               <h5>Your task will be shown in the task pool.</h5>
             </Stack>
 
-            <h2>Input</h2>
+            <Divider
+              css={css`
+                margin-top: 40px;
+                margin-bottom: 20px;
+              `}
+            />
+
+            {/* upload circuit */}
+            <h2>Upload Circuit</h2>
             <List dense={true}>
-              <ListItem key={files?.Hash}>
+              <ListItem key={circomFile?.Hash}>
                 <ListItemIcon>
                   <FolderIcon />
                 </ListItemIcon>
                 <ListItemText
-                  primary={files?.Name}
-                  secondary={formatBytes(files?.Size as number)}
-                  primaryTypographyProps={{
-                    style: {
-                      whiteSpace: "nowrap",
-                      overflow: "hidden",
-                      textOverflow: "ellipsis",
-                    },
-                  }}
-                />
-                {/* <IconButton onClick={() => handleDelete()}>
-              <HighlightOffIcon />
-            </IconButton> */}
-              </ListItem>
-            </List>
-
-            <h2>File Upload </h2>
-
-            <List dense={true}>
-              <ListItem key={files?.Hash}>
-                <ListItemIcon>
-                  <FolderIcon />
-                </ListItemIcon>
-                <ListItemText
-                  primary={files?.Name}
-                  secondary={formatBytes(files?.Size as number)}
+                  primary={circomFile?.Name}
+                  secondary={formatBytes(circomFile?.Size as number)}
                   primaryTypographyProps={{
                     style: {
                       whiteSpace: "nowrap",
@@ -324,11 +303,11 @@ const ProcessingStep = ({ task }: ProcessingStepProps) => {
               variant="outlined"
               component="label"
               sx={{
-                width: "100px",
+                width: "150px",
                 alignSelf: "flex-end",
               }}
             >
-              Upload
+              Upload Circuit
               <input
                 hidden
                 multiple
@@ -337,16 +316,23 @@ const ProcessingStep = ({ task }: ProcessingStepProps) => {
               />
             </Button>
 
-            <h2>File Upload </h2>
+            <Divider
+              css={css`
+                margin-top: 40px;
+                margin-bottom: 20px;
+              `}
+            />
 
+            {/* upload zkey */}
+            <h2>Upload ZKey</h2>
             <List dense={true}>
-              <ListItem key={files?.Hash}>
+              <ListItem key={zkeyFile?.Hash}>
                 <ListItemIcon>
                   <FolderIcon />
                 </ListItemIcon>
                 <ListItemText
-                  primary={files?.Name}
-                  secondary={formatBytes(files?.Size as number)}
+                  primary={zkeyFile?.Name}
+                  secondary={formatBytes(zkeyFile?.Size as number)}
                   primaryTypographyProps={{
                     style: {
                       whiteSpace: "nowrap",
@@ -364,11 +350,11 @@ const ProcessingStep = ({ task }: ProcessingStepProps) => {
               variant="outlined"
               component="label"
               sx={{
-                width: "100px",
+                width: "150px",
                 alignSelf: "flex-end",
               }}
             >
-              Upload
+              Upload ZKey
               <input
                 hidden
                 multiple
@@ -377,16 +363,23 @@ const ProcessingStep = ({ task }: ProcessingStepProps) => {
               />
             </Button>
 
-            <h2>File Upload </h2>
+            <Divider
+              css={css`
+                margin-top: 40px;
+                margin-bottom: 20px;
+              `}
+            />
 
+            {/* upload verifier file */}
+            <h2>Upload Verifier File</h2>
             <List dense={true}>
-              <ListItem key={files?.Hash}>
+              <ListItem key={verifierFile?.Hash}>
                 <ListItemIcon>
                   <FolderIcon />
                 </ListItemIcon>
                 <ListItemText
-                  primary={files?.Name}
-                  secondary={formatBytes(files?.Size as number)}
+                  primary={verifierFile?.Name}
+                  secondary={formatBytes(verifierFile?.Size as number)}
                   primaryTypographyProps={{
                     style: {
                       whiteSpace: "nowrap",
@@ -404,11 +397,11 @@ const ProcessingStep = ({ task }: ProcessingStepProps) => {
               variant="outlined"
               component="label"
               sx={{
-                width: "100px",
+                width: "200px",
                 alignSelf: "flex-end",
               }}
             >
-              Upload
+              Upload Verifier File
               <input
                 hidden
                 multiple
@@ -416,6 +409,33 @@ const ProcessingStep = ({ task }: ProcessingStepProps) => {
                 onChange={handleUpload as any}
               />
             </Button>
+
+            <Divider
+              css={css`
+                margin-top: 40px;
+                margin-bottom: 20px;
+              `}
+            />
+
+            <Input
+              inputRef={verifierAddressRef}
+              placeholder="enter verifier's deployed address"
+              style={{ margin: "30px 0" }}
+            />
+
+            <Divider
+              css={css`
+                margin-top: 40px;
+                margin-bottom: 20px;
+              `}
+            />
+
+            <Input
+              inputRef={zkProofRef}
+              placeholder="enter zkProof"
+              style={{ margin: "30px 0" }}
+            />
+
             <Divider
               css={css`
                 margin-top: 40px;
