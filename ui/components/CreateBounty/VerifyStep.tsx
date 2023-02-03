@@ -9,7 +9,7 @@ import { Task } from "../../typings";
 import { useContract, useSigner, useAccount } from "wagmi";
 import Bounty from "../../Bounty.json";
 import { useRouter } from "next/router";
-import { utils } from "ethers";
+import { ethers } from "ethers";
 
 type VerifyStepProps = {
   task: Task;
@@ -41,17 +41,17 @@ const VerifyStep = ({ task }: VerifyStepProps) => {
   const urlPrefix = "https://files.lighthouse.storage/viewFile/"
 
   const openZkeyFile = () => {
-    const cid = decoder.decode(utils.arrayify(task.zkeyCID));
+    const cid = decoder.decode(ethers.utils.arrayify(task.zkeyCID));
     window.open(urlPrefix + cid, "_blank");
   }
 
   const openCircomFile = () => {
-    const cid = decoder.decode(utils.arrayify(task.circomCID));
+    const cid = decoder.decode(ethers.utils.arrayify(task.circomCID));
     window.open(urlPrefix + cid, "_blank");
   }
   
   const openVerifierFile = () => {
-    const cid = decoder.decode(utils.arrayify(task.verifierCID));
+    const cid = decoder.decode(ethers.utils.arrayify(task.verifierCID));
     window.open(urlPrefix + cid, "_blank");
   }
 
@@ -100,7 +100,7 @@ const VerifyStep = ({ task }: VerifyStepProps) => {
                 alignSelf: "flex-end",
               }}
             >
-              {task.bountyAmount} TFIL
+              {task.bountyAmount} tFIL
             </Button>
           </Stack>
           <h5>{task.description}</h5>
