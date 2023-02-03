@@ -7,6 +7,7 @@ import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import "./IVerifier.sol";
 
 contract Bounty is Initializable, OwnableUpgradeable {
+    uint public completedStep;
     // variables set by bounty provier at Tx 1 (constructor)
     string public name;
     string public description;
@@ -60,6 +61,8 @@ contract Bounty is Initializable, OwnableUpgradeable {
         name = _name;
         description = _description;
         dataCID = _dataCID;
+
+        completedStep = 1;
     }
 
     /*
@@ -116,6 +119,7 @@ contract Bounty is Initializable, OwnableUpgradeable {
         bountyHunter = msg.sender;
 
         emit BountySubmitted();
+        completedStep = 2;
     }
 
     /*
@@ -130,6 +134,7 @@ contract Bounty is Initializable, OwnableUpgradeable {
         isComplete = true;
 
         emit BountyReleased();
+        completedStep = 3;
     }
 
     /*
@@ -153,6 +158,7 @@ contract Bounty is Initializable, OwnableUpgradeable {
         payable(msg.sender).transfer(address(this).balance);
 
         emit BountyClaimed();
+        completedStep = 4;
     }
 
     // function to concat input into digest

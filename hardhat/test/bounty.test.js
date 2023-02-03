@@ -72,6 +72,7 @@ describe("Bounty contract test", function () {
             expect(await bounty.description()).to.equal("This is the first bounty");
             expect(await bounty.dataCID()).to.equal('0x' + cidraw.toString('hex'));
             expect(await bounty.owner()).to.equal(owner);
+            expect(await bounty.completedStep()).to.equal(1);
         });
     });
 
@@ -180,6 +181,7 @@ describe("Bounty contract test", function () {
 
             expect(tx).to.emit(bounty, "BountySubmitted");
             expect(await bounty.bountyHunter()).to.equal(submitter);
+            expect(await bounty.completedStep()).to.equal(2);
         });
 
         it("Should reject submitting a submitted bounty", async function () {
@@ -248,6 +250,7 @@ describe("Bounty contract test", function () {
 
             expect(tx).to.emit(bounty, "BountyReleased");
             expect(await bounty.isComplete()).to.equal(true);
+            expect(await bounty.completedStep()).to.equal(3);
         });
 
         it("Should reject releasing a bounty twice", async function () {
@@ -319,6 +322,7 @@ describe("Bounty contract test", function () {
             // Check that the input has been updated
             expect(await bounty.input(0)).to.equal(5);
             expect(await bounty.input(1)).to.equal(123456789);
+            expect(await bounty.completedStep()).to.equal(4);
         });
 
         it("Should reject claiming a claimed bounty", async function () {
