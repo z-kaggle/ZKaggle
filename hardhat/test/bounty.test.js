@@ -126,6 +126,7 @@ describe("Bounty contract test", function () {
                 submitBounty(
                     0x0,
                     0x0,
+                    0x0,
                     verifier.address,
                     [0, 0],
                     [[0, 0], [0, 0]],
@@ -137,6 +138,7 @@ describe("Bounty contract test", function () {
         it("Should reject a bounty with wrong verifier", async function () {
             await expect(bounty.connect(ethers.provider.getSigner(1)).
                 submitBounty(
+                    0x0,
                     0x0,
                     0x0,
                     ethers.constants.AddressZero,
@@ -152,6 +154,7 @@ describe("Bounty contract test", function () {
                 submitBounty(
                     0x0,
                     0x0,
+                    0x0,
                     verifier.address,
                     a,
                     b,
@@ -164,6 +167,7 @@ describe("Bounty contract test", function () {
             const submitter = await ethers.provider.getSigner(1).getAddress();
             const tx = await bounty.connect(ethers.provider.getSigner(1)).
                 submitBounty(
+                    0x0,
                     0x0,
                     0x0,
                     verifier.address,
@@ -181,6 +185,7 @@ describe("Bounty contract test", function () {
         it("Should reject submitting a submitted bounty", async function () {
             await expect(bounty.connect(ethers.provider.getSigner(1)).
                 submitBounty(
+                    0x0,
                     0x0,
                     0x0,
                     verifier.address,
@@ -224,6 +229,7 @@ describe("Bounty contract test", function () {
 
             const tx = await bounty.connect(ethers.provider.getSigner(1)).
                 submitBounty(
+                    0x0,
                     0x0,
                     0x0,
                     verifier.address,
@@ -275,6 +281,7 @@ describe("Bounty contract test", function () {
 
             tx = await bounty.connect(ethers.provider.getSigner(1)).
                 submitBounty(
+                    0x0,
                     0x0,
                     0x0,
                     verifier.address,

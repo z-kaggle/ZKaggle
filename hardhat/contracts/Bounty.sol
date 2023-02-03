@@ -17,6 +17,7 @@ contract Bounty is Initializable, OwnableUpgradeable {
     address public bountyHunter;
     bytes public zkeyCID;
     bytes public circomCID;
+    bytes public verifierCID;
     IVerifier public verifier;
     uint[2] public a;
     uint[2][2] public b;
@@ -70,6 +71,7 @@ contract Bounty is Initializable, OwnableUpgradeable {
     function submitBounty(
         bytes memory _zkeyCID,
         bytes memory _circomCID,
+        bytes memory _verifierCID,
         address _verifier,
         uint[2] memory _a,
         uint[2][2] memory _b,
@@ -109,6 +111,7 @@ contract Bounty is Initializable, OwnableUpgradeable {
 
         zkeyCID = _zkeyCID;
         circomCID = _circomCID;
+        verifierCID = _verifierCID;
 
         bountyHunter = msg.sender;
 
