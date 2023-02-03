@@ -8,6 +8,7 @@ import "@openzeppelin/contracts/proxy/Clones.sol";
 contract BountyFactory {
     address public immutable bountyTemplate;
     address[] public bounties;
+    uint public bountyCount;
 
     event BountyCreated(address indexed bounty);
 
@@ -25,6 +26,7 @@ contract BountyFactory {
         Bounty(clone).initialize{value: msg.value}(msg.sender, _name, _description, _dataCID);
         bounties.push(clone);
         emit BountyCreated(clone);
+        bountyCount++;
         return clone;
     }
 }
