@@ -1,11 +1,6 @@
 import { css } from "@emotion/react";
-import PaidIcon from "@mui/icons-material/Paid";
 import {
   Button,
-  Divider,
-  List,
-  ListItemButton,
-  ListItemText,
   Stack,
   Input,
 } from "@mui/material";
@@ -20,11 +15,9 @@ type CheckOutStepProps = {
 };
 
 const CheckOutStep = ({ task }: CheckOutStepProps) => {
+  // TODO: switch to use task.BountyHunter [Cathie]
   const [isBountyHunter, setIsBountyHunter] = React.useState(false);
   const inputRef = React.useRef<HTMLInputElement>(null);
-
-  const [results, setResults] = React.useState<any>([]);
-
 
   const { data: signer } = useSigner();
 
@@ -32,10 +25,6 @@ const CheckOutStep = ({ task }: CheckOutStepProps) => {
     address: task.address,
     abi: Bounty.abi,
     signerOrProvider: signer,
-  });
-
-  const { data: balance } = useBalance({
-    address: task.address as any,
   });
 
   const handleClaim = async () => {
@@ -63,21 +52,6 @@ const CheckOutStep = ({ task }: CheckOutStepProps) => {
     console.log("Mining...", claimBounty.hash);
     await claimBounty.wait();
     
-  }
-
-  const handleResults = async () => {
-    let index = 0;
-    while (true) {
-      try {
-        const result = await bounty!.input(index);
-        setResults((prev: any) => [...prev, result]);
-        console.log(result);
-      }
-      catch(e){
-        console.log(e);
-        break;
-      }
-    }
   }
 
   return (
@@ -121,7 +95,7 @@ const CheckOutStep = ({ task }: CheckOutStepProps) => {
                 alignSelf: "flex-end",
               }}
             >
-              {balance?.formatted} {balance?.symbol}
+              {task.bountyAmount} TFIL
             </Button>
           </Stack>
           <h5>{task.description}</h5>
@@ -151,19 +125,10 @@ const CheckOutStep = ({ task }: CheckOutStepProps) => {
         ) : (
           <>
           <h2>Computed results</h2>
-          <h5>{results}</h5>
-          <Button
-            variant="outlined"
-            component="label"
-            sx={{
-              width: "100px",
-              alignSelf: "flex-end",
-              marginBottom: "40px",
-            }}
-            onClick={() => handleResults()}
-          >
-            Reload
-          </Button>
+          <h5>{task.input}</h5>
+
+          <h2>Hashed results</h2>
+          <h5>{task.hashedInput}</h5>
           </>)}
       {/* for development purpose */}
       <Button onClick={() => setIsBountyHunter(!isBountyHunter)}>
