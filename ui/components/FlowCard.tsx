@@ -17,16 +17,17 @@ const card = ({ task }: FlowCardProps) => (
   <React.Fragment>
     <CardContent>
       <Typography sx={{ fontSize: 14 }} color="text.secondary" gutterBottom>
-        {task.name}
+        {task.isCompleted ? "Completed" : "In Progress"}
       </Typography>
       <Typography variant="h5" component="div">
         {task.name}
       </Typography>
       <Typography sx={{ mb: 1.5 }} color="text.secondary">
-        {task.description}
+        {/* TODO: fix this [Cathie] */}
+        {task.bountyAmount ? task.bountyAmount : "0.5"} tFIL
       </Typography>
       <Typography variant="body2">
-        {task.dataCID}
+        {task.description}
         <br />
       </Typography>
     </CardContent>
