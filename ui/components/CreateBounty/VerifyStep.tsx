@@ -1,25 +1,60 @@
 import { css } from "@emotion/react";
-import PaidIcon from "@mui/icons-material/Paid";
 import {
-  Box,
   Button,
-  Divider,
-  List,
-  ListItemButton,
-  ListItemText,
   Stack,
-  TextField,
 } from "@mui/material";
 import React from "react";
 
 import { Task } from "../../typings";
+import { useContract, useSigner, useAccount } from "wagmi";
+import Bounty from "../../Bounty.json";
+import { useRouter } from "next/router";
+import { utils } from "ethers";
 
 type VerifyStepProps = {
   task: Task;
 };
-// !: no handle for submit [Cathie]
-// !: let's fix the UI first [Cathie]
+
 const VerifyStep = ({ task }: VerifyStepProps) => {
+  const decoder = new TextDecoder();
+  const taskRouter = useRouter();
+
+  const { address: address } = useAccount();
+  const [isBountyHunter, setIsBountyHunter] = React.useState(address === task.bountyHunter);
+  const [isBountyOwner, setIsBountyOwner] = React.useState(address === task.bountyOwner);
+
+  const { data: signer } = useSigner();
+
+  const bounty = useContract({
+    address: task.address,
+    abi: Bounty.abi,
+    signerOrProvider: signer,
+  });
+
+  const handleRelease = async () => {
+    const releaseBounty = await bounty!.releaseBounty();
+    console.log("Mining...", releaseBounty.hash);
+    await releaseBounty.wait();
+    taskRouter.push(`/tasks/${task.address}`);
+  }
+
+  const urlPrefix = "https://files.lighthouse.storage/viewFile/"
+
+  const openZkeyFile = () => {
+    const cid = decoder.decode(utils.arrayify(task.zkeyCID));
+    window.open(urlPrefix + cid, "_blank");
+  }
+
+  const openCircomFile = () => {
+    const cid = decoder.decode(utils.arrayify(task.circomCID));
+    window.open(urlPrefix + cid, "_blank");
+  }
+  
+  const openVerifierFile = () => {
+    const cid = decoder.decode(utils.arrayify(task.verifierCID));
+    window.open(urlPrefix + cid, "_blank");
+  }
+
   return (
     <div
       css={css`
@@ -29,9 +64,24 @@ const VerifyStep = ({ task }: VerifyStepProps) => {
         min-width: 300px;
       `}
     >
-      <h1>Verify the results!</h1>
-      <h5>Check the results and release the bounty</h5>
-
+      {isBountyHunter ? (
+        <>
+          <h1>Awaiting verification...</h1>
+          <h5>
+            The bounty owner will verify your results and pay you the bounty.
+            This may take a while.
+          </h5>
+        </>
+      ) : isBountyOwner ? (
+        <>
+          <h1>You got a submission!</h1>
+          <h5>
+            The bounty hunter has submitted the results.
+            Please verify the results and pay the bounty.
+          </h5>
+        </>
+      ) :
+        (<h1>This is not your task.</h1>)}
       <div
         css={css`
           display: flex;
@@ -42,7 +92,7 @@ const VerifyStep = ({ task }: VerifyStepProps) => {
       >
         <Stack paddingTop={6} spacing={0}>
           <Stack direction="row" spacing={10} justifyContent="space-between">
-            <h2 style={{ padding: "0", margin: "0" }}>MNIST Training Task</h2>
+            <h2 style={{ padding: "0", margin: "0" }}>{task.name}</h2>
             <Button
               variant="outlined"
               sx={{
@@ -50,107 +100,100 @@ const VerifyStep = ({ task }: VerifyStepProps) => {
                 alignSelf: "flex-end",
               }}
             >
-              0.5 ETH
+              {task.bountyAmount} TFIL
             </Button>
           </Stack>
-          <h5>Your task will be shown in the task pool.</h5>
+          <h5>{task.description}</h5>
         </Stack>
-
-        <h2>Input</h2>
-        <List component="nav" aria-label="secondary mailbox folder">
-          <ListItemButton>
-            <ListItemText primary="Input 1" />
-          </ListItemButton>
-          <ListItemButton>
-            <ListItemText primary="Input 2" />
-          </ListItemButton>
-        </List>
-        <Button
-          variant="outlined"
-          component="label"
-          sx={{
-            width: "100px",
-            alignSelf: "flex-end",
-            marginBottom: "40px",
-          }}
-        >
-          Download
-          <input hidden accept="image/*" multiple type="file" />
+        {isBountyOwner ? (
+          <>
+            <Button
+              variant="outlined"
+              component="label"
+              sx={{
+                width: "300px",
+                alignSelf: "flex-end",
+                marginBottom: "40px",
+              }}
+              onClick={() => openZkeyFile()}
+            >
+              View zkey file
+            </Button>
+            <Button
+              variant="outlined"
+              component="label"
+              sx={{
+                width: "300px",
+                alignSelf: "flex-end",
+                marginBottom: "40px",
+              }}
+              onClick={() => openCircomFile()}
+            >
+              View circom file
+            </Button>
+            <Button
+              variant="outlined"
+              component="label"
+              sx={{
+                width: "300px",
+                alignSelf: "flex-end",
+                marginBottom: "40px",
+              }}
+              onClick={() => openVerifierFile()}
+            >
+              View verifier file
+            </Button>
+            <h2>Verifier contract address</h2>
+            <h5>{task.verifier}</h5>
+            {/* <Button
+              variant="contained"
+              component="label"
+              sx={{
+                width: "100px",
+                alignSelf: "flex-end",
+                marginBottom: "40px",
+              }}
+              onClick={() => { }}
+            >
+              Verify
+            </Button> */}
+            <Button
+              variant="contained"
+              component="label"
+              sx={{
+                width: "100px",
+                alignSelf: "flex-end",
+                marginBottom: "40px",
+              }}
+              onClick={() => handleRelease()}
+            >
+              Release
+            </Button>
+          </>
+        ) : null}
+        {/* for development purpose */}
+        <Button onClick={
+          () => {
+            setIsBountyHunter(true);
+            setIsBountyOwner(false);
+          }}>
+          Switch to bounty hunter
         </Button>
-
-        <Divider />
-
-        <h2>Hashed Results</h2>
-        <List component="nav" aria-label="secondary mailbox folder">
-          <ListItemButton>
-            <ListItemText primary="Hashed Results 1" />
-          </ListItemButton>
-          <ListItemButton>
-            <ListItemText primary="Hashed Results 2" />
-          </ListItemButton>
-        </List>
-        <Button
-          variant="outlined"
-          component="label"
-          sx={{
-            width: "100px",
-            alignSelf: "flex-end",
-          }}
-        >
-          Download
-          <input hidden accept="image/*" multiple type="file" />
+        <Button onClick={
+          () => {
+            setIsBountyHunter(false);
+            setIsBountyOwner(true);
+          }}>
+          Switch to bounty owner
         </Button>
-
-        <h2>Release Bounty</h2>
-        <div
-          css={css`
-            display: flex;
-            flex-direction: row;
-            justify-content: flex-end;
-          `}
-        >
-          <Button
-            variant="outlined"
-            sx={{
-              width: "150px",
-              alignSelf: "flex-end",
-            }}
-          >
-            0.5 ETH
-          </Button>
-          <Button
-            variant="outlined"
-            startIcon={<PaidIcon />}
-            sx={{
-              width: "150px",
-              alignSelf: "flex-end",
-              marginLeft: "10px",
-            }}
-          >
-            Deposit
-          </Button>
-        </div>
-
-        <Divider
-          css={css`
-            margin-top: 40px;
-            margin-bottom: 20px;
-          `}
-        />
-        <Button
-          variant="contained"
-          sx={{
-            borderRadius: "30px",
-            height: "40px",
-            width: "100px",
-            alignSelf: "flex-end",
-          }}
-          // onClick={() => handleSubmit()}
-        >
-          Finish
+        <Button onClick={
+          () => {
+            setIsBountyHunter(false);
+            setIsBountyOwner(false);
+          }}>
+          Switch to neither
         </Button>
-      </div>
-    </div>
+      </div></div>
   );
 };
 
