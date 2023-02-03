@@ -7,7 +7,7 @@ import {
 import React from "react";
 
 import { Task } from "../../typings";
-import { useContract, useSigner, useBalance } from "wagmi";
+import { useContract, useSigner, useAccount } from "wagmi";
 import Bounty from "../../Bounty.json";
 
 type CheckOutStepProps = {
@@ -15,8 +15,10 @@ type CheckOutStepProps = {
 };
 
 const CheckOutStep = ({ task }: CheckOutStepProps) => {
-  // TODO: switch to use task.BountyHunter [Cathie]
-  const [isBountyHunter, setIsBountyHunter] = React.useState(false);
+
+  const { address: address } = useAccount();
+  const [isBountyHunter, setIsBountyHunter] = React.useState(address === task.bountyHunter);
+  const [isBountyOwner, setIsBountyOwner] = React.useState(address === task.bountyOwner);
   const inputRef = React.useRef<HTMLInputElement>(null);
 
   const { data: signer } = useSigner();
@@ -34,7 +36,7 @@ const CheckOutStep = ({ task }: CheckOutStepProps) => {
       return;
     }
     let calldata;
-    try{
+    try {
       calldata = JSON.parse(preImage);
       if (!Array.isArray(calldata)) {
         alert("Please enter in array format");
@@ -42,7 +44,7 @@ const CheckOutStep = ({ task }: CheckOutStepProps) => {
       }
       console.log(calldata);
     }
-    catch(e){
+    catch (e) {
       alert("Please enter in array format");
       return;
     }
@@ -51,7 +53,7 @@ const CheckOutStep = ({ task }: CheckOutStepProps) => {
 
     console.log("Mining...", claimBounty.hash);
     await claimBounty.wait();
-    
+
   }
 
   return (
@@ -71,12 +73,14 @@ const CheckOutStep = ({ task }: CheckOutStepProps) => {
             You can claim the bounty now.
           </h5>
         </>
-      ) : (
+      ) : isBountyOwner ? (
+
         <>
           <h1>Results are in!</h1>
           <h5>Check the computed results below.</h5>
         </>
-      )}
+      ) :
+        (<h1>This is not your task.</h1>)}
       <div
         css={css`
           display: flex;
@@ -122,19 +126,38 @@ const CheckOutStep = ({ task }: CheckOutStepProps) => {
               Claim
             </Button>
           </>
-        ) : (
+        ) : isBountyOwner ? (
           <>
-          <h2>Computed results</h2>
-          <h5>{task.input}</h5>
+            <h2>Computed results</h2>
+            <h5>{task.input}</h5>
 
-          <h2>Hashed results</h2>
-          <h5>{task.hashedInput}</h5>
-          </>)}
-      {/* for development purpose */}
-      <Button onClick={() => setIsBountyHunter(!isBountyHunter)}>
-        Change role
-      </Button>
-    </div></div>
+            <h2>Hashed results</h2>
+            <h5>{task.hashedInput}</h5>
+          </>
+        ) : null}
+        {/* for development purpose */}
+        <Button onClick={
+          () => {
+            setIsBountyHunter(true);
+            setIsBountyOwner(false);
+          }}>
+          Switch to bounty hunter
+        </Button>
+        <Button onClick={
+          () => {
+            setIsBountyHunter(false);
+            setIsBountyOwner(true);
+          }}>
+          Switch to bounty owner
+        </Button>
+        <Button onClick={
+          () => {
+            setIsBountyHunter(false);
+            setIsBountyOwner(false);
+          }}>
+          Switch to neither
+        </Button>
+      </div></div>
   );
 };
 
