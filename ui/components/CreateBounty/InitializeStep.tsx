@@ -1,32 +1,59 @@
+import React from "react";
 import { css } from "@emotion/react";
-import lighthouse from "@lighthouse-web3/sdk";
-import FolderIcon from "@mui/icons-material/Folder";
-import HighlightOffIcon from "@mui/icons-material/HighlightOff";
-import PaidIcon from "@mui/icons-material/Paid";
 import {
-  Button,
-  List,
-  ListItem,
-  ListItemIcon,
-  ListItemText,
   TextField,
+  List,
+  ListItemText,
+  Button,
+  ListItemIcon,
+  ListItem,
+  Input,
 } from "@mui/material";
+
+import PaidIcon from "@mui/icons-material/Paid";
+import HighlightOffIcon from "@mui/icons-material/HighlightOff";
+import FolderIcon from "@mui/icons-material/Folder";
+import lighthouse from "@lighthouse-web3/sdk";
+import { useContract, useSigner } from "wagmi";
+import { formatBytes } from "../../utils";
+import BountyFactory from "../../BountyFactory.json";
 import { ethers, utils } from "ethers";
 import { useRouter } from "next/router";
-import React from "react";
-import { useContract, useSigner } from "wagmi";
-
-import BountyFactory from "../../BountyFactory.json";
-import { formatBytes } from "../../utils";
-// import base32 from "base32.js";
+import base32 from "base32.js";
 
 const InitializeStep = () => {
-  const [projectName, setProjectName] = React.useState("");
-  const [requirements, setRequirements] = React.useState("");
-  const [files, setFiles] =
-    React.useState<lighthouse.IpfsFileResponse | null>();
+  const [projectName, setProjectName] = React.useState("Project101");
+  const [requirements, setRequirements] = React.useState("Try your best");
+  // TODO: show empty state instead of dummy data [Cathie]
+  const [file, setFile] = React.useState<lighthouse.IpfsFileResponse | null>(null);
+  const bountyAmountRef = React.useRef<HTMLInputElement>(null);
   const taskRouter = useRouter();
-  const [fileList, setFileList] = React.useState<FileList | null>(null);
+
+  // file upload through lighthouse sdk
+
+  // const handleDelete = () => {
+  //   console.log("delete");
+  // };
+
+  const progressCallback = (progressData: any) => {
+    let percentageDone =
+      100 - ((progressData?.total / progressData?.uploaded) as any)?.toFixed(2);
+    console.log(percentageDone);
+  };
+
+  // ?: should we have a "confirm" button to upload the file? [Cathie]
+  const handleUpload = async (e: string) => {
+    const output = await lighthouse.uploadFileRaw(
+      e,
+      process.env.NEXT_PUBLIC_LIGHTHOUSE_API_KEY,
+      progressCallback
+    );
+    console.log(
+      "Visit at https://gateway.lighthouse.storage/ipfs/" + output.data.Hash
+    );
+    setFile(output.data);
+  };
+
   const { data: signer } = useSigner();
 
   const bountyFactory = useContract({
@@ -35,50 +62,38 @@ const InitializeStep = () => {
     signerOrProvider: signer,
   });
 
-  // input files to fileList
-  const handleInput = (event: React.ChangeEvent<HTMLInputElement>) => {
-    // setFileList((prevFiles) => [
-    //   ...prevFiles,
-    //   ...Array.from(event.target.files),
-    // ]);
-  };
-
-  const progressCallback = (progressData: any) => {
-    const percentageDone =
-      100 - ((progressData?.total / progressData?.uploaded) as any)?.toFixed(2);
-    console.log(percentageDone);
-  };
-
-  // upload files to lighthouse, then create bounty
   const handleSubmit = async () => {
-    // // upload all files at fileList to lighthouse
-    // const output = await lighthouse.uploadFileRaw(
-    //   e,
-    //   process.env.NEXT_PUBLIC_LIGHTHOUSE_API_KEY,
-    //   progressCallback
-    // );
-    // console.log(
-    //   "Visit at https://gateway.lighthouse.storage/ipfs/" + output.data.Hash
-    // );
-    // setFiles(output.data);
-    // create bounty
-    // const decoder = new base32.Decoder();
-    // const cid = decoder.write(files!.Hash.slice(1)).finalize();
-    // const createBounty = await bountyFactory!.createBounty(
-    //   projectName,
-    //   requirements,
-    //   cid,
-    //   {
-    //     value: ethers.utils.parseEther("0.01"), // TODO: this value should be set by the user [Cathie]
-    //   }
-    // );
-    // console.log("Mining...", createBounty.hash);
-    // await createBounty.wait();
-    // // TODO: should be loading latest event instead of index 0 [Cathie]
-    // // !: taskRouter doesn't seem to be working [Cathie]
-    // // not sure what this is supposed to do [Cathie]
-    // console.log("Mined --", await bountyFactory?.bounties(0));
-    // taskRouter.push(`/tasks/${await bountyFactory?.bounties(0)}`);
+    if (!file) {
+      alert("Please choose a file.");
+      return;
+    }
+    if (
+      bountyAmountRef.current?.value === undefined ||
+      bountyAmountRef.current?.value === null ||
+      bountyAmountRef.current?.value === "" ||
+      +bountyAmountRef.current.value <= 0
+    ) {
+      alert("Please enter a valid bounty amount.");
+      return;
+    }
+    const bountyAmount = bountyAmountRef.current.value;
+
+    console.log("bountyAmount", bountyAmount);
+    const decoder = new base32.Decoder();
+    const cid = decoder.write(file!.Hash.slice(1)).finalize();
+    const createBounty = await bountyFactory!.createBounty(
+      projectName,
+      requirements,
+      cid,
+      {
+        value: ethers.utils.parseEther(bountyAmount),
+      }
+    );
+    console.log("Mining...", createBounty.hash);
+    await createBounty.wait();
+    //!: routing seems not working [Cathie]
+    console.log("Mined --", await bountyFactory?.bounties(await bountyFactory?.bountyCount() - 1));
+    taskRouter.push(`/tasks/${await bountyFactory?.bounties(await bountyFactory?.bountyCount() - 1)}`);
   };
 
   return (
@@ -119,13 +134,13 @@ const InitializeStep = () => {
       <h2>File Upload </h2>
 
       <List dense={true}>
-        <ListItem key={files?.Hash}>
+        <ListItem key={file?.Hash}>
           <ListItemIcon>
             <FolderIcon />
           </ListItemIcon>
           <ListItemText
-            primary={files?.Name}
-            secondary={formatBytes(files?.Size as number)}
+            primary={file?.Name}
+            secondary={formatBytes(file?.Size as number)}
             primaryTypographyProps={{
               style: {
                 whiteSpace: "nowrap",
@@ -148,11 +163,15 @@ const InitializeStep = () => {
         }}
       >
         Upload
-        <input hidden multiple type="file" onChange={handleInput} />
+        <input hidden multiple type="file" onChange={handleUpload as any} />
       </Button>
 
       <h2>Deposit Bounty </h2>
-
+      <Input
+        inputRef={bountyAmountRef}
+        placeholder="enter amount in ETH"
+        style={{ margin: "0 0 30px 0" }}
+      />
       <Button
         variant="contained"
         startIcon={<PaidIcon />}
