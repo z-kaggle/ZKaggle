@@ -15,6 +15,7 @@ export interface Task {
   bountyHunter: string;
   zkeyCID: string;
   circomCID: string;
+  verifierCID: string;
   verifier: string;
 
   // Todo: need to confirm the type

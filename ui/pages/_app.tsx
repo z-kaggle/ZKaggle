@@ -14,7 +14,7 @@ import "@fontsource/roboto/500.css";
 import "@fontsource/roboto/700.css";
 import "@rainbow-me/rainbowkit/styles.css";
 
-import { filecoin, filecoinHyperspace } from "./chain.config";
+import { filecoin, filecoinHyperspace } from "./api/chain.config";
 
 const { chains, provider } = configureChains(
   [filecoinHyperspace, filecoin],

@@ -28,7 +28,7 @@ const InitializeStep = () => {
   const taskRouter = useRouter();
 
   const progressCallback = (progressData: any) => {
-    let percentageDone =
+    const percentageDone =
       100 - ((progressData?.total / progressData?.uploaded) as any)?.toFixed(2);
     console.log(percentageDone);
   };
