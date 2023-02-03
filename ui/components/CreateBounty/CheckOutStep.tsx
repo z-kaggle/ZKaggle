@@ -114,7 +114,7 @@ const CheckOutStep = ({ task }: CheckOutStepProps) => {
               style={{ margin: "0 0 30px 0" }}
             />
             <Button
-              variant="outlined"
+              variant="contained"
               component="label"
               sx={{
                 width: "100px",
