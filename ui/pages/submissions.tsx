@@ -5,7 +5,7 @@ import { useAccount } from "wagmi";
 
 import Bounty from "../Bounty.json";
 import BountyFactory from "../BountyFactory.json";
-import ColCard from "../components/ColCard";
+import FlowCard from "../components/FlowCard";
 import MainFlow from "../components/MainFlow";
 import NavBar from "../components/NavBar";
 import TopBar from "../components/TopBar";
@@ -50,7 +50,9 @@ const SubmissionsPage = ({ tasks }: Props) => {
           {connected ? (
             tasks
               .filter((task) => task.bountyHunter === address)
-              .map((task, index) => <ColCard key={index} task={task}></ColCard>)
+              .map((task, index) => (
+                <FlowCard key={index} task={task} expanded={true}></FlowCard>
+              ))
           ) : (
             <h1>🚨Please connect your wallet to continue!</h1>
           )}
@@ -75,7 +77,7 @@ export const getServerSideProps = async () => {
   // fetching all task address by querying the factory contract
   const tasks = [];
   const count = Number(await bountyFactory?.bountyCount());
-  console.log('count', count);
+  console.log("count", count);
   for (let i = count - 1; i >= 0; i--) {
     const address = await bountyFactory?.bounties(i);
     tasks.push({

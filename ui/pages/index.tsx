@@ -44,7 +44,7 @@ const Home = ({ tasks }: Props) => {
           `}
         >
           {tasks.map((task, index) => (
-            <FlowCard key={index} task={task}></FlowCard>
+            <FlowCard key={index} task={task} expanded={false}></FlowCard>
           ))}
         </div>
       </MainFlow>
@@ -67,7 +67,7 @@ export const getServerSideProps = async () => {
   // fetching all task address by querying the factory contract
   const tasks = [];
   const count = Number(await bountyFactory?.bountyCount());
-  console.log('count', count);
+  console.log("count", count);
   for (let i = count - 1; i >= 0; i--) {
     const address = await bountyFactory?.bounties(i);
     tasks.push({
@@ -85,7 +85,7 @@ export const getServerSideProps = async () => {
     );
     task.description = await bounty?.description();
   });
-  
+
   await Promise.all(results);
   return {
     props: { tasks },

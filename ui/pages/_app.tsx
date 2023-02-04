@@ -1,3 +1,4 @@
+import { createTheme, ThemeOptions, ThemeProvider } from "@mui/material/styles";
 import {
   getDefaultWallets,
   lightTheme,
@@ -15,6 +16,17 @@ import "@fontsource/roboto/700.css";
 import "@rainbow-me/rainbowkit/styles.css";
 
 import { filecoin, filecoinHyperspace } from "./api/chain.config";
+
+const themeOptions: ThemeOptions = {
+  palette: {
+    primary: {
+      main: "#fffbfe",
+      contrastText: "#6750a4",
+    },
+  },
+};
+
+const theme = createTheme(themeOptions);
 
 const { chains, provider } = configureChains(
   [filecoinHyperspace, filecoin],
@@ -63,7 +75,9 @@ function MyApp({ Component, pageProps }: AppProps) {
           accentColorForeground: "#6750A4",
         })}
       >
-        <Component {...pageProps} />
+        <ThemeProvider theme={theme}>
+          <Component {...pageProps} />
+        </ThemeProvider>
       </RainbowKitProvider>
     </WagmiConfig>
   );
