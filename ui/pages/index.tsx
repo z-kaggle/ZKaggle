@@ -64,34 +64,26 @@ export const getServerSideProps = async () => {
     provider
   );
 
-  // fetching all task address by browsing events
-  const eventSignature = utils.id(`BountyCreated(address)`);
-  const taskFilter = {
-    address: BountyFactory.address,
-    abi: BountyFactory.abi,
-    topics: [eventSignature],
-    fromBlock: 0,
-  };
-  const logs = await provider.getLogs(taskFilter);
-  const rawtasks = logs.map((log) => {
-    const task = bountyFactory?.interface.parseLog(log);
-    return {
-      address: task?.args[0] as string,
-    } as Task;
-  });
-
-  // removing duplicate tasks and formatting
-  const ids = rawtasks.map((task) => task.address);
-  const tasks = rawtasks
-    .filter(({ address }, index) => !ids.includes(address, index + 1))
-    .reverse();
+  // fetching all task address by querying the factory contract
+  let tasks = [];
+  const count = Number(await bountyFactory?.bountyCount());
+  console.log('count', count);
+  for (let i = count - 1; i >= 0; i--) {
+    const address = await bountyFactory?.bounties(i);
+    tasks.push({
+      address: address,
+    } as Task);
+  }
 
   // fetching all task details
   const results = tasks.map(async (task: Task) => {
     const bounty = new Contract(task.address, Bounty.abi, provider);
+    task.isCompleted = await bounty?.isComplete();
     task.name = await bounty?.name();
+    task.bountyAmount = ethers.utils.formatEther(
+      await provider.getBalance(task?.address)
+    );
     task.description = await bounty?.description();
-    task.dataCID = await bounty?.dataCID();
   });
   await Promise.all(results);
   return {
