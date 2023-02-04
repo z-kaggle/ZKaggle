@@ -9,7 +9,6 @@ contract BountyFactory {
     address public immutable bountyTemplate;
     address[] public bounties;
     uint public bountyCount;
-    address[] public bountyOwners;
 
     event BountyCreated(address indexed bounty);
 
@@ -26,7 +25,6 @@ contract BountyFactory {
         address clone = Clones.clone(bountyTemplate);
         Bounty(clone).initialize{value: msg.value}(msg.sender, _name, _description, _dataCID);
         bounties.push(clone);
-        bountyOwners.push(msg.sender);
         emit BountyCreated(clone);
         bountyCount++;
         return clone;
