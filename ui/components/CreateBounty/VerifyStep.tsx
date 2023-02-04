@@ -34,8 +34,8 @@ const VerifyStep = ({ task }: VerifyStepProps) => {
   const handleRelease = async () => {
     const releaseBounty = await bounty!.releaseBounty();
     console.log("Mining...", releaseBounty.hash);
-    await releaseBounty.wait();
-    taskRouter.push(`/tasks/${task.address}`);
+    // await releaseBounty.wait();
+    // taskRouter.push(`/tasks/${task.address}`);
   }
 
   const urlPrefix = "https://files.lighthouse.storage/viewFile/"

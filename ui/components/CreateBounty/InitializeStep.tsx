@@ -10,13 +10,12 @@ import {
   ListItemIcon,
   ListItemText,
   TextField,
-  useTheme,
 } from "@mui/material";
 import base32 from "base32.js";
 import { ethers } from "ethers";
 import { useRouter } from "next/router";
 import React from "react";
-import { useContract, useSigner, useWaitForTransaction } from "wagmi";
+import { useContract, useSigner } from "wagmi";
 
 import BountyFactory from "../../BountyFactory.json";
 import { formatBytes } from "../../utils";
@@ -84,11 +83,24 @@ const InitializeStep = () => {
       }
     );
     console.log("Mining...", createBounty.hash);
-    await createBounty.wait(); // !: .wait might not resolve [Cathie]
+    // await createBounty.wait(); // !: .wait might not resolve [Cathie]
+
+    // !: hacky way to use while loop instead [Cathie]
+    const provider = new ethers.providers.Web3Provider(window.ethereum as any);
+    let receipt = null;
+    while (receipt === null) {
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+      try {
+        receipt = await provider.getTransactionReceipt(createBounty.hash);
+      } catch (error) {
+        console.log(error);
+        break;
+      }
+      console.log("not yet");
+    }
 
     console.log("Mined --", createBounty.hash);
-    // TODO: [low priority] route to step 2 instead [Cathie]
-    taskRouter.push(`/myspace`);
+    taskRouter.replace("/myspace");
   };
 
   return (

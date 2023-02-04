@@ -10,12 +10,26 @@ import MainFlow from "../components/MainFlow";
 import NavBar from "../components/NavBar";
 import TopBar from "../components/TopBar";
 import { Task } from "../typings";
+import { useRouter } from "next/router";
+import { useContractEvent } from "wagmi";
 
 interface Props {
   tasks: [Task];
 }
 
 const Home = ({ tasks }: Props) => {
+  const taskRouter = useRouter();
+
+  useContractEvent({
+    address: BountyFactory.address,
+    abi: BountyFactory.abi,
+    eventName: "BountyCreated",
+    listener() {
+      console.log("BountyCreated");
+      taskRouter.replace(taskRouter.asPath);
+    },
+  });
+
   return (
     <div
       css={css`

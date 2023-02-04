@@ -14,6 +14,7 @@ import MainFlow from "../../components/MainFlow";
 import NavBar from "../../components/NavBar";
 import TopBar from "../../components/TopBar";
 import { Task } from "../../typings";
+import { useRouter } from "next/router";
 
 const stepTitles = ["Initialize", "Processing", "Verify", "Check Out"];
 
@@ -23,6 +24,8 @@ interface Props {
 
 const TaskSteps = ({ task }: Props) => {
   console.log("TaskSteps", task);
+
+  const taskRouter = useRouter();
 
   const [bountyStep, setbountyStep] = React.useState(task.completedStep);
 
@@ -58,7 +61,9 @@ const TaskSteps = ({ task }: Props) => {
     address: task.address,
     abi: Bounty.abi,
     eventName: "BountySubmitted",
-    listener() {
+    async listener() {
+      console.log("BountySubmitted");
+      await taskRouter.replace(taskRouter.asPath);
       setbountyStep(2);
     },
   });
@@ -66,7 +71,9 @@ const TaskSteps = ({ task }: Props) => {
     address: task.address,
     abi: Bounty.abi,
     eventName: "BountyReleased",
-    listener() {
+    async listener() {
+      console.log('BountyReleased');
+      await taskRouter.replace(taskRouter.asPath);
       setbountyStep(3);
     },
   });
@@ -76,6 +83,7 @@ const TaskSteps = ({ task }: Props) => {
     eventName: "BountyClaimed",
     listener() {
       console.log("BountyClaimed");
+      taskRouter.replace(taskRouter.asPath);
     },
   });
 
