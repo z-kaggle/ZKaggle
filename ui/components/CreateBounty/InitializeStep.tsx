@@ -11,37 +11,28 @@ import {
 } from "@mui/material";
 
 import PaidIcon from "@mui/icons-material/Paid";
-import HighlightOffIcon from "@mui/icons-material/HighlightOff";
 import FolderIcon from "@mui/icons-material/Folder";
 import lighthouse from "@lighthouse-web3/sdk";
-import { useContract, useSigner } from "wagmi";
+import { useContract, useSigner, useWaitForTransaction } from "wagmi";
 import { formatBytes } from "../../utils";
 import BountyFactory from "../../BountyFactory.json";
-import { ethers, utils } from "ethers";
+import { ethers } from "ethers";
 import { useRouter } from "next/router";
 import base32 from "base32.js";
 
 const InitializeStep = () => {
   const [projectName, setProjectName] = React.useState("Project101");
   const [requirements, setRequirements] = React.useState("Try your best");
-  // TODO: show empty state instead of dummy data [Cathie]
   const [file, setFile] = React.useState<lighthouse.IpfsFileResponse | null>(null);
   const bountyAmountRef = React.useRef<HTMLInputElement>(null);
   const taskRouter = useRouter();
 
-  // file upload through lighthouse sdk
-
-  // const handleDelete = () => {
-  //   console.log("delete");
-  // };
-
   const progressCallback = (progressData: any) => {
-    let percentageDone =
+    const percentageDone =
       100 - ((progressData?.total / progressData?.uploaded) as any)?.toFixed(2);
     console.log(percentageDone);
   };
 
-  // ?: should we have a "confirm" button to upload the file? [Cathie]
   const handleUpload = async (e: string) => {
     const output = await lighthouse.uploadFileRaw(
       e,
@@ -90,10 +81,11 @@ const InitializeStep = () => {
       }
     );
     console.log("Mining...", createBounty.hash);
-    await createBounty.wait();
-    //!: routing seems not working [Cathie]
-    console.log("Mined --", await bountyFactory?.bounties(await bountyFactory?.bountyCount() - 1));
-    taskRouter.push(`/tasks/${await bountyFactory?.bounties(await bountyFactory?.bountyCount() - 1)}`);
+    await createBounty.wait(); // !: .wait might not resolve [Cathie]
+    
+    console.log("Mined --", createBounty.hash);
+    // TODO: [low priority] route to step 2 instead [Cathie]
+    taskRouter.push(`/myspace`);
   };
 
   return (
@@ -149,9 +141,6 @@ const InitializeStep = () => {
               },
             }}
           />
-          {/* <IconButton onClick={() => handleDelete()}>
-              <HighlightOffIcon />
-            </IconButton> */}
         </ListItem>
       </List>
       <Button
@@ -169,7 +158,7 @@ const InitializeStep = () => {
       <h2>Deposit Bounty </h2>
       <Input
         inputRef={bountyAmountRef}
-        placeholder="enter amount in ETH"
+        placeholder="enter amount in tFIL"
         style={{ margin: "0 0 30px 0" }}
       />
       <Button

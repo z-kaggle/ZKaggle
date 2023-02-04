@@ -14,7 +14,7 @@ import "@fontsource/roboto/500.css";
 import "@fontsource/roboto/700.css";
 import "@rainbow-me/rainbowkit/styles.css";
 
-import { filecoin, filecoinHyperspace } from "./chain.config";
+import { filecoin, filecoinHyperspace } from "./api/chain.config";
 
 const { chains, provider } = configureChains(
   [filecoinHyperspace, filecoin],
@@ -23,20 +23,20 @@ const { chains, provider } = configureChains(
     jsonRpcProvider({
       priority: 0,
       rpc: () => ({
-        http: `https://api.hyperspace.node.glif.io`,
+        http: `https://api.hyperspace.node.glif.io/rpc/v1`,
       }),
     }),
     // only support filecoin API requests
     jsonRpcProvider({
       priority: 1,
       rpc: () => ({
-        http: `https://api.hyperspace.node.glif.io/rpc/v0`,
+        http: `https://api.hyperspace.node.glif.io/`,
       }),
     }),
     jsonRpcProvider({
       priority: 2,
       rpc: () => ({
-        http: `https://api.hyperspace.node.glif.io/rpc/v1`,
+        http: `https://api.hyperspace.node.glif.io/rpc/v0`,
       }),
     }),
   ]
