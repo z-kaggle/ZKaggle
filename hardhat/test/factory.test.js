@@ -31,6 +31,7 @@ describe("BountyFactory test", function () {
         expect(await bounty.description()).to.equal("This is the first bounty");
         expect(await bounty.dataCID()).to.equal("0x00");
         expect(await factory.bountyCount()).to.equal(1);
+        expect(await factory.bountyOwners(0)).to.equal(await ethers.provider.getSigner(0).getAddress());
     });
 
     it("Should calculate future bounty address", async function () {
@@ -44,5 +45,6 @@ describe("BountyFactory test", function () {
             { value: ethers.utils.parseEther("1") }
         )).to.emit(factory, "BountyCreated").withArgs(futureAddress);
         expect(await factory.bountyCount()).to.equal(2);
+        expect(await factory.bountyOwners(1)).to.equal(await ethers.provider.getSigner(0).getAddress());
     });
 });
