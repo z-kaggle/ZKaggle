@@ -1,5 +1,5 @@
 import { css } from "@emotion/react";
-import { Contract, ethers, utils } from "ethers";
+import { Contract, ethers } from "ethers";
 import Head from "next/head";
 import React from "react";
 
@@ -65,7 +65,7 @@ export const getServerSideProps = async () => {
   );
 
   // fetching all task address by querying the factory contract
-  let tasks = [];
+  const tasks = [];
   const count = Number(await bountyFactory?.bountyCount());
   console.log('count', count);
   for (let i = count - 1; i >= 0; i--) {
@@ -85,6 +85,7 @@ export const getServerSideProps = async () => {
     );
     task.description = await bounty?.description();
   });
+  
   await Promise.all(results);
   return {
     props: { tasks },
