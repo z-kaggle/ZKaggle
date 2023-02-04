@@ -13,7 +13,7 @@ import {
 import PaidIcon from "@mui/icons-material/Paid";
 import FolderIcon from "@mui/icons-material/Folder";
 import lighthouse from "@lighthouse-web3/sdk";
-import { useContract, useSigner, useWaitForTransaction } from "wagmi";
+import { useContract, useSigner } from "wagmi";
 import { formatBytes } from "../../utils";
 import BountyFactory from "../../BountyFactory.json";
 import { ethers } from "ethers";
@@ -81,11 +81,24 @@ const InitializeStep = () => {
       }
     );
     console.log("Mining...", createBounty.hash);
-    await createBounty.wait(); // !: .wait might not resolve [Cathie]
-    
+    // await createBounty.wait(); // !: .wait might not resolve [Cathie]
+
+    // !: hacky way to use while loop instead [Cathie]
+    const provider = new ethers.providers.Web3Provider(window.ethereum as any);
+    let receipt = null;
+    while (receipt === null) {
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+      try {
+        receipt = await provider.getTransactionReceipt(createBounty.hash);
+      } catch (error) {
+        console.log(error);
+        break;
+      }
+      console.log("not yet");
+    }
+
     console.log("Mined --", createBounty.hash);
-    // TODO: [low priority] route to step 2 instead [Cathie]
-    taskRouter.push(`/myspace`);
+    taskRouter.replace("/myspace");
   };
 
   return (

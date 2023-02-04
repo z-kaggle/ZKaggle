@@ -9,12 +9,15 @@ import React from "react";
 import { Task } from "../../typings";
 import { useContract, useSigner, useAccount } from "wagmi";
 import Bounty from "../../Bounty.json";
+import { useRouter } from "next/router";
+import { ethers } from "ethers";
 
 type CheckOutStepProps = {
   task: Task;
 };
 
 const CheckOutStep = ({ task }: CheckOutStepProps) => {
+  const taskRouter = useRouter();
 
   const { address: address } = useAccount();
   const [isBountyHunter, setIsBountyHunter] = React.useState(address === task.bountyHunter);
@@ -52,8 +55,24 @@ const CheckOutStep = ({ task }: CheckOutStepProps) => {
     const claimBounty = await bounty!.claimBounty(calldata);
 
     console.log("Mining...", claimBounty.hash);
-    await claimBounty.wait();
+    // await claimBounty.wait(); // !: .wait might not resolve [Cathie]
 
+    // !: hacky way to use while loop instead [Cathie]
+    const provider = new ethers.providers.Web3Provider(window.ethereum as any);
+    let receipt = null;
+    while (receipt === null) {
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+      try {
+        receipt = await provider.getTransactionReceipt(claimBounty.hash);
+      } catch (error) {
+        console.log(error);
+        break;
+      }
+      console.log("not yet");
+    }
+
+    console.log("Mined --", claimBounty.hash);
+    taskRouter.replace("/submissions");
   }
 
   return (
