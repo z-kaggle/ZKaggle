@@ -181,9 +181,9 @@ export const getServerSideProps = async (
   // tx 4
   // !: hacky way to get the input [Cathie]
   try {
-    task.input0 = (await bounty?.input(0)).toString();
+    task.input0 = (await bounty?.input(0))?.toString();
     // console.log(task.input0);
-    task.input1 = (await bounty?.input(1)).toString();
+    task.input1 = (await bounty?.input(1))?.toString();
     // console.log(task.input1);
   } catch (error) {
     console.log(error);

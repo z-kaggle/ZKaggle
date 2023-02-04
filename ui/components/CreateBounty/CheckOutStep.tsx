@@ -129,7 +129,8 @@ const CheckOutStep = ({ task }: CheckOutStepProps) => {
         ) : isBountyOwner ? (
           <>
             <h2>Computed results</h2>
-            <h5>{task.input}</h5>
+            <h5>{task.input0}</h5>
+            <h5>{task.input1}</h5>
 
             <h2>Hashed results</h2>
             <h5>{task.hashedInput}</h5>
