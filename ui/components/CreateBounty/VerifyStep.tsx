@@ -84,7 +84,7 @@ const VerifyStep = ({ task }: VerifyStepProps) => {
           </h5>
         </>
       ) : (
-        <h1>This is not your task.</h1>
+        <h1 style={{ marginBottom: "20px" }}>This is not your task.</h1>
       )}
       <div
         css={css`

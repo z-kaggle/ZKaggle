@@ -99,7 +99,7 @@ const CheckOutStep = ({ task }: CheckOutStepProps) => {
           <h5>Check the computed results below.</h5>
         </>
       ) : (
-        <h1>This is not your task.</h1>
+        <h1 style={{marginBottom:"20px"}}>This is not your task.</h1>
       )}
       <div
         css={css`

@@ -1,7 +1,9 @@
 import { css } from "@emotion/react";
 import { Contract, ethers } from "ethers";
 import Head from "next/head";
+import { useRouter } from "next/router";
 import React from "react";
+import { useContractEvent } from "wagmi";
 
 import Bounty from "../Bounty.json";
 import BountyFactory from "../BountyFactory.json";
@@ -10,8 +12,6 @@ import MainFlow from "../components/MainFlow";
 import NavBar from "../components/NavBar";
 import TopBar from "../components/TopBar";
 import { Task } from "../typings";
-import { useRouter } from "next/router";
-import { useContractEvent } from "wagmi";
 
 interface Props {
   tasks: [Task];

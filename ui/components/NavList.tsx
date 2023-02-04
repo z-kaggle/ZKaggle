@@ -1,5 +1,5 @@
-import AccountBoxIcon from "@mui/icons-material/AccountBox";
-import ListAltIcon from "@mui/icons-material/ListAlt";
+import AccountCircleIcon from "@mui/icons-material/AccountCircle";
+import AutoAwesomeMosaicIcon from "@mui/icons-material/AutoAwesomeMosaic";
 import Box from "@mui/material/Box";
 import List from "@mui/material/List";
 import ListItem from "@mui/material/ListItem";
@@ -22,7 +22,7 @@ export default function NavList() {
                     marginLeft: "5px",
                   }}
                 >
-                  <ListAltIcon />
+                  <AutoAwesomeMosaicIcon />
                 </ListItemIcon>
                 <ListItemText
                   primary="Feed"
@@ -42,7 +42,7 @@ export default function NavList() {
                     marginLeft: "5px",
                   }}
                 >
-                  <AccountBoxIcon />
+                  <AccountCircleIcon />
                 </ListItemIcon>
                 <ListItemText
                   primary="MySpace"
@@ -62,7 +62,7 @@ export default function NavList() {
                     marginLeft: "5px",
                   }}
                 >
-                  <AccountBoxIcon />
+                  <AccountCircleIcon />
                 </ListItemIcon>
                 <ListItemText
                   primary="Submitted"
