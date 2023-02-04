@@ -15,17 +15,18 @@ export interface Task {
   bountyHunter: string;
   zkeyCID: string;
   circomCID: string;
+  verifierCID: string;
   verifier: string;
 
   // Todo: need to confirm the type
-  a: Array;
-  b: Array<Array>;
-  c: Array;
-  hashedInput: Array;
+  a: Array<string>;
+  b: Array<Array<string>>;
+  c: Array<string>;
+  hashedInput: Array<string>;
 
   // tx 3
   isCompleted: boolean;
 
   // tx 4
-  input: Array;
+  input: Array<string>;
 }

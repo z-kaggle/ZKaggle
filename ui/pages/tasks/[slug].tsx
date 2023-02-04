@@ -1,5 +1,6 @@
 import { css } from "@emotion/react";
 import { Button, Step, StepLabel, Stepper } from "@mui/material";
+import base32 from "base32.js";
 import { Contract, ethers, utils } from "ethers";
 import type { GetServerSidePropsContext } from "next";
 import React from "react";
@@ -161,6 +162,7 @@ export const getServerSideProps = async (
     task.step = 1;
   }
 
+  const encoder = new base32.Encoder();
   // fetching all task details
   task.bountyAmount = ethers.utils.formatEther(
     await provider.getBalance(task?.address)
@@ -170,22 +172,21 @@ export const getServerSideProps = async (
   // tx 1
   task.name = await bounty?.name();
   task.description = await bounty?.description();
-  task.dataCID = await bounty?.dataCID();
+  task.dataCID = encoder.write(await bounty?.dataCID()).finalize();
   // tx 2
   task.bountyHunter = await bounty?.bountyHunter();
-  task.zkeyCID = await bounty?.zkeyCID();
-  task.circomCID = await bounty?.circomCID();
-  task.verifier = await bounty?.verifier();
-  // task.a = await bounty?.a([0]) as string;
-  // console.log("task.a", await bounty?.a([Number] as any));
+  task.zkeyCID = encoder.write(await bounty?.zkeyCID()).finalize();
+  task.circomCID = encoder.write(await bounty?.circomCID()).finalize();
+  // task.verifierCID = encoder.write(await bounty?.verifierCID()).finalize();
+  task.verifier = encoder.write(await bounty?.verifier()).finalize();
+  // task.a = await bounty?.a([0]);
   // task.b = await bounty?.b([]);
   // task.c = await bounty?.c([]);
   // task.hashedInput = await bounty?.hashedInput([]);
-  // // tx 3
-  // task.isCompleted = await bounty?.isCompleted();
-  // // tx 4
+  // tx 3
+  task.isCompleted = await bounty?.isComplete();
+  // tx 4
   // task.input = await bounty?.input([]);
-  console.log("task", await bounty?.a([0]));
 
   return {
     props: { task },
