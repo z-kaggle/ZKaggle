@@ -136,7 +136,7 @@ export const getServerSideProps = async (
 ) => {
   // geting task address from url
   const task: Task = {
-    address: context.query.slug as string as string,
+    address: context.query.slug as string,
   } as Task;
 
   const provider = new ethers.providers.JsonRpcProvider(
