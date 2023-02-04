@@ -204,11 +204,11 @@ const ProcessingStep = ({ task }: ProcessingStepProps) => {
       a, b, c, Input
     );
     console.log("Mining...", submitBounty.hash);
-    await submitBounty.wait();
+    // await submitBounty.wait();
 
-    // TODO: check if taskRouter.push is working [Cathie]
-    console.log("Mined --", submitBounty.hash);
-    taskRouter.push(`/tasks/${task.address}`);
+    // // TODO: check if taskRouter.push is working [Cathie]
+    // console.log("Mined --", submitBounty.hash);
+    // taskRouter.push(`/tasks/${task.address}`);
   };
 
   const urlPrefix = "https://files.lighthouse.storage/viewFile/"
