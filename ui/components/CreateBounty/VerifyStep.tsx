@@ -172,7 +172,7 @@ const VerifyStep = ({ task }: VerifyStepProps) => {
           </>
         ) : null}
         {/* for development purpose */}
-        <Button onClick={
+        {/* <Button onClick={
           () => {
             setIsBountyHunter(true);
             setIsBountyOwner(false);
@@ -192,7 +192,7 @@ const VerifyStep = ({ task }: VerifyStepProps) => {
             setIsBountyOwner(false);
           }}>
           Switch to neither
-        </Button>
+        </Button> */}
       </div></div>
   );
 };

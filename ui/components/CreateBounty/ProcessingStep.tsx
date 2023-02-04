@@ -430,7 +430,7 @@ const ProcessingStep = ({ task }: ProcessingStepProps) => {
           </>) : null}
 
         {/* for development purpose */}
-        <Button onClick={
+        {/* <Button onClick={
           () => {
             setIsBountyOwner(false);
           }}>
@@ -441,7 +441,7 @@ const ProcessingStep = ({ task }: ProcessingStepProps) => {
             setIsBountyOwner(true);
           }}>
           Switch to bounty owner
-        </Button>
+        </Button> */}
       </div></div>
   );
 };
