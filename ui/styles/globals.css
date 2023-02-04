@@ -32,3 +32,12 @@ h5 {
   margin-bottom: 0;
   font-weight: 200;
 }
+
+.Mui-completed, .Mui-active{
+  color: #6750A4 !important;
+}
+
+.MuiStepIcon-text{
+  color: white;
+  fill: white;
+}
