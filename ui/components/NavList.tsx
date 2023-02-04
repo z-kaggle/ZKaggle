@@ -53,6 +53,26 @@ export default function NavList() {
               </ListItemButton>
             </ListItem>
           </Link>
+
+          <Link href={`/submissions`}>
+            <ListItem disablePadding>
+              <ListItemButton>
+                <ListItemIcon
+                  sx={{
+                    marginLeft: "5px",
+                  }}
+                >
+                  <AccountBoxIcon />
+                </ListItemIcon>
+                <ListItemText
+                  primary="Submitted"
+                  sx={{
+                    marginLeft: "-25px",
+                  }}
+                />
+              </ListItemButton>
+            </ListItem>
+          </Link>
         </List>
       </nav>
     </Box>
