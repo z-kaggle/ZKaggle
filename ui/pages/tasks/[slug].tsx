@@ -7,10 +7,8 @@ import React from "react";
 import { useContractEvent } from "wagmi";
 
 import Bounty from "../../Bounty.json";
-import CheckOutStep from "../../components/CreateBounty/CheckOutStep";
-import InitializeStep from "../../components/CreateBounty/InitializeStep";
-import ProcessingStep from "../../components/CreateBounty/ProcessingStep";
-import VerifyStep from "../../components/CreateBounty/VerifyStep";
+import dynamic from "next/dynamic";
+
 import MainFlow from "../../components/MainFlow";
 import NavBar from "../../components/NavBar";
 import TopBar from "../../components/TopBar";
@@ -23,38 +21,33 @@ interface Props {
 }
 
 const TaskSteps = ({ task }: Props) => {
+  const CheckOutStep = dynamic(() => import("../../components/CreateBounty/CheckOutStep"), { ssr: false });
+  const ProcessingStep = dynamic(() => import("../../components/CreateBounty/ProcessingStep"), { ssr: false });
+  const VerifyStep = dynamic(() => import("../../components/CreateBounty/VerifyStep"), { ssr: false });
+  
   console.log("TaskSteps", task);
 
   const taskRouter = useRouter();
 
-  const [bountyStep, setbountyStep] = React.useState(task.completedStep);
+  const [bountyStep, setbountyStep] = React.useState(Math.min(3, Math.max(1, task.completedStep)));
 
   // step jumpers
-  const goToNextStep = () => {
-    setbountyStep((currentStep) => {
-      if (currentStep === stepTitles.length - 1) {
-        return currentStep;
-      }
-      return currentStep + 1;
-    });
-  };
-  const goToPreviousStep = () => {
-    setbountyStep((currentStep) => {
-      if (currentStep === 0) {
-        return currentStep;
-      }
-      return currentStep - 1;
-    });
-  };
-
-  const stepComponents = [
-    <InitializeStep key={0} />,
-    <ProcessingStep key={1} task={task} />,
-    <VerifyStep key={2} task={task} />,
-    <CheckOutStep key={3} task={task} />,
-  ];
-
-  const currentStep = stepComponents[bountyStep];
+  // const goToNextStep = () => {
+  //   setbountyStep((currentStep) => {
+  //     if (currentStep === stepTitles.length - 1) {
+  //       return currentStep;
+  //     }
+  //     return currentStep + 1;
+  //   });
+  // };
+  // const goToPreviousStep = () => {
+  //   setbountyStep((currentStep) => {
+  //     if (currentStep === 0) {
+  //       return currentStep;
+  //     }
+  //     return currentStep - 1;
+  //   });
+  // };
 
   // listening to contract events to update step
   useContractEvent({
@@ -115,14 +108,16 @@ const TaskSteps = ({ task }: Props) => {
               </Step>
             ))}
           </Stepper>
-          {currentStep}
+          {bountyStep === 1 ? <ProcessingStep task={task} /> : null}
+          {bountyStep === 2 ? <VerifyStep task={task} /> : null}
+          {bountyStep === 3 ? <CheckOutStep task={task} /> : null}
           {/* for dev only */}
-          <Button color="secondary" onClick={goToNextStep}>
+          {/* <Button color="secondary" onClick={goToNextStep}>
             Next
           </Button>
           <Button color="secondary" onClick={goToPreviousStep}>
             Previous
-          </Button>
+          </Button> */}
         </div>
       </MainFlow>
     </div>

@@ -194,7 +194,7 @@ const CheckOutStep = ({ task }: CheckOutStepProps) => {
           </>
         ) : null}
         {/* for development purpose */}
-        <Button
+        {/* <Button
           color="secondary"
           onClick={() => {
             setIsBountyHunter(true);
@@ -220,7 +220,7 @@ const CheckOutStep = ({ task }: CheckOutStepProps) => {
           }}
         >
           Switch to neither
-        </Button>
+        </Button> */}
       </div>
     </div>
   );
