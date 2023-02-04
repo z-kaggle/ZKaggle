@@ -1,10 +1,10 @@
 export interface Task {
   address: string;
-  event: string;
-  step: number;
 
   bountyAmount: string;
   bountyOwner: string;
+
+  completedStep: number;
 
   // tx 1
   name: string;
@@ -15,17 +15,18 @@ export interface Task {
   bountyHunter: string;
   zkeyCID: string;
   circomCID: string;
+  verifierCID: string;
   verifier: string;
-
-  // Todo: need to confirm the type
-  a: Array;
-  b: Array<Array>;
-  c: Array;
-  hashedInput: Array;
+  
+  // a: [string, string];
+  // b: [[string, string], [string, string]];
+  // c: [string, string];
+  hashedInput: string;
 
   // tx 3
   isCompleted: boolean;
 
   // tx 4
-  input: Array;
+  input0: string;
+  input1: string;
 }

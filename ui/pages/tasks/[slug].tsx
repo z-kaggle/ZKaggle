@@ -1,6 +1,6 @@
 import { css } from "@emotion/react";
 import { Button, Step, StepLabel, Stepper } from "@mui/material";
-import { Contract, ethers, utils } from "ethers";
+import { Contract, ethers } from "ethers";
 import type { GetServerSidePropsContext } from "next";
 import React from "react";
 import { useContractEvent } from "wagmi";
@@ -24,7 +24,7 @@ interface Props {
 const TaskSteps = ({ task }: Props) => {
   console.log("TaskSteps", task);
 
-  const [bountyStep, setbountyStep] = React.useState(task.step);
+  const [bountyStep, setbountyStep] = React.useState(task.completedStep);
 
   // step jumpers
   const goToNextStep = () => {
@@ -132,60 +132,62 @@ export const getServerSideProps = async (
   );
   const bounty = new Contract(task.address, Bounty.abi, provider);
 
-  // fetching all task address by browsing events
-  const eventSubmitted = utils.id(`BountySubmitted()`);
-  const eventReleased = utils.id(`BountyReleased()`);
-  const eventClaimed = utils.id(`BountyClaimed()`);
-  const eventFilter = {
-    address: task.address,
-    abi: Bounty.abi,
-    topics: [eventSubmitted, eventReleased, eventClaimed],
-    fromBlock: 0,
-  };
-  const logs = await provider.getLogs(eventFilter);
-  const events = await logs.map((log) => {
-    const event = bounty?.interface.parseLog(log);
-    return event.name;
-  });
-
-  console.log("Events", events);
-
-  // setting task step according to events
-  if (events.includes("BountyClaimed")) {
-    task.step = 3;
-  } else if (events.includes("BountyReleased")) {
-    task.step = 3;
-  } else if (events.includes("BountySubmitted")) {
-    task.step = 2;
-  } else {
-    task.step = 1;
-  }
-
-  // fetching all task details
   task.bountyAmount = ethers.utils.formatEther(
     await provider.getBalance(task?.address)
   );
+  // console.log(task.bountyAmount);
   task.bountyOwner = await bounty?.owner();
+  // console.log(task.bountyOwner);
 
+  task.completedStep = Math.min(await bounty?.completedStep(), 3);
+  // console.log(task.completedStep);
+
+  // fetching all task details
   // tx 1
   task.name = await bounty?.name();
+  // console.log(task.name);
   task.description = await bounty?.description();
+  // console.log(task.description);
   task.dataCID = await bounty?.dataCID();
+  // console.log(task.dataCID);
+
   // tx 2
   task.bountyHunter = await bounty?.bountyHunter();
+  // console.log(task.bountyHunter);
   task.zkeyCID = await bounty?.zkeyCID();
+  // console.log(task.zkeyCID);
   task.circomCID = await bounty?.circomCID();
+  // console.log(task.circomCID);
+  task.verifierCID = await bounty?.verifierCID();
+  // console.log(task.verifierCID);
   task.verifier = await bounty?.verifier();
-  // task.a = await bounty?.a([0]) as string;
-  // console.log("task.a", await bounty?.a([Number] as any));
-  // task.b = await bounty?.b([]);
-  // task.c = await bounty?.c([]);
-  // task.hashedInput = await bounty?.hashedInput([]);
-  // // tx 3
-  // task.isCompleted = await bounty?.isCompleted();
-  // // tx 4
-  // task.input = await bounty?.input([]);
-  console.log("task", await bounty?.a([0]));
+  // console.log(task.verifier);
+  // task.a = [await bounty?.a(0), await bounty?.a(1)];
+  // task.b = [[await bounty?.b(0, 0), await bounty?.b(0, 1)], [await bounty?.b(1, 0), await bounty?.b(1, 1)]];
+  // task.c = [await bounty?.c(0), await bounty?.c(1)];
+
+  // !: hacky way to get the hashed input [Cathie]
+  try {
+    task.hashedInput = await bounty?.concatDigest(await bounty?.hashedInput(0), await bounty?.hashedInput(1));
+    // console.log(task.hashedInput);
+  } catch (error) {
+    console.log(error);
+  }
+
+  // tx 3
+  task.isCompleted = await bounty?.isComplete();
+  // console.log(task.isCompleted);
+
+  // tx 4
+  // !: hacky way to get the input [Cathie]
+  try {
+    task.input0 = (await bounty?.input(0)).toString();
+    // console.log(task.input0);
+    task.input1 = (await bounty?.input(1)).toString();
+    // console.log(task.input1);
+  } catch (error) {
+    console.log(error);
+  }
 
   return {
     props: { task },

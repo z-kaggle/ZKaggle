@@ -1,25 +1,61 @@
 import { css } from "@emotion/react";
-import PaidIcon from "@mui/icons-material/Paid";
 import {
   Button,
-  Divider,
-  List,
-  ListItemButton,
-  ListItemText,
   Stack,
-  TextField,
+  Input,
 } from "@mui/material";
 import React from "react";
 
 import { Task } from "../../typings";
+import { useContract, useSigner, useAccount } from "wagmi";
+import Bounty from "../../Bounty.json";
 
 type CheckOutStepProps = {
   task: Task;
 };
-// !: no handle for submit [Cathie]
-// !: let's fix the UI first [Cathie]
+
 const CheckOutStep = ({ task }: CheckOutStepProps) => {
-  const [isBountyHunter, setIsBountyHunter] = React.useState(false);
+
+  const { address: address } = useAccount();
+  const [isBountyHunter, setIsBountyHunter] = React.useState(address === task.bountyHunter);
+  const [isBountyOwner, setIsBountyOwner] = React.useState(address === task.bountyOwner);
+  const inputRef = React.useRef<HTMLInputElement>(null);
+
+  const { data: signer } = useSigner();
+
+  const bounty = useContract({
+    address: task.address,
+    abi: Bounty.abi,
+    signerOrProvider: signer,
+  });
+
+  const handleClaim = async () => {
+    const preImage = inputRef.current?.value;
+    if (!preImage) {
+      alert("Please enter pre-image(s) of hashed results");
+      return;
+    }
+    let calldata;
+    try {
+      calldata = JSON.parse(preImage);
+      if (!Array.isArray(calldata)) {
+        alert("Please enter in array format");
+        return;
+      }
+      console.log(calldata);
+    }
+    catch (e) {
+      alert("Please enter in array format");
+      return;
+    }
+
+    const claimBounty = await bounty!.claimBounty(calldata);
+
+    console.log("Mining...", claimBounty.hash);
+    await claimBounty.wait();
+
+  }
+
   return (
     <div
       css={css`
@@ -33,16 +69,18 @@ const CheckOutStep = ({ task }: CheckOutStepProps) => {
         <>
           <h1>Congrats!</h1>
           <h5>
-            Your task has been verified by the provider, your bounty has been
-            released to your wallet
+            Your task has been verified by the provider.
+            You can claim the bounty now.
           </h5>
         </>
-      ) : (
+      ) : isBountyOwner ? (
+
         <>
-          <h1>Closing the task!</h1>
-          <h5>Check the results and release the bounty</h5>
+          <h1>Results are in!</h1>
+          <h5>Check the computed results below.</h5>
         </>
-      )}
+      ) :
+        (<h1>This is not your task.</h1>)}
       <div
         css={css`
           display: flex;
@@ -53,7 +91,7 @@ const CheckOutStep = ({ task }: CheckOutStepProps) => {
       >
         <Stack paddingTop={6} spacing={0}>
           <Stack direction="row" spacing={10} justifyContent="space-between">
-            <h2 style={{ padding: "0", margin: "0" }}>MNIST Training Task</h2>
+            <h2 style={{ padding: "0", margin: "0" }}>{task.name}</h2>
             <Button
               variant="outlined"
               sx={{
@@ -61,111 +99,65 @@ const CheckOutStep = ({ task }: CheckOutStepProps) => {
                 alignSelf: "flex-end",
               }}
             >
-              0.5 ETH
+              {task.bountyAmount} TFIL
             </Button>
           </Stack>
-          <h5>Your task will be shown in the task pool.</h5>
+          <h5>{task.description}</h5>
         </Stack>
+        {isBountyHunter ? (
+          <>
+            <h2>Unhash computed results</h2>
 
-        <h2>Input</h2>
-        <List component="nav" aria-label="secondary mailbox folder">
-          <ListItemButton>
-            <ListItemText primary="Input 1" />
-          </ListItemButton>
-          <ListItemButton>
-            <ListItemText primary="Input 2" />
-          </ListItemButton>
-        </List>
-        <Button
-          variant="outlined"
-          component="label"
-          sx={{
-            width: "100px",
-            alignSelf: "flex-end",
-            marginBottom: "40px",
-          }}
-        >
-          Download
-          <input hidden accept="image/*" multiple type="file" />
+            <Input
+              inputRef={inputRef}
+              placeholder="enter pre-image(s) of hashed results, e.g. [5, 123456789]"
+              style={{ margin: "0 0 30px 0" }}
+            />
+            <Button
+              variant="contained"
+              component="label"
+              sx={{
+                width: "100px",
+                alignSelf: "flex-end",
+                marginBottom: "40px",
+              }}
+              onClick={() => handleClaim()}
+            >
+              Claim
+            </Button>
+          </>
+        ) : isBountyOwner ? (
+          <>
+            <h2>Computed results</h2>
+            <h5>{task.input}</h5>
+
+            <h2>Hashed results</h2>
+            <h5>{task.hashedInput}</h5>
+          </>
+        ) : null}
+        {/* for development purpose */}
+        <Button onClick={
+          () => {
+            setIsBountyHunter(true);
+            setIsBountyOwner(false);
+          }}>
+          Switch to bounty hunter
         </Button>
-
-        <Divider />
-
-        <h2>Results</h2>
-        <List component="nav" aria-label="secondary mailbox folder">
-          <ListItemButton>
-            <ListItemText primary="Results 1" />
-          </ListItemButton>
-          <ListItemButton>
-            <ListItemText primary="Results 2" />
-          </ListItemButton>
-        </List>
-        <Button
-          variant="outlined"
-          component="label"
-          sx={{
-            width: "100px",
-            alignSelf: "flex-end",
-          }}
-        >
-          Download
-          <input hidden accept="image/*" multiple type="file" />
+        <Button onClick={
+          () => {
+            setIsBountyHunter(false);
+            setIsBountyOwner(true);
+          }}>
+          Switch to bounty owner
         </Button>
-
-        <h2>Release Bounty</h2>
-        <div
-          css={css`
-            display: flex;
-            flex-direction: row;
-            justify-content: flex-end;
-          `}
-        >
-          <Button
-            variant="outlined"
-            sx={{
-              width: "150px",
-              alignSelf: "flex-end",
-            }}
-          >
-            0.5 ETH
-          </Button>
-          <Button
-            variant="outlined"
-            startIcon={<PaidIcon />}
-            sx={{
-              width: "150px",
-              alignSelf: "flex-end",
-              marginLeft: "10px",
-            }}
-          >
-            Deposit
-          </Button>
-        </div>
-
-        <Divider
-          css={css`
-            margin-top: 40px;
-            margin-bottom: 20px;
-          `}
-        />
-        <Button
-          variant="contained"
-          sx={{
-            borderRadius: "30px",
-            height: "40px",
-            width: "100px",
-            alignSelf: "flex-end",
-          }}
-          // onClick={() => handleSubmit()}
-        >
-          Finish
+        <Button onClick={
+          () => {
+            setIsBountyHunter(false);
+            setIsBountyOwner(false);
+          }}>
+          Switch to neither
         </Button>
-      </div>
-      {/* for development purpose */}
-      <Button onClick={() => setIsBountyHunter(!isBountyHunter)}>
-        Change role
-      </Button>
-    </div>
+      </div></div>
   );
 };
 

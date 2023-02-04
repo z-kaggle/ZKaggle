@@ -15,7 +15,7 @@ interface Props {
   tasks: Task[];
 }
 
-const MySpacePage = ({ tasks }: Props) => {
+const SubmissionsPage = ({ tasks }: Props) => {
   const { address, isConnected } = useAccount();
   const [connected, setConnected] = useState(false);
 
@@ -49,7 +49,7 @@ const MySpacePage = ({ tasks }: Props) => {
           address this filter can only be done on client side */}
           {connected ? (
             tasks
-              .filter((task) => task.bountyOwner === address)
+              .filter((task) => task.bountyHunter === address)
               .map((task, index) => <ColCard key={index} task={task}></ColCard>)
           ) : (
             <h1>🚨Please connect your wallet to continue!</h1>
@@ -60,7 +60,7 @@ const MySpacePage = ({ tasks }: Props) => {
   );
 };
 
-export default MySpacePage;
+export default SubmissionsPage;
 
 export const getServerSideProps = async () => {
   const provider = new ethers.providers.JsonRpcProvider(
@@ -92,7 +92,7 @@ export const getServerSideProps = async () => {
       await provider.getBalance(task?.address)
     );
     task.description = await bounty?.description();
-    task.bountyOwner = await bounty?.owner();
+    task.bountyHunter = await bounty?.bountyHunter();
   });
 
   await Promise.all(results);
