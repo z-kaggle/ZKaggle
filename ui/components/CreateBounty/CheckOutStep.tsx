@@ -136,7 +136,7 @@ const CheckOutStep = ({ task }: CheckOutStepProps) => {
           </>
         ) : null}
         {/* for development purpose */}
-        {/* <Button onClick={
+        <Button onClick={
           () => {
             setIsBountyHunter(true);
             setIsBountyOwner(false);
@@ -156,7 +156,7 @@ const CheckOutStep = ({ task }: CheckOutStepProps) => {
             setIsBountyOwner(false);
           }}>
           Switch to neither
-        </Button> */}
+        </Button>
       </div></div>
   );
 };
