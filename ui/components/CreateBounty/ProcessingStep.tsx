@@ -1,6 +1,7 @@
 import { css } from "@emotion/react";
 import lighthouse from "@lighthouse-web3/sdk";
 import FolderIcon from "@mui/icons-material/Folder";
+import UploadIcon from "@mui/icons-material/Upload";
 import {
   Button,
   Divider,
@@ -11,6 +12,7 @@ import {
   ListItemText,
   Stack,
 } from "@mui/material";
+import base32 from "base32.js";
 import { ethers } from "ethers";
 import { useRouter } from "next/router";
 import React from "react";
@@ -21,7 +23,6 @@ import Bounty from "../../Bounty.json";
 import BountyFactory from "../../BountyFactory.json";
 import { Task } from "../../typings";
 import { formatBytes } from "../../utils";
-import base32 from "base32.js";
 
 type ProcessingStepProps = {
   task: Task;
@@ -29,7 +30,9 @@ type ProcessingStepProps = {
 
 const ProcessingStep = ({ task }: ProcessingStepProps) => {
   const { address } = useAccount();
-  const [isBountyOwner, setIsBountyOwner] = React.useState(task.bountyOwner === address);
+  const [isBountyOwner, setIsBountyOwner] = React.useState(
+    task.bountyOwner === address
+  );
 
   const [zkeyFile, setZkeyFile] =
     React.useState<lighthouse.IpfsFileResponse | null>(null);
@@ -185,10 +188,16 @@ const ProcessingStep = ({ task }: ProcessingStepProps) => {
     // format zkProof
     let a, b, c, Input;
     try {
-      const argv = zkProofRef.current.value.replace(/["[\]\s]/g, "").split(',').map(x => BigInt(x).toString());
+      const argv = zkProofRef.current.value
+        .replace(/["[\]\s]/g, "")
+        .split(",")
+        .map((x) => BigInt(x).toString());
 
       a = [argv[0], argv[1]];
-      b = [[argv[2], argv[3]], [argv[4], argv[5]]];
+      b = [
+        [argv[2], argv[3]],
+        [argv[4], argv[5]],
+      ];
       c = [argv[6], argv[7]];
       Input = argv.slice(8);
     } catch (e) {
@@ -201,7 +210,10 @@ const ProcessingStep = ({ task }: ProcessingStepProps) => {
       Buffer.from(circomFile!.Hash),
       Buffer.from(verifierFile!.Hash),
       verifierAddressRef.current.value,
-      a, b, c, Input
+      a,
+      b,
+      c,
+      Input
     );
     console.log("Mining...", submitBounty.hash);
     await submitBounty.wait();
@@ -211,14 +223,18 @@ const ProcessingStep = ({ task }: ProcessingStepProps) => {
     taskRouter.push(`/tasks/${task.address}`);
   };
 
-  const urlPrefix = "https://files.lighthouse.storage/viewFile/"
+  const urlPrefix = "https://files.lighthouse.storage/viewFile/";
 
   const openDataFile = () => {
     const encoder = new base32.Encoder();
-    const cid = 'b' + encoder.write(ethers.utils.arrayify(task.dataCID)).finalize().toLowerCase();
+    const cid =
+      "b" +
+      encoder
+        .write(ethers.utils.arrayify(task.dataCID))
+        .finalize()
+        .toLowerCase();
     window.open(urlPrefix + cid, "_blank");
-  }
-
+  };
 
   return (
     <div
@@ -232,7 +248,9 @@ const ProcessingStep = ({ task }: ProcessingStepProps) => {
       {isBountyOwner ? (
         <>
           <h2>This task is waiting for bounty hunter to pick up...</h2>
-          <h5>This might take a while, come back to check the progress later!</h5>
+          <h5>
+            This might take a while, come back to check the progress later!
+          </h5>
         </>
       ) : (
         <>
@@ -268,29 +286,29 @@ const ProcessingStep = ({ task }: ProcessingStepProps) => {
           <>
             <Divider
               css={css`
-            margin-top: 40px;
-            margin-bottom: 20px;
-          `}
+                margin-top: 40px;
+                margin-bottom: 20px;
+              `}
             />
             {/* download data file */}
             <h2>Download task data</h2>
             <Button
-              variant="outlined"
+              variant="contained"
               component="label"
               sx={{
-                width: "300px",
+                width: "100px",
+                height: "30px",
                 alignSelf: "flex-end",
-                marginBottom: "40px",
               }}
               onClick={() => openDataFile()}
             >
-              View data file
+              Download
             </Button>
             <Divider
               css={css`
-            margin-top: 40px;
-            margin-bottom: 20px;
-          `}
+                margin-top: 40px;
+                margin-bottom: 20px;
+              `}
             />
             {/* upload zkey file */}
             <h2>Upload zkey</h2>
@@ -313,21 +331,17 @@ const ProcessingStep = ({ task }: ProcessingStepProps) => {
               </ListItem>
             </List>
             <Button
-              variant="outlined"
+              variant="contained"
               component="label"
               sx={{
-                width: "150px",
+                width: "100px",
+                height: "30px",
                 alignSelf: "flex-end",
               }}
             >
-              Upload zkey
-              <input
-                hidden
-                type="file"
-                onChange={handleZkeyUpload as any}
-              />
+              Upload
+              <input hidden type="file" onChange={handleZkeyUpload as any} />
             </Button>
-
 
             {/* upload circuit */}
             <h2>Upload Circom file</h2>
@@ -350,21 +364,17 @@ const ProcessingStep = ({ task }: ProcessingStepProps) => {
               </ListItem>
             </List>
             <Button
-              variant="outlined"
+              variant="contained"
               component="label"
               sx={{
-                width: "150px",
+                width: "100px",
+                height: "30px",
                 alignSelf: "flex-end",
               }}
             >
-              Upload Circom
-              <input
-                hidden
-                type="file"
-                onChange={handleCircomUpload as any}
-              />
+              Upload
+              <input hidden type="file" onChange={handleCircomUpload as any} />
             </Button>
-
 
             {/* upload verifier.sol */}
             <h2>Upload verifier.sol</h2>
@@ -387,14 +397,15 @@ const ProcessingStep = ({ task }: ProcessingStepProps) => {
               </ListItem>
             </List>
             <Button
-              variant="outlined"
+              variant="contained"
               component="label"
               sx={{
-                width: "150px",
+                width: "100px",
+                height: "30px",
                 alignSelf: "flex-end",
               }}
             >
-              Upload sol
+              Upload
               <input
                 hidden
                 type="file"
@@ -417,32 +428,36 @@ const ProcessingStep = ({ task }: ProcessingStepProps) => {
 
             <Button
               variant="contained"
-              component="label"
+              startIcon={<UploadIcon />}
               sx={{
-                width: "100px",
+                borderRadius: "30px",
+                height: "50px",
                 alignSelf: "flex-end",
-                marginBottom: "40px",
               }}
               onClick={() => handleSubmit()}
             >
               Submit
             </Button>
-          </>) : null}
+          </>
+        ) : null}
 
         {/* for development purpose */}
-        <Button onClick={
-          () => {
+        <Button
+          onClick={() => {
             setIsBountyOwner(false);
-          }}>
+          }}
+        >
           Switch to bounty hunter
         </Button>
-        <Button onClick={
-          () => {
+        <Button
+          onClick={() => {
             setIsBountyOwner(true);
-          }}>
+          }}
+        >
           Switch to bounty owner
         </Button>
-      </div></div>
+      </div>
+    </div>
   );
 };
 

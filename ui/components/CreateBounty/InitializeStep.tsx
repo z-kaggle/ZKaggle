@@ -1,29 +1,32 @@
-import React from "react";
 import { css } from "@emotion/react";
-import {
-  TextField,
-  List,
-  ListItemText,
-  Button,
-  ListItemIcon,
-  ListItem,
-  Input,
-} from "@mui/material";
-
-import PaidIcon from "@mui/icons-material/Paid";
-import FolderIcon from "@mui/icons-material/Folder";
 import lighthouse from "@lighthouse-web3/sdk";
-import { useContract, useSigner, useWaitForTransaction } from "wagmi";
-import { formatBytes } from "../../utils";
-import BountyFactory from "../../BountyFactory.json";
+import FolderIcon from "@mui/icons-material/Folder";
+import PaidIcon from "@mui/icons-material/Paid";
+import {
+  Button,
+  Input,
+  List,
+  ListItem,
+  ListItemIcon,
+  ListItemText,
+  TextField,
+  useTheme,
+} from "@mui/material";
+import base32 from "base32.js";
 import { ethers } from "ethers";
 import { useRouter } from "next/router";
-import base32 from "base32.js";
+import React from "react";
+import { useContract, useSigner, useWaitForTransaction } from "wagmi";
+
+import BountyFactory from "../../BountyFactory.json";
+import { formatBytes } from "../../utils";
 
 const InitializeStep = () => {
-  const [projectName, setProjectName] = React.useState("Project101");
-  const [requirements, setRequirements] = React.useState("Try your best");
-  const [file, setFile] = React.useState<lighthouse.IpfsFileResponse | null>(null);
+  const [projectName, setProjectName] = React.useState("");
+  const [requirements, setRequirements] = React.useState("");
+  const [file, setFile] = React.useState<lighthouse.IpfsFileResponse | null>(
+    null
+  );
   const bountyAmountRef = React.useRef<HTMLInputElement>(null);
   const taskRouter = useRouter();
 
@@ -82,7 +85,7 @@ const InitializeStep = () => {
     );
     console.log("Mining...", createBounty.hash);
     await createBounty.wait(); // !: .wait might not resolve [Cathie]
-    
+
     console.log("Mined --", createBounty.hash);
     // TODO: [low priority] route to step 2 instead [Cathie]
     taskRouter.push(`/myspace`);
@@ -104,6 +107,7 @@ const InitializeStep = () => {
         required
         id="outlined-required"
         label="Task Name"
+        color="secondary"
         value={projectName}
         onChange={(e) => setProjectName(e.target.value)}
         sx={{
@@ -115,6 +119,7 @@ const InitializeStep = () => {
         required
         id="outlined-multiline-static"
         label="Requirements"
+        color="secondary"
         multiline
         rows={4}
         value={requirements}
@@ -144,10 +149,11 @@ const InitializeStep = () => {
         </ListItem>
       </List>
       <Button
-        variant="outlined"
+        variant="contained"
         component="label"
         sx={{
           width: "100px",
+          height: "30px",
           alignSelf: "flex-end",
         }}
       >
@@ -158,6 +164,7 @@ const InitializeStep = () => {
       <h2>Deposit Bounty </h2>
       <Input
         inputRef={bountyAmountRef}
+        color="secondary"
         placeholder="enter amount in tFIL"
         style={{ margin: "0 0 30px 0" }}
       />
