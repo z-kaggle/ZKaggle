@@ -4,7 +4,9 @@ import FolderIcon from "@mui/icons-material/Folder";
 import PaidIcon from "@mui/icons-material/Paid";
 import {
   Button,
+  Divider,
   Input,
+  InputAdornment,
   List,
   ListItem,
   ListItemIcon,
@@ -161,7 +163,8 @@ const InitializeStep = () => {
         </ListItem>
       </List>
       <Button
-        variant="contained"
+        variant="outlined"
+        color="secondary"
         component="label"
         sx={{
           width: "100px",
@@ -174,11 +177,25 @@ const InitializeStep = () => {
       </Button>
 
       <h2>Deposit Bounty </h2>
-      <Input
-        inputRef={bountyAmountRef}
+      <TextField
+        required
+        label="Deposit Amount"
+        id="outlined-start-adornment"
         color="secondary"
-        placeholder="enter amount in tFIL"
-        style={{ margin: "0 0 30px 0" }}
+        inputRef={bountyAmountRef}
+        sx={{
+          marginTop: "10px",
+        }}
+        InputProps={{
+          endAdornment: <InputAdornment position="end">tFIL</InputAdornment>,
+        }}
+      />
+
+      <Divider
+        css={css`
+          margin-top: 40px;
+          margin-bottom: 20px;
+        `}
       />
       <Button
         variant="contained"

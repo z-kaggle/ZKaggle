@@ -43,7 +43,29 @@ const CreateBounty: NextPage = () => {
         >
           <Stepper activeStep={0} alternativeLabel>
             {stepTitles.map((label) => (
-              <Step key={label}>
+              <Step
+                key={label}
+                sx={{
+                  // "& .MuiStepLabel-label": {
+                  //   color: "black",
+                  // },
+                  // "& .MuiStepLabel-active": {
+                  //   color: "black",
+                  // },
+                  // "& .MuiStepLabel-completed": {
+                  //   color: "black",
+                  // },
+                  // "& .MuiStepIcon-root": {
+                  //   color: "white",
+                  // },
+                  "& .MuiStepIcon-completed": {
+                    color: "green",
+                  },
+                  "& .MuiStepIcon-active": {
+                    color: "red",
+                  },
+                }}
+              >
                 <StepLabel>{label}</StepLabel>
               </Step>
             ))}

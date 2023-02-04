@@ -4,6 +4,7 @@ import FolderIcon from "@mui/icons-material/Folder";
 import UploadIcon from "@mui/icons-material/Upload";
 import {
   Button,
+  Chip,
   Divider,
   Input,
   List,
@@ -11,6 +12,7 @@ import {
   ListItemIcon,
   ListItemText,
   Stack,
+  useTheme,
 } from "@mui/material";
 import base32 from "base32.js";
 import { ethers } from "ethers";
@@ -19,6 +21,7 @@ import React from "react";
 import { useAccount, useSigner } from "wagmi";
 import { useContract } from "wagmi";
 
+import FlowCard from "../FlowCard";
 import Bounty from "../../Bounty.json";
 import BountyFactory from "../../BountyFactory.json";
 import { Task } from "../../typings";
@@ -45,6 +48,7 @@ const ProcessingStep = ({ task }: ProcessingStepProps) => {
   const zkProofRef = React.useRef<HTMLInputElement>(null);
 
   const taskRouter = useRouter();
+  const theme = useTheme();
 
   const { data: signer } = useSigner();
 
@@ -247,14 +251,14 @@ const ProcessingStep = ({ task }: ProcessingStepProps) => {
     >
       {isBountyOwner ? (
         <>
-          <h2>This task is waiting for bounty hunter to pick up...</h2>
+          <h1>Waiting for picking up...</h1>
           <h5>
             This might take a while, come back to check the progress later!
           </h5>
         </>
       ) : (
         <>
-          <h2>Upload your computed results ASAP</h2>
+          <h1>Upload your results ASAP</h1>
           <h5>Bounty submissions are first-come-first-served.</h5>
         </>
       )}
@@ -267,33 +271,59 @@ const ProcessingStep = ({ task }: ProcessingStepProps) => {
         `}
       >
         <Stack paddingTop={6} spacing={0}>
-          <Stack direction="row" spacing={10} justifyContent="space-between">
-            <h2 style={{ padding: "0", margin: "0" }}>{task.name}</h2>
-            <Button
-              variant="outlined"
-              sx={{
-                width: "150px",
-                alignSelf: "flex-end",
-              }}
-            >
-              {task.bountyAmount} tFIL
-            </Button>
+          <Stack
+            direction="row"
+            spacing={1}
+            alignItems="center"
+            justifyContent="space-between"
+            flexWrap="nowrap"
+            overflow="overlay"
+          >
+            <h2 style={{ padding: "0", margin: "0", flexShrink: 0 }}>
+              {task.name}
+            </h2>
+            <div style={{ flexShrink: 0 }}>
+              <Chip
+                label={task.isCompleted ? "Completed" : "In Progress"}
+                sx={{
+                  backgroundColor: task.isCompleted
+                    ? ""
+                    : theme.palette.primary.contrastText,
+                  color: "white",
+                  borderRadius: "50px",
+                  marginRight: "10px",
+                  fontSize: "12px",
+                  height: "20px",
+                }}
+              />
+              <Chip
+                label={task.bountyAmount + " tFil"}
+                {...(!task.isCompleted && {
+                  variant: "outlined",
+                  color: "secondary",
+                })}
+                sx={{
+                  color: task.isCompleted
+                    ? "white"
+                    : theme.palette.primary.contrastText,
+                  borderRadius: "50px",
+                  marginRight: "10px",
+                  fontSize: "12px",
+                  height: "20px",
+                }}
+              />
+            </div>
           </Stack>
           <h5>{task.description}</h5>
         </Stack>
 
         {!isBountyOwner ? (
           <>
-            <Divider
-              css={css`
-                margin-top: 40px;
-                margin-bottom: 20px;
-              `}
-            />
             {/* download data file */}
             <h2>Download task data</h2>
             <Button
-              variant="contained"
+              variant="outlined"
+              color="secondary"
               component="label"
               sx={{
                 width: "100px",
@@ -304,12 +334,6 @@ const ProcessingStep = ({ task }: ProcessingStepProps) => {
             >
               Download
             </Button>
-            <Divider
-              css={css`
-                margin-top: 40px;
-                margin-bottom: 20px;
-              `}
-            />
             {/* upload zkey file */}
             <h2>Upload zkey</h2>
             <List dense={true}>
@@ -331,7 +355,8 @@ const ProcessingStep = ({ task }: ProcessingStepProps) => {
               </ListItem>
             </List>
             <Button
-              variant="contained"
+              variant="outlined"
+              color="secondary"
               component="label"
               sx={{
                 width: "100px",
@@ -364,7 +389,8 @@ const ProcessingStep = ({ task }: ProcessingStepProps) => {
               </ListItem>
             </List>
             <Button
-              variant="contained"
+              variant="outlined"
+              color="secondary"
               component="label"
               sx={{
                 width: "100px",
@@ -396,8 +422,10 @@ const ProcessingStep = ({ task }: ProcessingStepProps) => {
                 />
               </ListItem>
             </List>
+
             <Button
-              variant="contained"
+              variant="outlined"
+              color="secondary"
               component="label"
               sx={{
                 width: "100px",
@@ -415,15 +443,22 @@ const ProcessingStep = ({ task }: ProcessingStepProps) => {
 
             <h2>Verifier Contract Address</h2>
             <Input
+              color="secondary"
               inputRef={verifierAddressRef}
               placeholder="Enter verifier address (must be deployed on Hyperspace testnet)"
               style={{ margin: "0 0 30px 0" }}
             />
             <h2>ZK Proof</h2>
             <Input
+              color="secondary"
               inputRef={zkProofRef}
               placeholder="Enter verifier calldata from snarkjs"
-              style={{ margin: "0 0 30px 0" }}
+            />
+            <Divider
+              css={css`
+                margin-top: 40px;
+                margin-bottom: 20px;
+              `}
             />
 
             <Button
@@ -443,6 +478,7 @@ const ProcessingStep = ({ task }: ProcessingStepProps) => {
 
         {/* for development purpose */}
         <Button
+          color="secondary"
           onClick={() => {
             setIsBountyOwner(false);
           }}
@@ -450,6 +486,7 @@ const ProcessingStep = ({ task }: ProcessingStepProps) => {
           Switch to bounty hunter
         </Button>
         <Button
+          color="secondary"
           onClick={() => {
             setIsBountyOwner(true);
           }}

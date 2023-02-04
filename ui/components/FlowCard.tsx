@@ -38,8 +38,8 @@ export default function FlowCard({ task, expanded }: FlowCardProps) {
           "&:hover": {
             cursor: "pointer",
             transform: "scale(1.05)",
-            transition: "transform 0.3s ease-in-out",
-            boxShadow: "0 0 5px rgba(0, 0, 0, 0.2)",
+            transition: "transform 0.5s ease-in-out",
+            boxShadow: "0 0 5px #d1c4e9",
           },
         }}
         onClick={() => taskRouter.push(`/tasks/${task.address}`)}
@@ -67,7 +67,10 @@ export default function FlowCard({ task, expanded }: FlowCardProps) {
             />
             <Chip
               label={task.bountyAmount + " tFil"}
-              variant={task.isCompleted ? "default" : "outlined"}
+              {...(!task.isCompleted && {
+                variant: "outlined",
+                color: "secondary",
+              })}
               sx={{
                 color: task.isCompleted
                   ? "white"
@@ -78,7 +81,7 @@ export default function FlowCard({ task, expanded }: FlowCardProps) {
                 fontSize: "12px",
                 height: "20px",
               }}
-            ></Chip>
+            />
           </div>
 
           <Typography variant="h5" component="div">

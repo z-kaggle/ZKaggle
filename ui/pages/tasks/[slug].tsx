@@ -2,6 +2,7 @@ import { css } from "@emotion/react";
 import { Button, Step, StepLabel, Stepper } from "@mui/material";
 import { Contract, ethers } from "ethers";
 import type { GetServerSidePropsContext } from "next";
+import { useRouter } from "next/router";
 import React from "react";
 import { useContractEvent } from "wagmi";
 
@@ -14,7 +15,6 @@ import MainFlow from "../../components/MainFlow";
 import NavBar from "../../components/NavBar";
 import TopBar from "../../components/TopBar";
 import { Task } from "../../typings";
-import { useRouter } from "next/router";
 
 const stepTitles = ["Initialize", "Processing", "Verify", "Check Out"];
 
@@ -72,7 +72,7 @@ const TaskSteps = ({ task }: Props) => {
     abi: Bounty.abi,
     eventName: "BountyReleased",
     async listener() {
-      console.log('BountyReleased');
+      console.log("BountyReleased");
       await taskRouter.replace(taskRouter.asPath);
       setbountyStep(3);
     },
@@ -108,7 +108,7 @@ const TaskSteps = ({ task }: Props) => {
             margin-bottom: 20px;
           `}
         >
-          <Stepper activeStep={bountyStep} alternativeLabel>
+          <Stepper activeStep={bountyStep} alternativeLabel color="primary">
             {stepTitles.map((label) => (
               <Step key={label}>
                 <StepLabel>{label}</StepLabel>
@@ -117,8 +117,12 @@ const TaskSteps = ({ task }: Props) => {
           </Stepper>
           {currentStep}
           {/* for dev only */}
-          <Button onClick={goToNextStep}>Next</Button>
-          <Button onClick={goToPreviousStep}>Previous</Button>
+          <Button color="secondary" onClick={goToNextStep}>
+            Next
+          </Button>
+          <Button color="secondary" onClick={goToPreviousStep}>
+            Previous
+          </Button>
         </div>
       </MainFlow>
     </div>
@@ -176,7 +180,10 @@ export const getServerSideProps = async (
 
   // !: hacky way to get the hashed input [Cathie]
   try {
-    task.hashedInput = await bounty?.concatDigest(await bounty?.hashedInput(0), await bounty?.hashedInput(1));
+    task.hashedInput = await bounty?.concatDigest(
+      await bounty?.hashedInput(0),
+      await bounty?.hashedInput(1)
+    );
     // console.log(task.hashedInput);
   } catch (error) {
     console.log(error);

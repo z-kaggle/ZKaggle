@@ -1,16 +1,13 @@
 import { css } from "@emotion/react";
-import {
-  Button,
-  Stack,
-  Input,
-} from "@mui/material";
-import React from "react";
-
-import { Task } from "../../typings";
-import { useContract, useSigner, useAccount } from "wagmi";
-import Bounty from "../../Bounty.json";
-import { useRouter } from "next/router";
+import PaidIcon from "@mui/icons-material/Paid";
+import { Button, Chip, Divider, Input, Stack, useTheme } from "@mui/material";
 import { ethers } from "ethers";
+import { useRouter } from "next/router";
+import React from "react";
+import { useAccount, useContract, useSigner } from "wagmi";
+
+import Bounty from "../../Bounty.json";
+import { Task } from "../../typings";
 
 type CheckOutStepProps = {
   task: Task;
@@ -20,9 +17,14 @@ const CheckOutStep = ({ task }: CheckOutStepProps) => {
   const taskRouter = useRouter();
 
   const { address: address } = useAccount();
-  const [isBountyHunter, setIsBountyHunter] = React.useState(address === task.bountyHunter);
-  const [isBountyOwner, setIsBountyOwner] = React.useState(address === task.bountyOwner);
+  const [isBountyHunter, setIsBountyHunter] = React.useState(
+    address === task.bountyHunter
+  );
+  const [isBountyOwner, setIsBountyOwner] = React.useState(
+    address === task.bountyOwner
+  );
   const inputRef = React.useRef<HTMLInputElement>(null);
+  const theme = useTheme();
 
   const { data: signer } = useSigner();
 
@@ -46,8 +48,7 @@ const CheckOutStep = ({ task }: CheckOutStepProps) => {
         return;
       }
       console.log(calldata);
-    }
-    catch (e) {
+    } catch (e) {
       alert("Please enter in array format");
       return;
     }
@@ -73,7 +74,7 @@ const CheckOutStep = ({ task }: CheckOutStepProps) => {
 
     // console.log("Mined --", claimBounty.hash);
     // taskRouter.replace("/submissions");
-  }
+  };
 
   return (
     <div
@@ -88,18 +89,18 @@ const CheckOutStep = ({ task }: CheckOutStepProps) => {
         <>
           <h1>Congrats!</h1>
           <h5>
-            Your task has been verified by the provider.
-            You can claim the bounty now.
+            Your task has been verified by the provider. You can claim the
+            bounty now.
           </h5>
         </>
       ) : isBountyOwner ? (
-
         <>
           <h1>Results are in!</h1>
           <h5>Check the computed results below.</h5>
         </>
-      ) :
-        (<h1>This is not your task.</h1>)}
+      ) : (
+        <h1>This is not your task.</h1>
+      )}
       <div
         css={css`
           display: flex;
@@ -108,37 +109,74 @@ const CheckOutStep = ({ task }: CheckOutStepProps) => {
           min-width: 300px;
         `}
       >
-        <Stack paddingTop={6} spacing={0}>
-          <Stack direction="row" spacing={10} justifyContent="space-between">
-            <h2 style={{ padding: "0", margin: "0" }}>{task.name}</h2>
-            <Button
-              variant="outlined"
+        <Stack
+          direction="row"
+          spacing={1}
+          alignItems="center"
+          justifyContent="space-between"
+          flexWrap="nowrap"
+          overflow="overlay"
+        >
+          <h2 style={{ padding: "0", margin: "0", flexShrink: 0 }}>
+            {task.name}
+          </h2>
+          <div style={{ flexShrink: 0 }}>
+            <Chip
+              label={task.isCompleted ? "Completed" : "In Progress"}
               sx={{
-                width: "150px",
-                alignSelf: "flex-end",
+                backgroundColor: task.isCompleted
+                  ? ""
+                  : theme.palette.primary.contrastText,
+                color: "white",
+                borderRadius: "50px",
+                marginRight: "10px",
+                fontSize: "12px",
+                height: "20px",
               }}
-            >
-              {task.bountyAmount} TFIL
-            </Button>
-          </Stack>
-          <h5>{task.description}</h5>
+            />
+            <Chip
+              label={task.bountyAmount + " tFil"}
+              {...(!task.isCompleted && {
+                variant: "outlined",
+                color: "secondary",
+              })}
+              sx={{
+                color: task.isCompleted
+                  ? "white"
+                  : theme.palette.primary.contrastText,
+                borderRadius: "50px",
+                marginRight: "10px",
+                fontSize: "12px",
+                height: "20px",
+              }}
+            />
+          </div>
         </Stack>
+        <h5>{task.description}</h5>
         {isBountyHunter ? (
           <>
             <h2>Unhash computed results</h2>
 
             <Input
+              color="secondary"
               inputRef={inputRef}
               placeholder="enter pre-image(s) of hashed results, e.g. [5, 123456789]"
               style={{ margin: "0 0 30px 0" }}
             />
+            <Divider
+              css={css`
+                margin-top: 40px;
+                margin-bottom: 20px;
+              `}
+            />
             <Button
               variant="contained"
+              startIcon={<PaidIcon />}
               component="label"
               sx={{
-                width: "100px",
+                borderRadius: "30px",
+                height: "50px",
                 alignSelf: "flex-end",
-                marginBottom: "40px",
               }}
               onClick={() => handleClaim()}
             >
@@ -156,28 +194,35 @@ const CheckOutStep = ({ task }: CheckOutStepProps) => {
           </>
         ) : null}
         {/* for development purpose */}
-        <Button onClick={
-          () => {
+        <Button
+          color="secondary"
+          onClick={() => {
             setIsBountyHunter(true);
             setIsBountyOwner(false);
-          }}>
+          }}
+        >
           Switch to bounty hunter
         </Button>
-        <Button onClick={
-          () => {
+        <Button
+          color="secondary"
+          onClick={() => {
             setIsBountyHunter(false);
             setIsBountyOwner(true);
-          }}>
+          }}
+        >
           Switch to bounty owner
         </Button>
-        <Button onClick={
-          () => {
+        <Button
+          color="secondary"
+          onClick={() => {
             setIsBountyHunter(false);
             setIsBountyOwner(false);
-          }}>
+          }}
+        >
           Switch to neither
         </Button>
-      </div></div>
+      </div>
+    </div>
   );
 };
 

@@ -1,15 +1,13 @@
 import { css } from "@emotion/react";
-import {
-  Button,
-  Stack,
-} from "@mui/material";
-import React from "react";
-
-import { Task } from "../../typings";
-import { useContract, useSigner, useAccount } from "wagmi";
-import Bounty from "../../Bounty.json";
-import { useRouter } from "next/router";
+import DoneIcon from "@mui/icons-material/Done";
+import { Button, Chip, Divider, Stack, useTheme } from "@mui/material";
 import { ethers } from "ethers";
+import { useRouter } from "next/router";
+import React from "react";
+import { useAccount, useContract, useSigner } from "wagmi";
+
+import Bounty from "../../Bounty.json";
+import { Task } from "../../typings";
 
 type VerifyStepProps = {
   task: Task;
@@ -18,10 +16,15 @@ type VerifyStepProps = {
 const VerifyStep = ({ task }: VerifyStepProps) => {
   const decoder = new TextDecoder();
   const taskRouter = useRouter();
+  const theme = useTheme();
 
   const { address: address } = useAccount();
-  const [isBountyHunter, setIsBountyHunter] = React.useState(address === task.bountyHunter);
-  const [isBountyOwner, setIsBountyOwner] = React.useState(address === task.bountyOwner);
+  const [isBountyHunter, setIsBountyHunter] = React.useState(
+    address === task.bountyHunter
+  );
+  const [isBountyOwner, setIsBountyOwner] = React.useState(
+    address === task.bountyOwner
+  );
 
   const { data: signer } = useSigner();
 
@@ -36,24 +39,24 @@ const VerifyStep = ({ task }: VerifyStepProps) => {
     console.log("Mining...", releaseBounty.hash);
     // await releaseBounty.wait();
     // taskRouter.push(`/tasks/${task.address}`);
-  }
+  };
 
-  const urlPrefix = "https://files.lighthouse.storage/viewFile/"
+  const urlPrefix = "https://files.lighthouse.storage/viewFile/";
 
   const openZkeyFile = () => {
     const cid = decoder.decode(ethers.utils.arrayify(task.zkeyCID));
     window.open(urlPrefix + cid, "_blank");
-  }
+  };
 
   const openCircomFile = () => {
     const cid = decoder.decode(ethers.utils.arrayify(task.circomCID));
     window.open(urlPrefix + cid, "_blank");
-  }
-  
+  };
+
   const openVerifierFile = () => {
     const cid = decoder.decode(ethers.utils.arrayify(task.verifierCID));
     window.open(urlPrefix + cid, "_blank");
-  }
+  };
 
   return (
     <div
@@ -76,12 +79,13 @@ const VerifyStep = ({ task }: VerifyStepProps) => {
         <>
           <h1>You got a submission!</h1>
           <h5>
-            The bounty hunter has submitted the results.
+            The bounty hunter has submitted the results. <br />
             Please verify the results and pay the bounty.
           </h5>
         </>
-      ) :
-        (<h1>This is not your task.</h1>)}
+      ) : (
+        <h1>This is not your task.</h1>
+      )}
       <div
         css={css`
           display: flex;
@@ -91,27 +95,61 @@ const VerifyStep = ({ task }: VerifyStepProps) => {
         `}
       >
         <Stack paddingTop={6} spacing={0}>
-          <Stack direction="row" spacing={10} justifyContent="space-between">
-            <h2 style={{ padding: "0", margin: "0" }}>{task.name}</h2>
-            <Button
-              variant="outlined"
-              sx={{
-                width: "150px",
-                alignSelf: "flex-end",
-              }}
-            >
-              {task.bountyAmount} tFIL
-            </Button>
+          <Stack
+            direction="row"
+            spacing={1}
+            alignItems="center"
+            justifyContent="space-between"
+            flexWrap="nowrap"
+            overflow="overlay"
+          >
+            <h2 style={{ padding: "0", margin: "0", flexShrink: 0 }}>
+              {task.name}
+            </h2>
+            <div style={{ flexShrink: 0 }}>
+              <Chip
+                label={task.isCompleted ? "Completed" : "In Progress"}
+                sx={{
+                  backgroundColor: task.isCompleted
+                    ? ""
+                    : theme.palette.primary.contrastText,
+                  color: "white",
+                  borderRadius: "50px",
+                  marginRight: "10px",
+                  fontSize: "12px",
+                  height: "20px",
+                }}
+              />
+              <Chip
+                label={task.bountyAmount + " tFil"}
+                {...(!task.isCompleted && {
+                  variant: "outlined",
+                  color: "secondary",
+                })}
+                sx={{
+                  color: task.isCompleted
+                    ? "white"
+                    : theme.palette.primary.contrastText,
+                  borderRadius: "50px",
+                  marginRight: "10px",
+                  fontSize: "12px",
+                  height: "20px",
+                }}
+              />
+            </div>
           </Stack>
           <h5>{task.description}</h5>
         </Stack>
+
         {isBountyOwner ? (
           <>
+            <h2>Verify files</h2>
             <Button
               variant="outlined"
+              color="secondary"
               component="label"
               sx={{
-                width: "300px",
+                width: "200px",
                 alignSelf: "flex-end",
                 marginBottom: "40px",
               }}
@@ -121,9 +159,10 @@ const VerifyStep = ({ task }: VerifyStepProps) => {
             </Button>
             <Button
               variant="outlined"
+              color="secondary"
               component="label"
               sx={{
-                width: "300px",
+                width: "200px",
                 alignSelf: "flex-end",
                 marginBottom: "40px",
               }}
@@ -133,9 +172,10 @@ const VerifyStep = ({ task }: VerifyStepProps) => {
             </Button>
             <Button
               variant="outlined"
+              color="secondary"
               component="label"
               sx={{
-                width: "300px",
+                width: "200px",
                 alignSelf: "flex-end",
                 marginBottom: "40px",
               }}
@@ -157,13 +197,20 @@ const VerifyStep = ({ task }: VerifyStepProps) => {
             >
               Verify
             </Button> */}
+            <Divider
+              css={css`
+                margin-top: 40px;
+                margin-bottom: 20px;
+              `}
+            />
             <Button
               variant="contained"
+              startIcon={<DoneIcon />}
               component="label"
               sx={{
-                width: "100px",
+                borderRadius: "30px",
+                height: "50px",
                 alignSelf: "flex-end",
-                marginBottom: "40px",
               }}
               onClick={() => handleRelease()}
             >
@@ -172,28 +219,35 @@ const VerifyStep = ({ task }: VerifyStepProps) => {
           </>
         ) : null}
         {/* for development purpose */}
-        <Button onClick={
-          () => {
+        <Button
+          color="secondary"
+          onClick={() => {
             setIsBountyHunter(true);
             setIsBountyOwner(false);
-          }}>
+          }}
+        >
           Switch to bounty hunter
         </Button>
-        <Button onClick={
-          () => {
+        <Button
+          color="secondary"
+          onClick={() => {
             setIsBountyHunter(false);
             setIsBountyOwner(true);
-          }}>
+          }}
+        >
           Switch to bounty owner
         </Button>
-        <Button onClick={
-          () => {
+        <Button
+          color="secondary"
+          onClick={() => {
             setIsBountyHunter(false);
             setIsBountyOwner(false);
-          }}>
+          }}
+        >
           Switch to neither
         </Button>
-      </div></div>
+      </div>
+    </div>
   );
 };
 

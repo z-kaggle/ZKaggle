@@ -26,6 +26,8 @@ const themeOptions: ThemeOptions = {
     },
     secondary: {
       main: "#6750a4",
+      contrastText: "#ffffff",
+      dark: "#d1c4e9",
     },
     background: {
       default: "#fffbfe",
