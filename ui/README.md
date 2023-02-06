@@ -1,15 +1,14 @@
-# FVM-hackathon UI 
+# ZKaggle UI 
 
-This is the UI of the FVM-hackathon projec, built with Next.js.
+1️⃣ Build with Next.js, MUI and ethers.js. <br>
+2️⃣ Use rainbowkit and wagmi for easier integration. <br>
+❗️ we only support Filecoin and Filecoin Hyperspace testnet right now
 
 ## Deployment
 
-Deployed with Vercel.
-
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/git/external?repository-url=https://github.com/vercel/next.js/tree/canary/examples/with-tailwindcss&project-name=with-tailwindcss&repository-name=with-tailwindcss)
+https://zkaggle.vercel.app/ 
 
 ## Initialization
-
 
 ```bash
 nmp install
@@ -18,3 +17,4 @@ nmp install
 ```bash
 npm run dev
 ```
+
