@@ -1,28 +1,42 @@
-require("@nomicfoundation/hardhat-toolbox")
-require("hardhat-deploy")
-require("hardhat-deploy-ethers")
-require("./tasks")
-require("dotenv").config()
+require("@nomiclabs/hardhat-waffle");
+require("@nomiclabs/hardhat-ethers");
+require("hardhat-deploy");
+require("hardhat-contract-sizer");
+require("hardhat-gas-reporter");
+require("dotenv").config();
 
-const PRIVATE_KEY = process.env.PRIVATE_KEY
-/** @type import('hardhat/config').HardhatUserConfig */
+const { PRIVATE_KEY: GOERLI_PRIVATE_KEY, ALCHEMY_API_KEY } = process.env;
+
 module.exports = {
-    solidity: "0.8.17",
-    defaultNetwork: "hyperspace",
+    solidity: {
+        version: "0.8.17",
+        optimizer: {
+            enabled: true,
+            runs: 1000,
+        }
+    },
     networks: {
-        hyperspace: {
-            chainId: 3141,
-            url: "https://api.hyperspace.node.glif.io/rpc/v1",
-            accounts: [PRIVATE_KEY],
+        hardhat: {
+            allowUnlimitedContractSize: true,
+            gas: 100000000,
+            blockGasLimit: 0x1fffffffffffff,
+        },
+        goerli: {
+            allowUnlimitedContractSize: true,
+            gas: 100000000,
+            blockGasLimit: 0x1fffffffffffff,
+            url: `https://eth-goerli.alchemyapi.io/v2/${ALCHEMY_API_KEY}`,
+            accounts: [`${GOERLI_PRIVATE_KEY}`],
         },
     },
+    namedAccounts: {
+        deployer: 0,
+    },
     paths: {
-        sources: "./contracts",
-        tests: "./test",
-        cache: "./cache",
-        artifacts: "./artifacts",
+        deploy: "deploy",
+        deployments: "deployments",
     },
     mocha: {
         timeout: 1000000
     }
-}
+};

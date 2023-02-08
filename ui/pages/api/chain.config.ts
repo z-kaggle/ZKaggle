@@ -21,7 +21,7 @@ export const filecoin: Chain = {
 };
 
 export const filecoinHyperspace: Chain = {
-  id: 3141,
+  id: 31337,
   name: "Filecoin Hyperspace",
   network: "filecoin-hyperspace",
   nativeCurrency: {
@@ -30,11 +30,11 @@ export const filecoinHyperspace: Chain = {
     symbol: "tFIL",
   },
   rpcUrls: {
-    default: { http: ["https://api.hyperspace.node.glif.io/rpc/v1"] },
-    public: { http: ["https://api.hyperspace.node.glif.io/rpc/v1"] },
+    default: { http: ["http://127.0.0.1:8545/"] },
+    public: { http: ["http://127.0.0.1:8545/"] },
   },
-  blockExplorers: {
-    default: { name: "FilFox", url: "https://hyperspace.filfox.info/en" },
-    gilf: { name: "Gilf", url: "https://explorer.glif.io/?network=hyperspace" },
-  },
+  // blockExplorers: {
+  //   default: { name: "FilFox", url: "https://hyperspace.filfox.info/en" },
+  //   gilf: { name: "Gilf", url: "https://explorer.glif.io/?network=hyperspace" },
+  // },
 };

@@ -70,7 +70,7 @@ export default Home;
 
 export const getServerSideProps = async () => {
   const provider = new ethers.providers.JsonRpcProvider(
-    "https://api.hyperspace.node.glif.io/rpc/v1"
+    "http://127.0.0.1:8545/"
   );
   const bountyFactory = new Contract(
     BountyFactory.address,

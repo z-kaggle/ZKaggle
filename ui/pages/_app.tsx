@@ -44,22 +44,22 @@ const { chains, provider } = configureChains(
     jsonRpcProvider({
       priority: 0,
       rpc: () => ({
-        http: `https://api.hyperspace.node.glif.io/rpc/v1`,
+        http: `http://127.0.0.1:8545/`,
       }),
     }),
-    // only support filecoin API requests
-    jsonRpcProvider({
-      priority: 1,
-      rpc: () => ({
-        http: `https://api.hyperspace.node.glif.io/`,
-      }),
-    }),
-    jsonRpcProvider({
-      priority: 2,
-      rpc: () => ({
-        http: `https://api.hyperspace.node.glif.io/rpc/v0`,
-      }),
-    }),
+    // // only support filecoin API requests
+    // jsonRpcProvider({
+    //   priority: 1,
+    //   rpc: () => ({
+    //     http: `https://api.hyperspace.node.glif.io/`,
+    //   }),
+    // }),
+    // jsonRpcProvider({
+    //   priority: 2,
+    //   rpc: () => ({
+    //     http: `https://api.hyperspace.node.glif.io/rpc/v0`,
+    //   }),
+    // }),
   ]
 );
 

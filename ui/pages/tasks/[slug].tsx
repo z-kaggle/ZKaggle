@@ -135,7 +135,7 @@ export const getServerSideProps = async (
   } as Task;
 
   const provider = new ethers.providers.JsonRpcProvider(
-    "https://api.hyperspace.node.glif.io/rpc/v1"
+    "http://127.0.0.1:8545/"
   );
   const bounty = new Contract(task.address, Bounty.abi, provider);
 
