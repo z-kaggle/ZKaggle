@@ -101,7 +101,7 @@ const VerifyStep = ({ task }: VerifyStepProps) => {
             alignItems="center"
             justifyContent="space-between"
             flexWrap="nowrap"
-            overflow="overlay"
+            overflow="visible"
           >
             <h2 style={{ padding: "0", margin: "0", flexShrink: 0 }}>
               {task.name}
